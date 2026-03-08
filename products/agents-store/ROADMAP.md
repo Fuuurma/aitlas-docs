@@ -555,3 +555,168 @@ constraints:
 
 **Total Planned Agents:** 20+  
 **Categories:** Professional (7), Role-Based (5), Industry (3), Lifestyle (3)
+---
+
+## Extended Agents Catalog (50+ Agents Planned)
+
+### Business & Leadership (10 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.ceo** | Strategic planning, executive decisions | f.crm, f.finance, f.analytics |
+| **f.founder** | Startup strategy, fundraising, growth | f.finance, f.crm, f.social |
+| **f.cto** | Technology strategy, architecture | f.monitor, f.hack, f.git |
+| **f.cfo** | Financial strategy, forecasting | f.finance, f.report, f.analytics |
+| **f.cmo** | Marketing strategy, brand management | f.social, f.analytics, f.seo |
+| **f.coo** | Operations, process optimization | f.automation, f.monitor, f.logs |
+| **f.product** | Product management, roadmaps | f.analytics, f.feedback, f.abtest |
+| **f.pm** | Project management, delivery | f.automation, f.report, f.calendar |
+| **f.consultant** | Business advisory, strategy | f.finance, f.analytics, f.report |
+| **f.accountant** | Bookkeeping, tax, compliance | f.finance, f.report, f.vault |
+
+### Development & Engineering (8 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.coder** | Full-stack development | f.vault, f.scrape, Terminal |
+| **f.reviewer** | Code review, quality | f.hack, f.vault, Terminal |
+| **f.architect** | System design, architecture | f.monitor, f.hack, f.report |
+| **f.devops** | Infrastructure, deployment | f.monitor, f.automation, f.backup |
+| **f.sre** | Reliability, incident response | f.monitor, f.logs, f.alerts |
+| **f.qa** | Testing, quality assurance | f.automation, f.abtest, Terminal |
+| **f.dbadmin** | Database administration | f.backup, f.migrate, f.logs |
+| **f.security** | Security engineering | f.hack, f.vault, f.monitor |
+
+### Creative & Content (6 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.writer** | Content creation, copywriting | f.scrape, f.library, f.translate |
+| **f.designer** | UI/UX, visual design | f.image, f.scrape, f.vault |
+| **f.editor** | Content editing, proofreading | f.library, f.translate |
+| **f.marketer** | Marketing campaigns, SEO | f.social, f.seo, f.analytics |
+| **f.social** | Social media management | f.social, f.analytics, f.image |
+| **f.video** | Video production, editing | f.video, f.image, f.audio |
+
+### Research & Analysis (6 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.researcher** | General research, analysis | f.scrape, f.news, f.library |
+| **f.analyst** | Data analysis, insights | f.analytics, f.report, f.dashboard |
+| **f.datascientist** | ML, data modeling | f.analytics, f.search, Terminal |
+| **f.academic** | Academic research, papers | f.library, f.scrape, f.translate |
+| **f.journalist** | News, investigation | f.news, f.scrape, f.social |
+| **f.investigator** | OSINT, background checks | f.scrape, f.search, f.maps |
+
+### Finance & Investment (5 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.investor** | Investment research, analysis | f.finance, f.crypto, f.news |
+| **f.trader** | Trading, technical analysis | f.finance, f.crypto, f.analytics |
+| **f.analyst-fin** | Financial analysis, modeling | f.finance, f.report, f.analytics |
+| **f.crypto** | Cryptocurrency, DeFi | f.crypto, f.news, f.analytics |
+| **f.auditor** | Financial auditing | f.finance, f.report, f.logs |
+
+### Security & Legal (5 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.hacker** | Penetration testing, security | f.hack, f.scrape, Terminal |
+| **f.forensics** | Digital forensics | f.logs, f.search, f.vault |
+| **f.lawyer** | Legal advice, contracts | f.library, f.scrape, f.vault |
+| **f.compliance** | Regulatory compliance | f.library, f.report, f.vault |
+| **f.privacy** | Privacy, GDPR, data protection | f.vault, f.logs, f.report |
+
+### Health & Wellness (5 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.doctor** | Medical information, research | f.library, f.scrape, f.vault |
+| **f.therapist** | Mental health, counseling | f.psychology, f.vault |
+| **f.nutritionist** | Nutrition, diet planning | f.food, f.fitness, f.vault |
+| **f.fitnesstrainer** | Workouts, fitness plans | f.fitness, f.habit, f.vault |
+| **f.coach-life** | Life coaching, goals | f.habit, f.calendar, f.vault |
+
+### Education & Learning (5 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.tutor** | Subject tutoring, explanations | f.library, f.language, f.translate |
+| **f.teacher** | Lesson planning, curriculum | f.library, f.slides, f.vault |
+| **f.trainer** | Corporate training, L&D | f.slides, f.video, f.report |
+| **f.language-teacher** | Language instruction | f.language, f.translate, f.audio |
+| **f.testprep** | Exam preparation | f.library, f.qa, f.habit |
+
+### Lifestyle & Personal (6 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.assistant** | Personal tasks, scheduling | f.calendar, f.email, f.tasks |
+| **f.planner** | Event planning, logistics | f.calendar, f.maps, f.travel |
+| **f.travel-agent** | Travel planning, bookings | f.travel, f.maps, f.weather |
+| **f.chef** | Recipe suggestions, cooking | f.food, f.translate, f.image |
+| **f.stylist** | Fashion, personal style | f.image, f.scrape, f.shop |
+| **f.realtor** | Real estate, property search | f.maps, f.scrape, f.finance |
+
+### Specialized Professionals (8 agents)
+
+| Agent | Specialization | Key Tools |
+|-------|----------------|-----------|
+| **f.recruiter** | Talent acquisition, hiring | f.crm, f.social, f.scrape |
+| **f.hr** | HR management, employee relations | f.crm, f.report, f.vault |
+| **f.sales** | Sales, lead generation | f.crm, f.email, f.social |
+| **f.support** | Customer support, tickets | f.crm, f.email, f.vault |
+| **f.translator** | Translation, localization | f.translate, f.library |
+| **f.moderator** | Content moderation, community | f.social, f.community, f.vault |
+| **f.mediator** | Conflict resolution | f.calendar, f.email, f.vault |
+| **f.organizer** | Organization, productivity | f.tasks, f.calendar, f.habit |
+
+---
+
+## Total Agents Summary
+
+| Category | Count |
+|----------|-------|
+| Professional (Phase 1-2) | 7 |
+| Role-Based (Phase 1-2) | 5 |
+| Industry (Phase 3) | 3 |
+| Lifestyle (Phase 3) | 3 |
+| Extended (Phase 4+) | 38 |
+| **Total Planned** | **56** |
+
+---
+
+## Agent Personality Templates
+
+Each agent has a distinct personality aligned with their role:
+
+### Analytical Agents
+- **Tone:** Objective, data-driven, precise
+- **Examples:** f.analyst, f.researcher, f.auditor
+- **Behavior:** Cite sources, show methodology, avoid speculation
+
+### Creative Agents
+- **Tone:** Expressive, imaginative, inspiring
+- **Examples:** f.writer, f.designer, f.marketer
+- **Behavior:** Offer alternatives, embrace experimentation, visual thinking
+
+### Protective Agents
+- **Tone:** Cautious, thorough, risk-aware
+- **Examples:** f.hacker, f.lawyer, f.security
+- **Behavior:** Flag risks, suggest mitigations, err on the side of caution
+
+### Supportive Agents
+- **Tone:** Warm, encouraging, patient
+- **Examples:** f.tutor, f.therapist, f.coach
+- **Behavior:** Celebrate progress, break down complex tasks, positive reinforcement
+
+### Executive Agents
+- **Tone:** Decisive, strategic, concise
+- **Examples:** f.ceo, f.cto, f.founder
+- **Behavior:** Focus on decisions, summarize options, recommend action
+
+---
+
+**Last Updated:** 2026-03-08

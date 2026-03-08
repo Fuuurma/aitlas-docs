@@ -378,6 +378,101 @@ Actions are MCP-based tools that extend Aitlas capabilities. Each action is a st
 
 ---
 
+### Tier 4: Extended Ecosystem (2027)
+
+#### Communication & Messaging
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.email | Email automation (draft, send, schedule) | High |
+| f.sms | SMS notifications & automation | Medium |
+| f.slack | Slack workspace automation | High |
+| f.discord | Discord bot & moderation | Medium |
+| f.whatsapp | WhatsApp Business API | Medium |
+| f.telegram | Telegram bot automation | Low |
+
+#### Content & Media
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.video | Video processing, transcription, clips | High |
+| f.image | Image generation, editing, optimization | High |
+| f.audio | Audio transcription, generation, editing | High |
+| f.slides | Presentation generation (PowerPoint, PDF) | Medium |
+| f.docs | Document generation (Word, PDF) | Medium |
+| f.pdf | PDF manipulation (merge, split, convert) | Medium |
+
+#### Automation & Integration
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.automation | Workflow automation (Zapier-style) | High |
+| f.webhook | Webhook management & routing | Medium |
+| f.sync | Data synchronization across platforms | Medium |
+| f.etl | ETL pipeline builder | Low |
+| f.migrate | Data migration tools | Low |
+
+#### Business & Operations
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.analytics | Analytics integration (GA, Mixpanel, etc.) | High |
+| f.seo | SEO optimization & auditing | Medium |
+| f.forms | Form handling & validation | Medium |
+| f.survey | Survey creation & analysis | Low |
+| f.feedback | Feedback collection & analysis | Medium |
+
+#### Development & DevOps
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.monitor | Monitoring & alerting (Datadog-style) | High |
+| f.logs | Log aggregation & search | Medium |
+| f.backup | Automated backup management | Medium |
+| f.feature | Feature flag management | Medium |
+| f.abtest | A/B testing framework | Low |
+
+#### Data & Intelligence
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.report | Automated report generation | High |
+| f.dashboard | Dashboard builder | Medium |
+| f.search | Advanced search (semantic, full-text) | High |
+| f.qa | Q&A system builder | Medium |
+| f.translate | Translation & localization | Medium |
+
+#### Lifestyle & Personal
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.weather | Weather data & forecasts | Medium |
+| f.maps | Maps, geocoding, routing | Medium |
+| f.travel | Travel planning & booking | Low |
+| f.food | Recipe search & meal planning | Low |
+| f.fitness | Fitness tracking & workouts | Medium |
+| f.habit | Habit tracking & formation | Medium |
+
+#### Ecommerce & Sales
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.shopify | Shopify store automation | Medium |
+| f.stripe | Stripe payment automation | High |
+| f.inventory | Inventory management | Low |
+| f.cart | Shopping cart integration | Low |
+
+#### Social & Community
+
+| Action | Purpose | Priority |
+|--------|---------|----------|
+| f.social | Multi-platform social media | High |
+| f.community | Community management | Medium |
+| f.forum | Forum/discussion automation | Low |
+| f.wiki | Wiki/knowledge base builder | Medium |
+
+---
+
 ## Action Development Guidelines
 
 ### Naming Convention
@@ -449,3 +544,223 @@ To propose a new action:
 **Total Planned Actions:** 20+  
 **Current:** 7  
 **Roadmap:** 13+ new actions
+---
+
+## Extended Actions Catalog (70+ Actions Planned)
+
+### Communication & Messaging (6 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.email** | Email automation (draft, send, schedule) | `draft_email`, `send_email`, `schedule_email`, `search_emails` |
+| **f.sms** | SMS notifications & automation | `send_sms`, `schedule_sms`, `get_delivery_status` |
+| **f.slack** | Slack workspace automation | `send_message`, `create_channel`, `search_messages`, `add_reaction` |
+| **f.discord** | Discord bot & moderation | `send_message`, `create_channel`, `manage_roles`, `moderate` |
+| **f.whatsapp** | WhatsApp Business API | `send_message`, `send_template`, `get_contacts` |
+| **f.telegram** | Telegram bot automation | `send_message`, `create_group`, `manage_members` |
+
+### Content & Media (6 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.video** | Video processing, transcription, clips | `transcribe`, `extract_clips`, `compress`, `add_subtitles` |
+| **f.image** | Image generation, editing, optimization | `generate`, `resize`, `compress`, `convert`, `edit` |
+| **f.audio** | Audio transcription, generation, editing | `transcribe`, `generate_speech`, `edit`, `convert` |
+| **f.slides** | Presentation generation | `create_deck`, `add_slide`, `export_pdf`, `add_charts` |
+| **f.docs** | Document generation | `create_doc`, `add_section`, `export_pdf`, `template` |
+| **f.pdf** | PDF manipulation | `merge`, `split`, `convert`, `ocr`, `compress` |
+
+### Automation & Integration (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.automation** | Workflow automation (Zapier-style) | `create_workflow`, `add_trigger`, `add_action`, `run` |
+| **f.webhook** | Webhook management & routing | `create_endpoint`, `list_webhooks`, `get_logs` |
+| **f.sync** | Data synchronization | `sync_data`, `resolve_conflicts`, `get_status` |
+| **f.etl** | ETL pipeline builder | `create_pipeline`, `add_transform`, `run_job` |
+| **f.migrate** | Data migration tools | `analyze_source`, `create_mapping`, `migrate` |
+
+### Business & Operations (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.analytics** | Analytics integration | `track_event`, `get_report`, `create_dashboard` |
+| **f.seo** | SEO optimization & auditing | `audit_site`, `analyze_keywords`, `get_rankings` |
+| **f.forms** | Form handling & validation | `create_form`, `get_responses`, `validate` |
+| **f.survey** | Survey creation & analysis | `create_survey`, `get_responses`, `analyze` |
+| **f.feedback** | Feedback collection | `collect_feedback`, `analyze_sentiment`, `generate_report` |
+
+### Development & DevOps (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.monitor** | Monitoring & alerting | `create_check`, `get_alerts`, `create_incident` |
+| **f.logs** | Log aggregation & search | `ingest`, `search`, `create_alert`, `export` |
+| **f.backup** | Backup management | `create_backup`, `restore`, `schedule`, `verify` |
+| **f.feature** | Feature flags | `create_flag`, `toggle`, `get_status`, `rollout` |
+| **f.abtest** | A/B testing | `create_experiment`, `assign_variant`, `get_results` |
+
+### Data & Intelligence (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.report** | Report generation | `create_report`, `schedule`, `export`, `template` |
+| **f.dashboard** | Dashboard builder | `create_dashboard`, `add_widget`, `share` |
+| **f.search** | Advanced search | `semantic_search`, `fulltext_search`, `hybrid` |
+| **f.qa** | Q&A system | `create_qa`, `answer_question`, `train` |
+| **f.translate** | Translation & localization | `translate`, `detect_language`, `batch_translate` |
+
+### Lifestyle & Personal (6 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.weather** | Weather data & forecasts | `current`, `forecast`, `alerts`, `historical` |
+| **f.maps** | Maps, geocoding, routing | `geocode`, `reverse_geocode`, `route`, `search_places` |
+| **f.travel** | Travel planning | `search_flights`, `search_hotels`, `create_itinerary` |
+| **f.food** | Recipe & meal planning | `search_recipes`, `create_meal_plan`, `shopping_list` |
+| **f.fitness** | Fitness tracking | `log_workout`, `get_stats`, `create_plan` |
+| **f.habit** | Habit tracking | `track_habit`, `get_streak`, `analyze` |
+
+### Ecommerce & Sales (4 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.shopify** | Shopify automation | `get_products`, `create_order`, `update_inventory` |
+| **f.stripe** | Stripe payments | `create_customer`, `create_charge`, `get_balance` |
+| **f.inventory** | Inventory management | `check_stock`, `reorder`, `get_forecast` |
+| **f.cart** | Shopping cart | `create_cart`, `add_item`, `checkout` |
+
+### Social & Community (4 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.social** | Multi-platform social media | `post`, `schedule`, `analytics`, `engage` |
+| **f.community** | Community management | `manage_members`, `moderate`, `analytics` |
+| **f.forum** | Forum automation | `create_thread`, `reply`, `moderate` |
+| **f.wiki** | Wiki/knowledge base | `create_page`, `search`, `update` |
+
+---
+
+## Total Actions Summary
+
+| Category | Count |
+|----------|-------|
+| Current (Production) | 7 |
+| Tier 1 (Q2 2026) | 5 |
+| Tier 2 (Q3 2026) | 5 |
+| Tier 3 (Q4 2026) | 5 |
+| Tier 4 (Extended) | 46 |
+| **Total Planned** | **68** |
+
+---
+
+**Last Updated:** 2026-03-08
+
+---
+
+## Extended Actions Catalog (70+ Actions Planned)
+
+### Communication & Messaging (6 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.email** | Email automation (draft, send, schedule) | `draft_email`, `send_email`, `schedule_email`, `search_emails` |
+| **f.sms** | SMS notifications & automation | `send_sms`, `schedule_sms`, `get_delivery_status` |
+| **f.slack** | Slack workspace automation | `send_message`, `create_channel`, `search_messages`, `add_reaction` |
+| **f.discord** | Discord bot & moderation | `send_message`, `create_channel`, `manage_roles`, `moderate` |
+| **f.whatsapp** | WhatsApp Business API | `send_message`, `send_template`, `get_contacts` |
+| **f.telegram** | Telegram bot automation | `send_message`, `create_group`, `manage_members` |
+
+### Content & Media (6 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.video** | Video processing, transcription, clips | `transcribe`, `extract_clips`, `compress`, `add_subtitles` |
+| **f.image** | Image generation, editing, optimization | `generate`, `resize`, `compress`, `convert`, `edit` |
+| **f.audio** | Audio transcription, generation, editing | `transcribe`, `generate_speech`, `edit`, `convert` |
+| **f.slides** | Presentation generation | `create_deck`, `add_slide`, `export_pdf`, `add_charts` |
+| **f.docs** | Document generation | `create_doc`, `add_section`, `export_pdf`, `template` |
+| **f.pdf** | PDF manipulation | `merge`, `split`, `convert`, `ocr`, `compress` |
+
+### Automation & Integration (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.automation** | Workflow automation (Zapier-style) | `create_workflow`, `add_trigger`, `add_action`, `run` |
+| **f.webhook** | Webhook management & routing | `create_endpoint`, `list_webhooks`, `get_logs` |
+| **f.sync** | Data synchronization | `sync_data`, `resolve_conflicts`, `get_status` |
+| **f.etl** | ETL pipeline builder | `create_pipeline`, `add_transform`, `run_job` |
+| **f.migrate** | Data migration tools | `analyze_source`, `create_mapping`, `migrate` |
+
+### Business & Operations (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.analytics** | Analytics integration | `track_event`, `get_report`, `create_dashboard` |
+| **f.seo** | SEO optimization & auditing | `audit_site`, `analyze_keywords`, `get_rankings` |
+| **f.forms** | Form handling & validation | `create_form`, `get_responses`, `validate` |
+| **f.survey** | Survey creation & analysis | `create_survey`, `get_responses`, `analyze` |
+| **f.feedback** | Feedback collection | `collect_feedback`, `analyze_sentiment`, `generate_report` |
+
+### Development & DevOps (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.monitor** | Monitoring & alerting | `create_check`, `get_alerts`, `create_incident` |
+| **f.logs** | Log aggregation & search | `ingest`, `search`, `create_alert`, `export` |
+| **f.backup** | Backup management | `create_backup`, `restore`, `schedule`, `verify` |
+| **f.feature** | Feature flags | `create_flag`, `toggle`, `get_status`, `rollout` |
+| **f.abtest** | A/B testing | `create_experiment`, `assign_variant`, `get_results` |
+
+### Data & Intelligence (5 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.report** | Report generation | `create_report`, `schedule`, `export`, `template` |
+| **f.dashboard** | Dashboard builder | `create_dashboard`, `add_widget`, `share` |
+| **f.search** | Advanced search | `semantic_search`, `fulltext_search`, `hybrid` |
+| **f.qa** | Q&A system | `create_qa`, `answer_question`, `train` |
+| **f.translate** | Translation & localization | `translate`, `detect_language`, `batch_translate` |
+
+### Lifestyle & Personal (6 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.weather** | Weather data & forecasts | `current`, `forecast`, `alerts`, `historical` |
+| **f.maps** | Maps, geocoding, routing | `geocode`, `reverse_geocode`, `route`, `search_places` |
+| **f.travel** | Travel planning | `search_flights`, `search_hotels`, `create_itinerary` |
+| **f.food** | Recipe & meal planning | `search_recipes`, `create_meal_plan`, `shopping_list` |
+| **f.fitness** | Fitness tracking | `log_workout`, `get_stats`, `create_plan` |
+| **f.habit** | Habit tracking | `track_habit`, `get_streak`, `analyze` |
+
+### Ecommerce & Sales (4 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.shopify** | Shopify automation | `get_products`, `create_order`, `update_inventory` |
+| **f.stripe** | Stripe payments | `create_customer`, `create_charge`, `get_balance` |
+| **f.inventory** | Inventory management | `check_stock`, `reorder`, `get_forecast` |
+| **f.cart** | Shopping cart | `create_cart`, `add_item`, `checkout` |
+
+### Social & Community (4 actions)
+
+| Action | Purpose | Tools |
+|--------|---------|-------|
+| **f.social** | Multi-platform social media | `post`, `schedule`, `analytics`, `engage` |
+| **f.community** | Community management | `manage_members`, `moderate`, `analytics` |
+| **f.forum** | Forum automation | `create_thread`, `reply`, `moderate` |
+| **f.wiki** | Wiki/knowledge base | `create_page`, `search`, `update` |
+
+---
+
+## Total Actions Summary
+
+| Category | Count |
+|----------|-------|
+| Current (Production) | 7 |
+| Tier 1 (Q2 2026) | 5 |
+| Tier 2 (Q3 2026) | 5 |
+| Tier 3 (Q4 2026) | 5 |
+| Extended (2027) | 46 |
+| **Total** | **68** |
+
