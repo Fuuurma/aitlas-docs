@@ -279,28 +279,102 @@ const client = new OpenAI({ apiKey: decryptedKey });
 
 **What:** Collection of 20+ specialized AI agent personalities with workflows and deliverables.
 
-**Agent Roster:**
-- **Engineering (8):** Frontend, Backend, Mobile, AI, DevOps, Prototype, Senior, Security
-- **Design (6):** UI, UX Research, UX Architect, Brand, Visual, Whimsy
-- **Marketing (3):** Growth, Social, Content
+> "A complete AI agency at your fingertips - From frontend wizards to Reddit community ninjas"
 
-**Integration:** Perfect match for Agents Store - import agents, convert format, add credit model, connect to Nexus.
+**Key Features:**
+- **Specialized** - Deep expertise, not generic prompts
+- **Personality-Driven** - Unique voice & style
+- **Deliverable-Focused** - Real code, processes, metrics
+- **Production-Ready** - Battle-tested workflows
+- **Multi-Tool** - Claude Code, Cursor, Aider, Windsurf
+
+**Agent Roster:**
+
+| Division | Agents |
+|----------|--------|
+| **Engineering (8)** | Frontend Developer, Backend Architect, Mobile App Builder, AI Engineer, DevOps Automator, Rapid Prototyper, Senior Developer, Security Engineer |
+| **Design (7)** | UI Designer, UX Researcher, UX Architect, Brand Guardian, Visual Storyteller, Whimsy Injector, Image Prompt Engineer |
+| **Marketing (3)** | Growth Marketer, Social Media Manager, Content Strategist |
+
+**Integration Path:**
+1. Import agents → Agents Store
+2. Convert YAML format → Aitlas format
+3. Add credit model → Monetize
+4. Connect to Nexus → User activation
+
+**MCP Tools:**
+```typescript
+list_agents() → agents: Agent[]
+get_agent(id) → agent: Agent
+activate_agent(id) → session: AgentSession
+```
+
+**Comparison:**
+| Feature | Agency Agents | Others |
+|---------|---------------|--------|
+| Stars | 12.7K | - |
+| License | MIT | - |
+| Quality | Production-ready | Varies |
+| Format | YAML | Various |
+| Multi-tool | ✅ | ❌ |
+
+**Verdict:** PERFECT for Agents Store - import, adapt, monetize.
+
+---
 
 ### Everything Claude Code (affaan-m/everything-claude-code)
 
-**Stars:** 67K | **License:** MIT | **Use:** Nexus optimization, Skills, Memory
+**Stars:** 67K | **License:** MIT | **Use:** Nexus optimization, Skills, Memory, Security
 
 **What:** Performance optimization system for AI agent harnesses from Anthropic hackathon winner.
 
+> "The performance optimization system for AI agent harnesses. From an Anthropic hackathon winner."
+
 **Key Features:**
-- Token optimization (model selection, prompt slimming)
-- Memory persistence (auto-save/load context)
-- Continuous learning (extract patterns into skills)
-- Verification loops (checkpoint vs continuous evals)
-- Parallelization (git worktrees, cascade method)
-- Subagent orchestration
-- Security (AgentShield - 1282 tests, 102 rules)
-- 50+ skills included
+| Feature | Description |
+|---------|-------------|
+| **Token Optimization** | Model selection, prompt slimming, background processes |
+| **Memory Persistence** | Auto-save/load context across sessions |
+| **Continuous Learning** | Extract patterns into reusable skills |
+| **Verification Loops** | Checkpoint vs continuous evals |
+| **Parallelization** | Git worktrees, cascade method |
+| **Subagent Orchestration** | Iterative retrieval pattern |
+| **Security** | AgentShield scanning (1282 tests, 102 rules) |
+| **Cross-Harness** | Claude Code, Codex, Cursor, OpenCode |
+
+**Components:**
+
+*Skills (50+):* frontend-slides, article-writing, content-engine, market-research, investor-materials, etc.
+
+*Hooks:* Session persistence, memory management, security scanning, quality gates
+
+*Commands:*
+- `/harness-audit` - Analyze harness performance
+- `/loop-start` - Start agent loop
+- `/loop-status` - Check loop status
+- `/quality-gate` - Run quality checks
+- `/model-route` - Optimize model selection
+
+**Direct Applications for Aitlas:**
+| ECC Feature | Aitlas Use |
+|-------------|------------|
+| Token Optimization | → RTK integration |
+| Memory Persistence | → f.library |
+| Skills | → Agents Store |
+| Security | → f.guard (AgentShield) |
+| Verification | → Quality gates |
+| Cross-harness | → Multi-agent support |
+
+**What We Can Extract:**
+1. Skills format → Agents Store
+2. Memory hooks → f.library + Nexus
+3. Security scanning → f.guard
+4. Token optimization → RTK enhancement
+5. Quality gates → Agent verification
+
+**Verdict:** HIGH VALUE for multiple Aitlas components.
+
+---
 
 ### Scrapling (D4Vinci/Scrapling)
 
@@ -308,17 +382,46 @@ const client = new OpenAI({ apiKey: decryptedKey });
 
 **What:** Adaptive web scraping framework with anti-bot bypass.
 
+> "An adaptive Web Scraping framework that handles everything from a single request to a full-scale crawl!"
+
 **Key Features:**
-- Adaptive parsing (auto-relocates elements when sites change)
-- Stealth mode (bypasses Cloudflare Turnstile)
-- Spider framework (scale to concurrent crawls)
-- Proxy rotation (built-in)
-- MCP server (✅ already integrated!)
-- CLI
+| Feature | Description |
+|---------|-------------|
+| **Adaptive Parsing** | Parser learns from website changes, auto-relocates elements |
+| **Stealth Mode** | Bypasses Cloudflare Turnstile, anti-bot systems |
+| **Spider Framework** | Scale to concurrent crawls with pause/resume |
+| **Proxy Rotation** | Built-in automatic proxy rotation |
+| **MCP Server** | ✅ Already has MCP integration! |
+| **CLI** | Command-line interface |
+
+**Comparison:**
+| Feature | Scrapling | BeautifulSoup | Playwright |
+|---------|-----------|---------------|------------|
+| Stars | 26K | 11K | - |
+| Adaptive | ✅ | ❌ | ❌ |
+| Stealth | ✅ | ❌ | Partial |
+| MCP | ✅ | ❌ | ❌ |
+| Proxy | ✅ | ❌ | ❌ |
 
 **Integration Options:**
-1. **f.scrape** - New dedicated scraping action
-2. **f.research** - Use as web scraping engine
+
+*Option 1: f.scrape (New Action)*
+```
+f.scrape(url, selector, options) → HTML/JSON
+```
+- MCP tools: `scrape_page`, `scrape_stealth`, `crawl_site`, `extract_data`
+
+*Option 2: Integrate into f.research*
+- Use Scrapling as web scraping engine
+- Better stealth, adaptive parsing survives site changes
+
+**Implementation:**
+- Python runtime needed (or external service)
+- MCP wrapper in TypeScript
+- Or: call via subprocess from Bun runtime
+- **Easier path:** Use their MCP server directly!
+
+**Verdict:** Strong candidate for f.scrape or f.research upgrade.
 
 **MCP Tools:**
 - `scrape_page(url, selector)`
