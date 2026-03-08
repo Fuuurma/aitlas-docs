@@ -1,7 +1,8 @@
-# Pi Integration — AI Agent Toolkit
+# Pi — Research
 
-**Status:** 🟡 Research  
+**Status:** 🔵 Research  
 **Reference:** [pi-mono](https://github.com/badlogic/pi-mono) (21K stars, MIT)  
+**Category:** Agent Framework  
 **Author:** badlogic (Mario Zechner)
 
 ---

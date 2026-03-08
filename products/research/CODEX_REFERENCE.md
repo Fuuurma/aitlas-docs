@@ -1,8 +1,8 @@
-# Codex — Reference Only
+# Codex — Research
 
-**Status:** 🔵 Reference  
+**Status:** 🔵 Reference (Not for integration)  
 **Reference:** [openai/codex](https://github.com/openai/codex) (64K stars, Apache 2.0)  
-**Note:** Competitor product — code is open, but not for integration.
+**Category:** Competitor / Reference
 
 ---
 
