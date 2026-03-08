@@ -2,7 +2,8 @@
 
 **Status:** 🟡 Integration Candidate  
 **Reference:** [openai/symphony](https://github.com/openai/symphony) (9K stars, Apache 2.0)  
-**For:** Nexus Tasks UI + f.loop integration
+**For:** Nexus → Tasks UI  
+**Integrates with:** [f.loop](./f-loop.md)
 
 ---
 
