@@ -268,3 +268,60 @@ const client = new OpenAI({ apiKey: decryptedKey });
 ---
 
 **Last Updated:** 2026-03-08
+
+---
+
+## 6. Additional Research
+
+### Agency Agents (msitarzewski/agency-agents)
+
+**Stars:** 12.7K | **License:** MIT | **Use:** Agents Store
+
+**What:** Collection of 20+ specialized AI agent personalities with workflows and deliverables.
+
+**Agent Roster:**
+- **Engineering (8):** Frontend, Backend, Mobile, AI, DevOps, Prototype, Senior, Security
+- **Design (6):** UI, UX Research, UX Architect, Brand, Visual, Whimsy
+- **Marketing (3):** Growth, Social, Content
+
+**Integration:** Perfect match for Agents Store - import agents, convert format, add credit model, connect to Nexus.
+
+### Everything Claude Code (affaan-m/everything-claude-code)
+
+**Stars:** 67K | **License:** MIT | **Use:** Nexus optimization, Skills, Memory
+
+**What:** Performance optimization system for AI agent harnesses from Anthropic hackathon winner.
+
+**Key Features:**
+- Token optimization (model selection, prompt slimming)
+- Memory persistence (auto-save/load context)
+- Continuous learning (extract patterns into skills)
+- Verification loops (checkpoint vs continuous evals)
+- Parallelization (git worktrees, cascade method)
+- Subagent orchestration
+- Security (AgentShield - 1282 tests, 102 rules)
+- 50+ skills included
+
+### Scrapling (D4Vinci/Scrapling)
+
+**Stars:** 26K | **License:** BSD-3-Clause | **Use:** f.scrape or f.research
+
+**What:** Adaptive web scraping framework with anti-bot bypass.
+
+**Key Features:**
+- Adaptive parsing (auto-relocates elements when sites change)
+- Stealth mode (bypasses Cloudflare Turnstile)
+- Spider framework (scale to concurrent crawls)
+- Proxy rotation (built-in)
+- MCP server (✅ already integrated!)
+- CLI
+
+**Integration Options:**
+1. **f.scrape** - New dedicated scraping action
+2. **f.research** - Use as web scraping engine
+
+**MCP Tools:**
+- `scrape_page(url, selector)`
+- `scrape_stealth(url)` - bypass anti-bot
+- `crawl_site(url, options)` - full crawl
+- `extract_data(selector)`
