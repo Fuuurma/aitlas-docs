@@ -1,2288 +1,858 @@
-# Aitlas Architecture Documentation
-
-**Version:** 1.0  
-**Last Updated:** 2026-03-08  
-**Status:** Design Phase  
-**Authors:** Atlas + Sergi
-
----
-
-## Executive Summary
-
-**Aitlas** is an AI orchestration platform that augments LLM capabilities with persistent memory, intelligent compaction, multi-agent coordination, and a rich tool ecosystem.
-
-**Core Principle:** We don't replace the LLM's brain—we build the orchestration layer around it.
+# Aitlas — Full Architecture Document
+**Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
+**Owner:** Furma.tech | **Maintained by:** Herb (AI CTO)
 
 ---
 
 ## Table of Contents
 
-1. [Architecture Overview](#1-architecture-overview)
-2. [LLM Capabilities vs Platform Requirements](#2-llm-capabilities-vs-platform-requirements)
-3. [Component Architecture](#3-component-architecture)
-4. [Memory System](#4-memory-system)
-5. [Compaction System](#5-compaction-system)
-6. [Tool Ecosystem](#6-tool-ecosystem)
-7. [Agent Orchestration](#7-agent-orchestration)
-8. [Pricing Tiers](#8-pricing-tiers)
-9. [Implementation Roadmap](#9-implementation-roadmap)
-10. [System Prompts for Agents Store](#10-system-prompts-for-agents-store)
-11. [MCP Actions API](#11-mcp-actions-api)
-12. [Integration with Nexus](#12-integration-with-nexus)
+1. [Vision & Mental Model](#1-vision--mental-model)
+2. [Product Map](#2-product-map)
+3. [Nexus — The Hub](#3-nexus--the-hub)
+4. [Agents — The Store](#4-agents--the-store)
+5. [Actions — The Engine (f.xyz)](#5-actions--the-engine-fxyz)
+6. [The Ralph Engine (f.loop)](#6-the-ralph-engine-floop)
+7. [MCP Strategy & Protocol](#7-mcp-strategy--protocol)
+8. [aitlas-core-template — The DNA](#8-aitlas-core-template--the-dna)
+9. [Shared Data Models (Prisma)](#9-shared-data-models-prisma)
+10. [Auth Architecture](#10-auth-architecture)
+11. [Credit System](#11-credit-system)
+12. [Security & BYOK](#12-security--byok)
+13. [Infrastructure & Deployment](#13-infrastructure--deployment)
+14. [API Design Conventions](#14-api-design-conventions)
+15. [Inter-Service Communication](#15-inter-service-communication)
+16. [AGENTS.md — AI Coding Rules](#16-agentsmd--ai-coding-rules)
+17. [Repo Registry](#17-repo-registry)
 
 ---
 
-## 1. Architecture Overview
+## 1. Vision & Mental Model
 
-### High-Level Diagram
+### The One-Sentence Version
+Aitlas is a **sovereign agentic OS** — a web workspace where users bring their own AI keys, connect tools via MCP, hire autonomous agents, and run long background tasks without trusting (or paying) a single cloud AI vendor.
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                           USER                                      │
-│                     (API Key Provider)                              │
-└──────────────────────────────┬──────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         NEXUS UI                                    │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐           │
-│  │  Chat    │  │  Code    │  │ Actions  │  │ Memory   │           │
-│  │  View    │  │  View    │  │  Panel   │  │  Panel   │           │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘           │
-└──────────────────────────────┬──────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                     AITLAS ORCHESTRATION LAYER                      │
-│                                                                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │   Memory     │  │  Compaction  │  │   Planner    │              │
-│  │    Layer     │  │    Layer     │  │    Layer     │              │
-│  └──────────────┘  └──────────────┘  └──────────────┘              │
-│                                                                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │    Tool      │  │    Agent     │  │   Context    │              │
-│  │   Router     │  │ Orchestrator │  │   Manager    │              │
-│  └──────────────┘  └──────────────┘  └──────────────┘              │
-└──────────────────────────────┬──────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                        LLM PROVIDER                                 │
-│               (Claude, GPT-4, Gemini, etc.)                         │
-│                                                                      │
-│  Built-in: Reasoning, Tool Calling, Context Window, Streaming      │
-└─────────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      EXECUTION LAYER                                │
-│                                                                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐           │
-│  │  Shell   │  │  Files   │  │ Browser  │  │   MCP    │           │
-│  │  Exec    │  │  System  │  │  Agent   │  │ Servers  │           │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘           │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### Request Flow
+### The Mental Model
 
 ```
-1. User sends request via Nexus UI
-   ↓
-2. Tool Router determines available tools
-   ↓
-3. Memory Layer injects relevant context
-   ↓
-4. Context Manager checks token count
-   ↓ (if >80% full)
-5. Compaction Layer summarizes old context
-   ↓
-6. Planner creates/updates task list
-   ↓
-7. Request sent to LLM (user's API key)
-   ↓
-8. LLM returns response + tool calls
-   ↓
-9. Execution Layer runs tools
-   ↓
-10. Memory Layer stores learnings
-    ↓
-11. Response streamed to Nexus UI
+The Internet         →   Browser
+The OS               →   Nexus
+The App Store        →   Agents
+The System Utilities →   Actions (f.xyz)
+The Background Daemons → f.loop (Ralph)
+The File System      →   f.library
+The Network Layer    →   MCP
+```
+
+### The Core Bets
+
+| Bet | Why it wins |
+|-----|-------------|
+| BYOK over hosted tokens | Users keep costs. Furma keeps trust. |
+| MCP as the lingua franca | Standards win. Proprietary protocols die. |
+| Credits only for compute, never tokens | Avoids token-bankruptcy and user resentment |
+| Agents as composable skill stacks | More powerful than single-prompt wrappers |
+| Durable async tasks over serverless | Long jobs need persistence, not timeouts |
+
+---
+
+## 2. Product Map
+
+```
+aitlas.xyz (Root Domain)
+├── nexus.aitlas.xyz     → Nexus Web App (Next.js, Vercel)
+├── agents.aitlas.xyz    → Agents Store (Next.js, Vercel)
+├── f.xyz                → Actions API Gateway (Next.js, Vercel)
+│     ├── /twyt          → f.twyt service
+│     ├── /library       → f.library service
+│     ├── /rsrx          → f.rsrx service
+│     ├── /loop          → f.loop orchestrator
+│     └── /guard         → f.guard service
+└── loop.internal        → Ralph workers (Hetzner, Bun, private)
+```
+
+### The Dependency Graph
+
+```
+Nexus
+  └── depends on → Auth Service (shared)
+  └── depends on → Credit Ledger (shared DB)
+  └── orchestrates → f.loop (via task queue)
+  └── calls → Actions (f.xyz) via MCP
+  └── displays → Agents (from Agents Store manifest API)
+
+Agents Store
+  └── depends on → Auth Service (shared)
+  └── reads → Agent manifests (DB)
+  └── triggers → Nexus agent activation
+
+f.loop (Ralph)
+  └── polls → Task Queue (Postgres, Neon)
+  └── calls → f.xyz Actions (via HTTP MCP)
+  └── calls → Third-party MCPs (via user config)
+  └── uses → BYOK key (decrypted in-memory, never logged)
+  └── writes → Task state (Postgres)
 ```
 
 ---
 
-## 2. LLM Capabilities vs Platform Requirements
+## 3. Nexus — The Hub
 
-### What LLMs Provide (Built-in) ✅
+### What It Is
+A web-based AI workspace. Think Claude.ai but where the user owns the LLM key, the tools, and the compute. The UI is the command center for everything in Aitlas.
 
-| Capability | Description | Provider Support |
-|------------|-------------|------------------|
-| **Reasoning** | Model's intelligence and problem-solving | All LLMs |
-| **Tool Calling** | Function calling API (we define schemas) | Claude, GPT, Gemini |
-| **Context Window** | Token limit per session (128K-200K) | All LLMs |
-| **Streaming** | Real-time response generation | All LLMs |
-| **Code Generation** | Writing code in various languages | All LLMs |
-| **Multi-modal** | Image, audio, video processing | Claude, GPT-4V, Gemini |
+### Core UI Surfaces
 
-**Example: Tool Calling (Built-in)**
+| Surface | Description |
+|---------|-------------|
+| **Chat Panel** | Primary chat interface. BYOK-powered. Two modes (see below). |
+| **Actions Sidebar** | Displays available f.xyz actions + third-party MCPs. Greyed in Basic mode. |
+| **Agent Panel** | Active agents, their status, and their current task queue. |
+| **Task Monitor** | Real-time view of all background jobs (Ralph tasks) with step-by-step progress. |
+| **Settings** | BYOK key management, credit balance, MCP connections, preferences. |
 
-```json
-// We define the schema
+### The Dual-Mode System
+
+#### Mode A: Standard Chat (Free)
+```
+System prompt injected:
+"You are Aitlas, a helpful AI assistant. You are in Basic Chat Mode.
+You have NO access to external tools. Only converse with the user.
+Do not reference any tools, agents, or actions."
+
+UI state:
+- Actions Sidebar: locked (grey, tooltip: "Enable Agentic Mode to unlock")
+- Agent Panel: hidden
+- Task Monitor: hidden
+- Cost to Furma: $0
+```
+
+#### Mode B: Agentic Mode (Credits Required)
+```
+System prompt injected:
+"You are Aitlas, a sovereign AI operating system. You have access to
+the following tools via MCP: [DYNAMIC TOOL LIST INJECTED HERE].
+For long-running tasks, dispatch to f.loop. Always confirm before
+dispatching tasks that will cost more than 10 credits."
+
+Gate:
+- User must have Pro subscription ($25/mo) OR credit balance >= $5
+- Toggle lives in top-right of chat interface
+
+UI state:
+- Actions Sidebar: active
+- Agent Panel: visible
+- Task Monitor: visible
+- Cost to Furma: credits consumed per tool call
+```
+
+### Nexus Data Flow (Agentic Mode)
+
+```
+[User sends message]
+       │
+       ▼
+[Next.js API Route: /api/chat]
+       │
+       ├─ Validate session (Auth)
+       ├─ Check credit balance (>= required)
+       ├─ Decrypt BYOK key (AES-256-GCM, in-memory only)
+       ├─ Build MCP tool list from user's enabled actions
+       ├─ Build system prompt with tool registry
+       │
+       ▼
+[Stream LLM response (user's BYOK key → OpenAI/Anthropic/etc.)]
+       │
+       ├─ If LLM calls a tool:
+       │     ├─ Short task (<30s): execute inline via f.xyz HTTP
+       │     └─ Long task (>30s): dispatch to f.loop task queue
+       │           └─ Return taskId to UI immediately
+       │           └─ UI polls /api/tasks/:id for progress
+       │
+       ▼
+[Stream response back to user via SSE]
+```
+
+### Nexus Tech Stack
+
+| Layer | Choice | Reason |
+|-------|--------|--------|
+| Framework | Next.js 15 (App Router) | SSE streaming, API routes, edge-ready |
+| Runtime | Bun | Fast install, fast scripts |
+| Hosting | Vercel | Zero-ops, global CDN, edge functions |
+| Streaming | Vercel AI SDK (`useChat`) | SSE + tool call parsing out of the box |
+| UI | React 19 + Tailwind v4 + shadcn/ui | Speed + consistency |
+| State | Zustand | Lightweight, no boilerplate |
+| Forms | React Hook Form + Zod | Type-safe, validated |
+| DB Client | Prisma 6 (Neon Postgres) | Type-safe, migrations |
+| Auth | Better Auth | Self-hosted, BYOK-safe, no Clerk lock-in |
+
+---
+
+## 4. Agents — The Store
+
+### What It Is
+A marketplace of pre-built "Super Agents" — each agent is a curated stack of: a base persona prompt, a set of Skills (tool calls), and a manifest declaring which f.xyz Actions and third-party MCPs it needs.
+
+### Agent Anatomy
+
+```typescript
+// Agent Manifest (stored in DB, returned via API)
+interface AgentManifest {
+  id: string;
+  name: string;               // "The Crypto Quant"
+  description: string;        // User-facing description
+  avatar: string;             // Image URL
+  category: AgentCategory;    // "research" | "dev" | "finance" | "support" | ...
+  isPremium: boolean;
+  creditCostEstimate: number; // Credits per typical session
+  
+  basePrompt: string;         // The core persona (stored encrypted)
+  
+  skills: AgentSkill[];       // What this agent CAN do
+  requiredActions: string[];  // f.xyz actions it needs: ["f.rsrx", "f.twyt"]
+  requiredMCPs: MCPRequirement[]; // Third-party MCPs it needs
+  
+  author: {
+    id: string;
+    name: string;
+    verified: boolean;
+  };
+  
+  revenueShare: number;       // 0.70 = 70% to author, 30% to Furma
+}
+```
+
+### Store Architecture
+
+- **Agents Store** is a separate Next.js app (`agents.aitlas.xyz`)
+- It is **read-only for browsing** (no auth required)
+- **Hiring an agent** redirects to Nexus with `?agentId=xxx` param
+- Nexus activates the agent, checks required actions are available, charges credits
+
+### Agent Activation Flow
+
+```
+[User clicks "Hire Agent" in Store]
+         │
+         ▼
+[Redirect: nexus.aitlas.xyz/activate?agentId=xxx]
+         │
+         ├─ Auth check: Is user logged in?
+         ├─ Credits check: Sufficient for agent's estimated cost?
+         ├─ MCP check: Are required MCPs configured?
+         │     └─ If not: show "Setup Required" modal with instructions
+         │
+         ▼
+[Agent activated: stored in UserAgent table]
+[Next chat session in Nexus uses agent's basePrompt + skill set]
+```
+
+### Revenue Share Mechanics
+
+| Event | Furma Cut | Author Cut |
+|-------|-----------|------------|
+| Free agent used | 100% (credits) | 0% |
+| Premium agent subscription | 30% | 70% |
+| Credits burned by premium agent's native actions | 100% (f.xyz margin) | 0% |
+| Credits burned by premium agent's MCP calls | 100% (if f.xyz MCP) | 0% |
+
+> **Key insight:** Furma makes money on the compute (f.xyz credits), not just the agent sale. Authors make money on subscriptions. Aligned incentives: authors want powerful agents that use f.xyz tools.
+
+---
+
+## 5. Actions — The Engine (f.xyz)
+
+### What Actions Are
+Actions are **Furma-native MCP servers** — each is a standalone microservice that exposes one domain of capability through the MCP tool protocol. They are the monetized compute layer of Aitlas.
+
+### Actions vs. Third-Party MCPs
+
+| | Aitlas Actions (f.xyz) | Third-Party MCPs |
+|--|------------------------|------------------|
+| Built by | Furma.tech | Community / GitHub |
+| Hosted on | Hetzner / Vercel | User or provider |
+| Trust level | Verified & audited | Experimental |
+| Credit cost | Yes — Furma revenue | No (user pays provider) |
+| Fallback? | No (gated) | N/A |
+| Example | f.rsrx, f.twyt | Google Search MCP |
+
+### Actions Registry
+
+| Action | MCP Tool Name | Description | Credit Cost | Status |
+|--------|--------------|-------------|-------------|--------|
+| **f.loop** | `dispatch_background_task` | Dispatch long async jobs to Ralph | 10/hr of compute | 🟡 Dev |
+| **f.twyt** | `search_twitter`, `get_user_timeline` | Twitter semantic search & ingestion | 1/query | ✅ Prod |
+| **f.library** | `ingest_document`, `search_knowledge_base` | Vector knowledge base (pgvector) | 2/ingest, 1/search | ✅ Prod |
+| **f.rsrx** | `deep_research`, `synthesize_report` | Multi-source research synthesis | 5/report | 🟡 Dev |
+| **f.guard** | `review_code`, `security_scan` | AI code review + security audit | 2/review | 🟡 Roadmap |
+| **f.support** | `create_ticket`, `resolve_ticket` | Autonomous helpdesk agent | 3/ticket | 🟡 Roadmap |
+| **f.decloy** | `deploy_agent`, `get_agent_status` | Sovereign MicroVM agent deployment | 75/deploy | 🟡 Roadmap |
+
+### Action Architecture Pattern
+
+Every f.xyz action follows the same internal structure (cloned from `aitlas-core-template`):
+
+```
+f.twyt/
+├── app/
+│   ├── api/
+│   │   └── mcp/
+│   │       └── route.ts          ← MCP server endpoint (POST /api/mcp)
+│   └── (dashboard)/              ← Optional standalone UI
+├── lib/
+│   ├── tools/
+│   │   ├── search-twitter.ts     ← Tool implementation
+│   │   └── get-timeline.ts       ← Tool implementation
+│   ├── mcp-server.ts             ← MCP server definition (list + call tools)
+│   ├── credit-middleware.ts      ← Shared: check + deduct credits
+│   └── auth-bridge.ts            ← Shared: validate Furma ID session
+├── prisma/
+│   └── schema.prisma             ← Service-local schema (extends shared models)
+├── AGENTS.md                     ← AI coding rules for this repo
+└── .env.example
+```
+
+---
+
+## 6. The Ralph Engine (f.loop)
+
+### What It Is
+Ralph is Aitlas's **durable background execution layer** — a fleet of Bun workers running on Hetzner that pick up long-running agentic tasks from the PostgreSQL task queue and execute them step-by-step, surviving server reboots, LLM errors, and network failures.
+
+### Why Not Serverless?
+Vercel functions timeout at 60 seconds. Agentic tasks (deep research, autonomous support, code review of large repos) can take 5–30 minutes. Ralph runs on long-lived Bun processes that are cheap ($5–20/mo Hetzner VPS), persistent, and horizontally scalable.
+
+### Ralph Architecture
+
+```
+┌──────────────────────────────────────────────────┐
+│                  f.loop (Ralph)                   │
+│             Bun Worker Process                    │
+│             Hetzner VPS (loop.internal)           │
+├──────────────────────────────────────────────────┤
+│                                                   │
+│  OBSERVE (every 5 seconds)                        │
+│  ├── SELECT * FROM tasks                          │
+│  │   WHERE status = 'PENDING'                     │
+│  │   ORDER BY created_at ASC                      │
+│  │   LIMIT 1                                      │
+│  │   FOR UPDATE SKIP LOCKED  ← concurrency-safe  │
+│  └── Load task.toolRegistry (available MCP tools) │
+│                                                   │
+│  REASON                                           │
+│  ├── Decrypt BYOK key (in-memory, never logged)   │
+│  ├── Build prompt: goal + available tools + steps │
+│  └── Call user's LLM (BYOK): "What's next step?"  │
+│                                                   │
+│  ACT                                              │
+│  ├── Execute LLM tool call via MCP                │
+│  ├── If f.xyz tool: deduct credits (atomic)       │
+│  ├── Append result to task.steps[]                │
+│  └── UPDATE task SET status='RUNNING',            │
+│       steps=..., updated_at=now()                 │
+│                                                   │
+│  EVALUATE                                         │
+│  ├── If LLM says "DONE": status = 'COMPLETED'     │
+│  ├── If maxSteps reached: status = 'TIMEOUT'      │
+│  ├── If error: status = 'FAILED', log error       │
+│  └── If PENDING: loop back to OBSERVE             │
+│                                                   │
+└──────────────────────────────────────────────────┘
+```
+
+### Task State Machine
+
+```
+PENDING → CLAIMED → RUNNING → COMPLETED
+                         └──→ FAILED
+                         └──→ TIMEOUT
+                         └──→ CANCELLED (user-initiated)
+```
+
+---
+
+## 7. MCP Strategy & Protocol
+
+### Philosophy
+MCP (Model Context Protocol) is the **nervous system of Aitlas**. Every interaction between Nexus and a tool — whether native (f.xyz) or third-party — goes through MCP. This means any MCP-compatible tool in the ecosystem works in Aitlas automatically.
+
+### MCP Transport: HTTP (Streamable)
+All f.xyz actions expose a **streamable HTTP MCP endpoint** at `/api/mcp`. This is the 2024 MCP standard (replaces old SSE transport). It supports both streaming and non-streaming tool calls.
+
+```
+POST https://f.twyt.xyz/api/mcp
+Content-Type: application/json
+Authorization: Bearer <furma_session_token>
+
 {
-  "name": "read_file",
-  "description": "Read file contents",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "path": { "type": "string" }
-    },
-    "required": ["path"]
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "search_twitter",
+    "arguments": { "query": "AI agents 2026", "limit": 10 }
   }
-}
-
-// LLM handles the rest
-// - Decides when to call
-// - Generates parameters
-// - Returns structured output
-```
-
-### What We Must Build ❌
-
-| Capability | Why LLMs Don't Have It | Complexity | Priority |
-|------------|------------------------|------------|----------|
-| **Persistent Memory** | LLMs have no memory between sessions | HIGH | P0 |
-| **Compaction** | LLMs don't auto-summarize context | MEDIUM | P0 |
-| **Agent Orchestration** | Multi-agent coordination not built-in | HIGH | P1 |
-| **Codebase Indexing** | Semantic search across files | MEDIUM | P1 |
-| **Tool Ecosystem** | Pre-built tools and integrations | LOW | P1 |
-| **Planning/State** | Task management, progress tracking | LOW | P2 |
-| **Browser Automation** | Web interaction capabilities | MEDIUM | P2 |
-| **Shell Execution** | Running commands safely | MEDIUM | P1 |
-
-### Why Each Component Matters
-
-#### 1. Persistent Memory
-**Problem:** LLMs start fresh every session. No recollection of past work, preferences, or decisions.
-
-**Solution:** Database-backed memory system with semantic retrieval.
-
-**Impact:**
-- Remember user preferences across sessions
-- Recall past decisions and rationale
-- Build cumulative knowledge over time
-
-#### 2. Compaction
-**Problem:** When context fills up, LLMs truncate or error. No intelligent summarization.
-
-**Solution:** Auto-detect when context >80% full, summarize old messages while preserving key information.
-
-**Impact:**
-- Unlimited conversation length
-- Preserve important context
-- Reduce token costs (summary < full history)
-
-#### 3. Agent Orchestration
-**Problem:** Complex tasks need multiple agents (researcher, coder, reviewer). LLMs don't coordinate.
-
-**Solution:** CrewAI-style orchestration with role-based agents and handoffs.
-
-**Impact:**
-- Parallel task execution
-- Specialized agents for different tasks
-- Better output quality through collaboration
-
-#### 4. Codebase Indexing
-**Problem:** LLMs can't search codebases semantically. They only see what's in context.
-
-**Solution:** QMD-powered hybrid search (BM25 + Vector) across all project files.
-
-**Impact:**
-- Find relevant code by meaning, not just exact text
-- Understand large codebases quickly
-- Better context for code generation
-
-#### 5. Tool Ecosystem
-**Problem:** Defining tools from scratch every time is tedious.
-
-**Solution:** Pre-built library of 50+ tools (Git, Docker, Database, API, etc.)
-
-**Impact:**
-- Faster development
-- Battle-tested tools
-- Community contributions
-
----
-
-## 3. Component Architecture
-
-### 3.1 Memory Layer
-
-**Purpose:** Persistent storage and retrieval of context across sessions.
-
-**Architecture:**
-
-```
-┌─────────────────────────────────────────────┐
-│            Memory Layer                     │
-├─────────────────────────────────────────────┤
-│                                             │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │   QMD        │      │  PostgreSQL  │   │
-│  │  (Hybrid     │◄────►│  (Structured │   │
-│  │   Search)    │      │   Storage)   │   │
-│  └──────────────┘      └──────────────┘   │
-│         │                      │           │
-│         ▼                      ▼           │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │  Embeddings  │      │  Memory      │   │
-│  │  (Local)     │      │  Records     │   │
-│  └──────────────┘      └──────────────┘   │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-**Memory Types:**
-
-| Type | Description | Storage | Retrieval |
-|------|-------------|---------|-----------|
-| **Short-term** | Current session context | In-memory | Direct access |
-| **Long-term** | Persistent memories | PostgreSQL + QMD | Semantic search |
-| **Episodic** | Task-specific context | PostgreSQL | Time-based |
-| **Semantic** | Facts and knowledge | QMD | Hybrid search |
-
-**Memory Lifecycle:**
-
-```
-1. CREATE: User provides information
-   ↓
-2. EMBED: Generate vector embedding (local model)
-   ↓
-3. STORE: Save to PostgreSQL + QMD index
-   ↓
-4. RETRIEVE: Query when relevant (semantic match)
-   ↓
-5. UPDATE: Modify when new information available
-   ↓
-6. DECAY: Reduce priority if not accessed
-```
-
-**API:**
-
-```typescript
-interface MemoryLayer {
-  // Create memory
-  create(memory: {
-    type: 'fact' | 'preference' | 'decision' | 'pattern';
-    content: string;
-    tags?: string[];
-    confidence?: number;
-  }): Promise<Memory>;
-  
-  // Search memories (semantic)
-  search(query: string, options?: {
-    types?: string[];
-    tags?: string[];
-    limit?: number;
-  }): Promise<Memory[]>;
-  
-  // Get specific memory
-  get(id: string): Promise<Memory>;
-  
-  // Update memory
-  update(id: string, updates: Partial<Memory>): Promise<Memory>;
-  
-  // Delete memory
-  delete(id: string): Promise<void>;
-}
-```
-
-### 3.2 Compaction Layer
-
-**Purpose:** Intelligently summarize context when approaching token limits.
-
-**Architecture:**
-
-```
-┌─────────────────────────────────────────────┐
-│          Compaction Layer                   │
-├─────────────────────────────────────────────┤
-│                                             │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │   Token      │      │  Summarizer  │   │
-│  │   Counter    │─────►│  Agent       │   │
-│  └──────────────┘      └──────────────┘   │
-│         │                      │           │
-│         ▼                      ▼           │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │   Trigger    │      │   Summary    │   │
-│  │   (80% full) │      │   Storage    │   │
-│  └──────────────┘      └──────────────┘   │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-**Compaction Process:**
-
-```
-1. Monitor token count continuously
-   ↓
-2. When >80% of context window:
-   ├─ Identify old messages (>50% of history)
-   ├─ Extract key information (decisions, facts, patterns)
-   ├─ Generate summary using LLM
-   ├─ Preserve recent context (last 20%)
-   └─ Replace old messages with summary
-   ↓
-3. Continue session with compacted context
-```
-
-**Summary Format:**
-
-```markdown
-# Session Summary (2026-03-08)
-
-## Key Decisions
-- Decided to use QMD for hybrid search
-- Chose CrewAI for orchestration
-- Pricing: $20/mo subscription
-
-## Progress Made
-- Created memory system architecture
-- Designed compaction workflow
-- Documented 50+ tools
-
-## Pending Tasks
-- Implement memory layer
-- Build compaction logic
-- Create tool definitions
-
-## User Preferences
-- Prefers concise responses
-- Values direct communication
-- Wants documentation-first approach
-```
-
-**Trigger Thresholds:**
-
-| Model | Context Window | Trigger Threshold | Action |
-|-------|---------------|-------------------|--------|
-| Claude 3.5 | 200K tokens | >160K (80%) | Compact |
-| GPT-4 | 128K tokens | >102K (80%) | Compact |
-| Gemini 1.5 | 1M tokens | >800K (80%) | Compact |
-
-### 3.3 Tool Router
-
-**Purpose:** Determine which tools are available for a given task.
-
-**Architecture:**
-
-```
-┌─────────────────────────────────────────────┐
-│            Tool Router                      │
-├─────────────────────────────────────────────┤
-│                                             │
-│  ┌──────────────┐                          │
-│  │   Request    │                          │
-│  │   Analyzer   │                          │
-│  └──────┬───────┘                          │
-│         │                                   │
-│         ▼                                   │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │   Tool       │      │   Tool       │   │
-│  │   Registry   │◄────►│   Matcher    │   │
-│  └──────────────┘      └──────────────┘   │
-│         │                      │           │
-│         ▼                      ▼           │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │  Available   │      │  Tool Schemas│   │
-│  │    Tools     │      │  (for LLM)   │   │
-│  └──────────────┘      └──────────────┘   │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-**Tool Categories:**
-
-| Category | Tools | Priority |
-|----------|-------|----------|
-| **Core** | read_file, write_file, edit_file, run_command | P0 |
-| **Search** | codebase_search, grep_search, find_file | P0 |
-| **Memory** | create_memory, search_memory, update_memory | P0 |
-| **Planning** | create_plan, update_plan, add_task | P1 |
-| **Git** | git_status, git_commit, git_push, git_pull | P1 |
-| **Docker** | docker_build, docker_run, docker_stop | P1 |
-| **Database** | query_db, migrate_db, seed_db | P2 |
-| **API** | http_get, http_post, http_put | P2 |
-| **Browser** | browser_navigate, browser_click, browser_screenshot | P2 |
-
-**Tool Selection Logic:**
-
-```typescript
-function selectTools(request: string, context: Context): Tool[] {
-  const availableTools: Tool[] = [];
-  
-  // Always include core tools
-  availableTools.push(...CORE_TOOLS);
-  
-  // Add based on request type
-  if (request.includes('file') || request.includes('code')) {
-    availableTools.push(...FILE_TOOLS);
-  }
-  
-  if (request.includes('search') || request.includes('find')) {
-    availableTools.push(...SEARCH_TOOLS);
-  }
-  
-  if (request.includes('git') || request.includes('commit')) {
-    availableTools.push(...GIT_TOOLS);
-  }
-  
-  // Add based on project type
-  if (context.projectType === 'web') {
-    availableTools.push(...WEB_TOOLS);
-  }
-  
-  // Limit to prevent overwhelming LLM
-  return availableTools.slice(0, 50);
-}
-```
-
-### 3.4 Planner Layer
-
-**Purpose:** Create and manage task lists for complex work.
-
-**Architecture:**
-
-```
-┌─────────────────────────────────────────────┐
-│            Planner Layer                    │
-├─────────────────────────────────────────────┤
-│                                             │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │   Plan       │      │   Task       │   │
-│  │   Creator    │─────►│   Manager    │   │
-│  └──────────────┘      └──────────────┘   │
-│         │                      │           │
-│         ▼                      ▼           │
-│  ┌──────────────┐      ┌──────────────┐   │
-│  │   Plan       │      │   Task       │   │
-│  │   Storage    │      │   Queue      │   │
-│  └──────────────┘      └──────────────┘   │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-**Plan Structure:**
-
-```typescript
-interface Plan {
-  id: string;
-  title: string;
-  description: string;
-  tasks: Task[];
-  createdAt: Date;
-  updatedAt: Date;
-  status: 'pending' | 'in_progress' | 'completed' | 'failed';
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'failed';
-  dependencies: string[]; // Task IDs
-  assignee?: string; // Agent ID
-  result?: any;
-}
-```
-
-**Planning Workflow:**
-
-```
-1. User makes request
-   ↓
-2. Plan Creator analyzes complexity
-   ├─ Simple (<3 steps): Execute directly
-   └─ Complex (>3 steps): Create plan
-   ↓
-3. Plan Creator generates tasks
-   ↓
-4. Task Manager prioritizes and queues
-   ↓
-5. Execute tasks sequentially/parallel
-   ↓
-6. Update task status as work progresses
-   ↓
-7. Mark plan complete when all tasks done
-```
-
----
-
-## 4. Memory System
-
-### 4.1 Memory Types
-
-#### Short-term Memory
-**Purpose:** Current session context, conversation history.
-
-**Storage:** In-memory (Redis or similar).
-
-**Retention:** Duration of session.
-
-**Access:** Fast, direct.
-
-#### Long-term Memory
-**Purpose:** Persistent facts, preferences, decisions.
-
-**Storage:** PostgreSQL + QMD index.
-
-**Retention:** Indefinite (with decay).
-
-**Access:** Semantic search.
-
-#### Episodic Memory
-**Purpose:** Task-specific context, project state.
-
-**Storage:** PostgreSQL.
-
-**Retention:** Task duration + archive.
-
-**Access:** Query by task/project ID.
-
-#### Semantic Memory
-**Purpose:** Knowledge base, learned patterns.
-
-**Storage:** QMD index.
-
-**Retention:** Indefinite.
-
-**Access:** Hybrid search.
-
-### 4.2 Memory Schema
-
-```sql
-CREATE TABLE memories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id),
-  type VARCHAR(50) NOT NULL, -- fact, preference, decision, pattern
-  title VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  embedding VECTOR(1536), -- For semantic search
-  tags TEXT[],
-  confidence FLOAT DEFAULT 0.8,
-  access_count INTEGER DEFAULT 0,
-  last_accessed TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW(),
-  expires_at TIMESTAMP -- Optional TTL
-);
-
-CREATE INDEX idx_memories_embedding ON memories USING ivfflat (embedding vector_cosine_ops);
-CREATE INDEX idx_memories_type ON memories(type);
-CREATE INDEX idx_memories_tags ON memories USING GIN(tags);
-```
-
-### 4.3 Memory Operations
-
-#### Create Memory
-
-```typescript
-async function createMemory(input: {
-  type: MemoryType;
-  content: string;
-  tags?: string[];
-  confidence?: number;
-}): Promise<Memory> {
-  // 1. Generate embedding (local model)
-  const embedding = await generateEmbedding(input.content);
-  
-  // 2. Store in PostgreSQL
-  const memory = await db.memories.create({
-    ...input,
-    embedding,
-    confidence: input.confidence ?? 0.8,
-  });
-  
-  // 3. Index in QMD
-  await qmd.index(memory);
-  
-  return memory;
-}
-```
-
-#### Search Memory
-
-```typescript
-async function searchMemory(query: string, options?: {
-  types?: MemoryType[];
-  tags?: string[];
-  limit?: number;
-}): Promise<Memory[]> {
-  // 1. Generate query embedding
-  const queryEmbedding = await generateEmbedding(query);
-  
-  // 2. Hybrid search via QMD (BM25 + Vector)
-  const results = await qmd.search({
-    query,
-    embedding: queryEmbedding,
-    filters: options,
-    limit: options?.limit ?? 10,
-  });
-  
-  // 3. Update access counts
-  await db.memories.updateMany({
-    where: { id: { in: results.map(r => r.id) } },
-    data: { 
-      access_count: { increment: 1 },
-      last_accessed: new Date(),
-    },
-  });
-  
-  return results;
-}
-```
-
-#### Inject Memory into Context
-
-```typescript
-async function injectMemory(
-  context: Message[],
-  query: string
-): Promise<Message[]> {
-  // 1. Search for relevant memories
-  const memories = await searchMemory(query, { limit: 5 });
-  
-  if (memories.length === 0) {
-    return context;
-  }
-  
-  // 2. Format as context message
-  const memoryContext = formatMemories(memories);
-  
-  // 3. Inject at beginning of context
-  return [
-    { role: 'system', content: memoryContext },
-    ...context,
-  ];
-}
-```
-
-### 4.4 Memory Decay
-
-**Purpose:** Prioritize frequently accessed memories, deprecate stale ones.
-
-**Algorithm:**
-
-```typescript
-function calculateMemoryPriority(memory: Memory): number {
-  const age = Date.now() - memory.created_at.getTime();
-  const daysSinceCreation = age / (1000 * 60 * 60 * 24);
-  
-  const daysSinceAccess = memory.last_accessed
-    ? (Date.now() - memory.last_accessed.getTime()) / (1000 * 60 * 60 * 24)
-    : daysSinceCreation;
-  
-  // Decay factor: reduce priority for old, unaccessed memories
-  const decayFactor = Math.exp(-daysSinceAccess / 30); // 30-day half-life
-  
-  // Boost for access count
-  const accessBoost = Math.log10(memory.access_count + 1);
-  
-  // Confidence weight
-  const confidenceWeight = memory.confidence;
-  
-  return decayFactor * (1 + accessBoost) * confidenceWeight;
 }
 ```
 
 ---
 
-## 5. Compaction System
+## 8. aitlas-core-template — The DNA
 
-### 5.1 Token Counting
+### Purpose
+Every single repo in the Aitlas ecosystem — Nexus, each f.xyz action, the Agents Store — is **cloned from this template**. It ensures zero configuration drift, shared auth, shared types, and consistent AI coding behavior.
 
-**Methods:**
+### Template Structure
 
-1. **Approximate:** Character count / 4 (fast, rough estimate)
-2. **Accurate:** Use tokenizer library (tiktoken for GPT, similar for Claude)
-3. **API:** Some providers return token counts in responses
+```
+aitlas-core-template/
+├── app/
+│   ├── api/
+│   │   ├── auth/
+│   │   │   └── [...all]/route.ts    ← Better Auth handler
+│   │   ├── health/
+│   │   │   └── route.ts             ← GET /api/health (uptime monitoring)
+│   │   └── mcp/
+│   │       └── route.ts             ← MCP server endpoint (override per service)
+│   ├── (auth)/
+│   │   ├── sign-in/page.tsx
+│   │   └── sign-up/page.tsx
+│   └── layout.tsx
+├── lib/
+│   ├── auth.ts                      ← Better Auth config (shared)
+│   ├── auth-client.ts               ← Client-side auth hooks
+│   ├── db.ts                        ← Prisma client singleton
+│   ├── mcp-server.ts                ← Empty MCP server (override per service)
+│   ├── credit-middleware.ts         ← Credit check + deduct (shared logic)
+│   ├── encryption.ts                ← AES-256-GCM helpers
+│   ├── logger.ts                    ← Pino structured logger
+│   ├── rate-limit.ts                ← Upstash Redis rate limiter
+│   └── env.ts                       ← Type-safe env vars (t3-env)
+├── prisma/
+│   └── schema.prisma                ← Base schema (User, ApiKey, Task, Credits)
+├── components/
+│   └── ui/                          ← shadcn/ui components
+├── AGENTS.md                        ← AI coding rules (CRITICAL — see §16)
+├── .env.example                     ← All required env vars documented
+├── next.config.ts
+├── tailwind.config.ts
+├── tsconfig.json
+└── package.json
+```
 
-**Implementation:**
+---
 
-```typescript
-import { Tiktoken } from 'tiktoken';
+## 9. Shared Data Models (Prisma)
 
-class TokenCounter {
-  private encoder: Tiktoken;
+The **base schema** lives in `aitlas-core-template/prisma/schema.prisma` and is copied to each repo. Each service only includes the models it needs, plus its own service-specific models.
+
+```prisma
+// ─── CORE (every service has this) ───────────────────────────────────────
+
+model User {
+  id              String      @id @default(cuid())
+  email           String      @unique
+  name            String?
+  emailVerified   Boolean     @default(false)
+  computeCredits  Int         @default(0)
+  planTier        PlanTier    @default(FREE)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   
-  constructor(model: string) {
-    this.encoder = new Tiktoken(getEncodingForModel(model));
-  }
+  apiKeys         ApiKey[]
+  sessions        Session[]
+  tasks           Task[]
+  userAgents      UserAgent[]
+  toolRegistry    ToolRegistry[]
+  creditLedger    CreditLedgerEntry[]
+}
+
+enum PlanTier {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+// ─── AUTH (Better Auth managed) ──────────────────────────────────────────
+
+model Session {
+  id          String   @id @default(cuid())
+  userId      String
+  token       String   @unique
+  expiresAt   DateTime
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── BYOK KEY STORAGE (AES-256-GCM encrypted) ────────────────────────────
+
+model ApiKey {
+  id        String      @id @default(cuid())
+  userId    String
+  provider  LLMProvider
+  keyData   String      // Encrypted ciphertext
+  iv        String      // Initialization vector (hex)
+  tag       String      // Auth tag (hex)
+  createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  countTokens(text: string): number {
-    return this.encoder.encode(text).length;
-  }
+  @@unique([userId, provider])
+}
+
+enum LLMProvider {
+  OPENAI
+  ANTHROPIC
+  DEEPSEEK
+  GEMINI
+  GROQ
+}
+
+// ─── CREDIT LEDGER (append-only, immutable) ───────────────────────────────
+
+model CreditLedgerEntry {
+  id          String          @id @default(cuid())
+  userId      String
+  delta       Int             // Positive = credit, Negative = debit
+  balance     Int             // Snapshot balance after this entry
+  reason      String          // "purchase", "f.twyt:search_twitter", "monthly_grant"
+  referenceId String?         // taskId, paymentId, etc.
+  createdAt   DateTime        @default(now())
+  user        User            @relation(fields: [userId], references: [id])
   
-  countMessages(messages: Message[]): number {
-    // Account for message overhead (role, formatting)
-    let total = 0;
-    for (const msg of messages) {
-      total += 4; // Message overhead
-      total += this.countTokens(msg.content);
-      total += this.countTokens(msg.role);
-    }
-    total += 2; // Conversation overhead
-    return total;
-  }
+  @@index([userId, createdAt])
+}
+
+// ─── TASK QUEUE (Ralph's job board) ───────────────────────────────────────
+
+model Task {
+  id               String       @id @default(cuid())
+  userId           String
+  status           TaskStatus   @default(PENDING)
+  goal             String       @db.Text
+  agentId          String?
+  toolRegistry     Json         // Serialized MCPToolRef[]
+  steps            Json         @default("[]") // TaskStep[]
+  currentStep      Int          @default(0)
+  maxSteps         Int          @default(50)
+  creditsReserved  Int          @default(0)
+  creditsUsed      Int          @default(0)
+  workerId         String?
+  errorMessage     String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  completedAt      DateTime?
+  user             User         @relation(fields: [userId], references: [id])
+  
+  @@index([status, createdAt])
+}
+
+enum TaskStatus {
+  PENDING
+  CLAIMED
+  RUNNING
+  COMPLETED
+  FAILED
+  TIMEOUT
+  CANCELLED
+}
+
+// ─── AGENTS (Agents Store) ────────────────────────────────────────────────
+
+model Agent {
+  id                  String        @id @default(cuid())
+  name                String
+  description         String        @db.Text
+  avatarUrl           String?
+  category            String
+  isPremium           Boolean       @default(false)
+  creditCostEstimate  Int           @default(5)
+  basePrompt          String        @db.Text
+  skillsJson          Json          // AgentSkill[]
+  requiredActionsJson Json          // string[]
+  requiredMCPsJson    Json          // MCPRequirement[]
+  authorId            String
+  revenueShare        Float         @default(0.70)
+  isPublished         Boolean       @default(false)
+  createdAt           DateTime      @default(now())
+  userAgents          UserAgent[]
+}
+
+model UserAgent {
+  id          String   @id @default(cuid())
+  userId      String
+  agentId     String
+  activatedAt DateTime @default(now())
+  isActive    Boolean  @default(true)
+  user        User     @relation(fields: [userId], references: [id])
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  
+  @@unique([userId, agentId])
+}
+
+// ─── TOOL REGISTRY (per user) ─────────────────────────────────────────────
+
+model ToolRegistry {
+  id           String   @id @default(cuid())
+  userId       String
+  toolType     String   // "native_action" | "third_party_mcp"
+  name         String
+  mcpEndpoint  String
+  isEnabled    Boolean  @default(true)
+  configData   String?  // Encrypted credentials
+  addedAt      DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, name])
 }
 ```
 
-### 5.2 Compaction Triggers
+---
 
-**Threshold-based:**
+## 10. Auth Architecture
 
-```typescript
-const TRIGGER_THRESHOLD = 0.8; // 80% of context window
+### Choice: Better Auth
+**Why not Clerk?** Clerk stores user data on their servers. For a BYOK-first, sovereign product, auth must be self-hosted. Better Auth runs entirely in our Neon Postgres instance.
 
-function shouldCompact(context: Message[], maxTokens: number): boolean {
-  const currentTokens = tokenCounter.countMessages(context);
-  return currentTokens > maxTokens * TRIGGER_THRESHOLD;
-}
+**Why not NextAuth?** Better Auth has better TypeScript support, built-in 2FA, passkeys, and a cleaner API.
+
+### Cross-Service Auth (Service-to-Service)
+
+When Nexus calls an f.xyz action on behalf of a user:
+
+```
+1. Nexus has user session
+2. Nexus calls f.twyt.xyz/api/mcp
+   - Header: Authorization: Bearer <session_token>
+   - Header: X-Furma-Internal: <FURMA_INTERNAL_SECRET>
+3. f.twyt validates the session token against shared Neon DB
+   (both services connect to same DB — session is valid cross-service)
+4. If valid: extract userId, proceed with credit check
 ```
 
-**Size-based:**
+> **Key:** Because all services share the same Neon Postgres, a session token created in Nexus is valid in any f.xyz service. No JWT overhead, no token passing, just shared DB lookup.
+
+---
+
+## 11. Credit System
+
+### Design Principles
+1. **Append-only ledger** — never UPDATE credits directly. Always INSERT a ledger entry.
+2. **Atomic operations** — credit check and task creation must be in the same DB transaction.
+3. **Reserve on dispatch, settle on completion** — prevents double-spending on parallel tasks.
+4. **Never charge for failed tool calls** — only deduct on successful execution.
+
+### Credit Pricing Table
+
+| Action | Credits | USD Equivalent (at $0.01/credit) |
+|--------|---------|----------------------------------|
+| Pro subscription/mo | +500 credits granted | $25/mo includes $5 credit value |
+| Credit pack (100) | $1 | $0.01/credit |
+| Credit pack (1,000) | $8 | $0.008/credit |
+| f.twyt search | 1 credit | $0.01 |
+| f.library ingest | 2 credits | $0.02 |
+| f.library search | 1 credit | $0.01 |
+| f.rsrx deep research | 5 credits | $0.05 |
+| f.guard code review | 2 credits | $0.02 |
+| f.support ticket | 3 credits | $0.03 |
+| f.loop compute (per hour) | 10 credits | $0.10/hr |
+
+---
+
+## 12. Security & BYOK
+
+### BYOK Threat Model
+Users trust Aitlas with their OpenAI/Anthropic API keys. A breach would expose their billing to adversarial use. The security model must prevent:
+- Keys readable from DB breach
+- Keys in server logs
+- Keys in error messages
+- Keys in memory longer than needed
+
+### AES-256-GCM Encryption
 
 ```typescript
-const MAX_MESSAGES = 100; // Maximum messages before compaction
+// lib/encryption.ts
+import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
 
-function shouldCompactBySize(context: Message[]): boolean {
-  return context.length > MAX_MESSAGES;
-}
-```
+const ALGORITHM = 'aes-256-gcm';
+const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex'); // 32 bytes
 
-### 5.3 Summarization Process
-
-**Step 1: Identify Messages to Compact**
-
-```typescript
-function identifyMessagesToCompact(context: Message[]): {
-  toCompact: Message[];
-  toKeep: Message[];
+export function encryptApiKey(plaintext: string): {
+  keyData: string;
+  iv: string;
+  tag: string;
 } {
-  // Keep last 20% of messages (recent context)
-  const keepCount = Math.ceil(context.length * 0.2);
-  const toKeep = context.slice(-keepCount);
+  const iv = randomBytes(16);
+  const cipher = createCipheriv(ALGORITHM, KEY, iv);
   
-  // Compact the rest
-  const toCompact = context.slice(0, -keepCount);
+  const encrypted = Buffer.concat([
+    cipher.update(plaintext, 'utf8'),
+    cipher.final()
+  ]);
   
-  return { toCompact, toKeep };
-}
-```
-
-**Step 2: Extract Key Information**
-
-```typescript
-async function extractKeyInformation(messages: Message[]): Promise<{
-  decisions: string[];
-  facts: string[];
-  patterns: string[];
-  progress: string[];
-  pending: string[];
-}> {
-  const prompt = `
-Analyze the following conversation and extract:
-
-1. Key decisions made
-2. Important facts learned
-3. Patterns identified
-4. Progress made
-5. Pending tasks
-
-Messages:
-${messages.map(m => `${m.role}: ${m.content}`).join('\n\n')}
-
-Format as JSON.
-  `;
-  
-  const extraction = await llm.generate(prompt, { responseFormat: 'json' });
-  return JSON.parse(extraction);
-}
-```
-
-**Step 3: Generate Summary**
-
-```typescript
-async function generateSummary(info: KeyInformation): Promise<string> {
-  const prompt = `
-Create a concise summary of the session so far.
-
-Key Decisions:
-${info.decisions.map(d => `- ${d}`).join('\n')}
-
-Important Facts:
-${info.facts.map(f => `- ${f}`).join('\n')}
-
-Progress Made:
-${info.progress.map(p => `- ${p}`).join('\n')}
-
-Pending Tasks:
-${info.pending.map(t => `- ${t}`).join('\n')}
-
-Keep the summary under 500 tokens. Focus on actionable information.
-  `;
-  
-  return await llm.generate(prompt);
-}
-```
-
-**Step 4: Replace Old Context**
-
-```typescript
-async function compactContext(
-  context: Message[],
-  maxTokens: number
-): Promise<Message[]> {
-  // 1. Check if needed
-  if (!shouldCompact(context, maxTokens)) {
-    return context;
-  }
-  
-  // 2. Identify messages
-  const { toCompact, toKeep } = identifyMessagesToCompact(context);
-  
-  // 3. Extract key info
-  const keyInfo = await extractKeyInformation(toCompact);
-  
-  // 4. Generate summary
-  const summary = await generateSummary(keyInfo);
-  
-  // 5. Create new context
-  const summaryMessage: Message = {
-    role: 'system',
-    content: `[Previous Session Summary]\n\n${summary}`,
-  };
-  
-  // 6. Store summary in memory
-  await createMemory({
-    type: 'episodic',
-    content: summary,
-    tags: ['session-summary', 'compaction'],
-  });
-  
-  return [summaryMessage, ...toKeep];
-}
-```
-
-### 5.4 Compaction Metrics
-
-**Track:**
-
-```typescript
-interface CompactionMetrics {
-  timestamp: Date;
-  messagesBefore: number;
-  messagesAfter: number;
-  tokensBefore: number;
-  tokensAfter: number;
-  compressionRatio: number;
-  summaryQuality: number; // 1-5 rating
-}
-```
-
----
-
-## 6. Tool Ecosystem
-
-### 6.1 Tool Definition Schema
-
-```typescript
-interface Tool {
-  name: string;
-  description: string;
-  parameters: JSONSchema;
-  executor: (params: any) => Promise<any>;
-  requiresApproval?: boolean;
-  category: ToolCategory;
-  tags?: string[];
-}
-
-interface JSONSchema {
-  type: 'object';
-  properties: Record<string, {
-    type: string;
-    description: string;
-    enum?: string[];
-    default?: any;
-  }>;
-  required: string[];
-}
-```
-
-### 6.2 Core Tools (P0)
-
-#### read_file
-
-```typescript
-const readFileTool: Tool = {
-  name: 'read_file',
-  description: 'Read the contents of a file',
-  parameters: {
-    type: 'object',
-    properties: {
-      path: {
-        type: 'string',
-        description: 'Path to the file to read',
-      },
-      startLine: {
-        type: 'number',
-        description: 'Start reading from this line (1-indexed)',
-      },
-      endLine: {
-        type: 'number',
-        description: 'Stop reading at this line (1-indexed)',
-      },
-    },
-    required: ['path'],
-  },
-  executor: async ({ path, startLine, endLine }) => {
-    const content = await fs.readFile(path, 'utf-8');
-    if (startLine && endLine) {
-      const lines = content.split('\n');
-      return lines.slice(startLine - 1, endLine).join('\n');
-    }
-    return content;
-  },
-  category: 'core',
-};
-```
-
-#### write_file
-
-```typescript
-const writeFileTool: Tool = {
-  name: 'write_file',
-  description: 'Write content to a file (creates or overwrites)',
-  parameters: {
-    type: 'object',
-    properties: {
-      path: {
-        type: 'string',
-        description: 'Path to the file to write',
-      },
-      content: {
-        type: 'string',
-        description: 'Content to write to the file',
-      },
-    },
-    required: ['path', 'content'],
-  },
-  executor: async ({ path, content }) => {
-    await fs.ensureDir(path.dirname(path));
-    await fs.writeFile(path, content);
-    return { success: true, path };
-  },
-  category: 'core',
-  requiresApproval: true,
-};
-```
-
-#### run_command
-
-```typescript
-const runCommandTool: Tool = {
-  name: 'run_command',
-  description: 'Execute a shell command',
-  parameters: {
-    type: 'object',
-    properties: {
-      command: {
-        type: 'string',
-        description: 'Command to execute',
-      },
-      cwd: {
-        type: 'string',
-        description: 'Working directory',
-      },
-      timeout: {
-        type: 'number',
-        description: 'Timeout in milliseconds',
-      },
-    },
-    required: ['command'],
-  },
-  executor: async ({ command, cwd, timeout }) => {
-    const result = await exec(command, { cwd, timeout });
-    return {
-      stdout: result.stdout,
-      stderr: result.stderr,
-      exitCode: result.exitCode,
-    };
-  },
-  category: 'core',
-  requiresApproval: true,
-};
-```
-
-### 6.3 Search Tools (P0)
-
-#### codebase_search
-
-```typescript
-const codebaseSearchTool: Tool = {
-  name: 'codebase_search',
-  description: 'Semantic search across the codebase (find code by meaning)',
-  parameters: {
-    type: 'object',
-    properties: {
-      query: {
-        type: 'string',
-        description: 'Natural language query (e.g., "Where is user authentication handled?")',
-      },
-      directory: {
-        type: 'string',
-        description: 'Directory to search in (optional)',
-      },
-      limit: {
-        type: 'number',
-        description: 'Maximum results to return',
-      },
-    },
-    required: ['query'],
-  },
-  executor: async ({ query, directory, limit = 10 }) => {
-    // Use QMD hybrid search
-    const results = await qmd.search({
-      query,
-      path: directory,
-      limit,
-    });
-    return results;
-  },
-  category: 'search',
-};
-```
-
-#### grep_search
-
-```typescript
-const grepSearchTool: Tool = {
-  name: 'grep_search',
-  description: 'Exact text/regex search across files',
-  parameters: {
-    type: 'object',
-    properties: {
-      pattern: {
-        type: 'string',
-        description: 'Pattern to search for (supports regex)',
-      },
-      path: {
-        type: 'string',
-        description: 'File or directory to search in',
-      },
-      caseInsensitive: {
-        type: 'boolean',
-        description: 'Case-insensitive search',
-      },
-    },
-    required: ['pattern'],
-  },
-  executor: async ({ pattern, path, caseInsensitive }) => {
-    const args = ['grep', '-n'];
-    if (caseInsensitive) args.push('-i');
-    if (path) args.push(path);
-    args.push(pattern);
-    
-    const result = await exec(args.join(' '));
-    return result.stdout;
-  },
-  category: 'search',
-};
-```
-
-### 6.4 Memory Tools (P0)
-
-#### create_memory
-
-```typescript
-const createMemoryTool: Tool = {
-  name: 'create_memory',
-  description: 'Create a persistent memory for future reference',
-  parameters: {
-    type: 'object',
-    properties: {
-      type: {
-        type: 'string',
-        enum: ['fact', 'preference', 'decision', 'pattern'],
-        description: 'Type of memory',
-      },
-      content: {
-        type: 'string',
-        description: 'Memory content',
-      },
-      tags: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'Tags for categorization',
-      },
-      confidence: {
-        type: 'number',
-        description: 'Confidence level (0-1)',
-      },
-    },
-    required: ['type', 'content'],
-  },
-  executor: async (params) => {
-    return await memoryLayer.create(params);
-  },
-  category: 'memory',
-};
-```
-
-#### search_memory
-
-```typescript
-const searchMemoryTool: Tool = {
-  name: 'search_memory',
-  description: 'Search through stored memories',
-  parameters: {
-    type: 'object',
-    properties: {
-      query: {
-        type: 'string',
-        description: 'Search query',
-      },
-      types: {
-        type: 'array',
-        items: { type: 'string' },
-        description: 'Filter by memory types',
-      },
-      limit: {
-        type: 'number',
-        description: 'Maximum results',
-      },
-    },
-    required: ['query'],
-  },
-  executor: async ({ query, types, limit }) => {
-    return await memoryLayer.search(query, { types, limit });
-  },
-  category: 'memory',
-};
-```
-
-### 6.5 Planning Tools (P1)
-
-#### create_plan
-
-```typescript
-const createPlanTool: Tool = {
-  name: 'create_plan',
-  description: 'Create a structured plan for complex tasks',
-  parameters: {
-    type: 'object',
-    properties: {
-      title: {
-        type: 'string',
-        description: 'Plan title',
-      },
-      description: {
-        type: 'string',
-        description: 'Plan description',
-      },
-      tasks: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            title: { type: 'string' },
-            description: { type: 'string' },
-            dependencies: { type: 'array', items: { type: 'string' } },
-          },
-        },
-        description: 'Tasks in the plan',
-      },
-    },
-    required: ['title', 'tasks'],
-  },
-  executor: async (params) => {
-    return await planner.createPlan(params);
-  },
-  category: 'planning',
-};
-```
-
-#### update_task
-
-```typescript
-const updateTaskTool: Tool = {
-  name: 'update_task',
-  description: 'Update task status',
-  parameters: {
-    type: 'object',
-    properties: {
-      taskId: {
-        type: 'string',
-        description: 'Task ID to update',
-      },
-      status: {
-        type: 'string',
-        enum: ['pending', 'in_progress', 'completed', 'failed'],
-        description: 'New status',
-      },
-      result: {
-        type: 'string',
-        description: 'Task result or notes',
-      },
-    },
-    required: ['taskId', 'status'],
-  },
-  executor: async ({ taskId, status, result }) => {
-    return await planner.updateTask(taskId, { status, result });
-  },
-  category: 'planning',
-};
-```
-
-### 6.6 Tool Registry
-
-```typescript
-class ToolRegistry {
-  private tools: Map<string, Tool> = new Map();
-  
-  register(tool: Tool): void {
-    this.tools.set(tool.name, tool);
-  }
-  
-  get(name: string): Tool | undefined {
-    return this.tools.get(name);
-  }
-  
-  getByCategory(category: ToolCategory): Tool[] {
-    return Array.from(this.tools.values())
-      .filter(t => t.category === category);
-  }
-  
-  getAll(): Tool[] {
-    return Array.from(this.tools.values());
-  }
-  
-  toOpenAISchema(): OpenAI.Tool[] {
-    return this.getAll().map(tool => ({
-      type: 'function',
-      function: {
-        name: tool.name,
-        description: tool.description,
-        parameters: tool.parameters,
-      },
-    }));
-  }
-  
-  toAnthropicSchema(): Anthropic.Tool[] {
-    return this.getAll().map(tool => ({
-      name: tool.name,
-      description: tool.description,
-      input_schema: tool.parameters,
-    }));
-  }
-}
-
-// Initialize registry
-const toolRegistry = new ToolRegistry();
-
-// Register all tools
-toolRegistry.register(readFileTool);
-toolRegistry.register(writeFileTool);
-toolRegistry.register(runCommandTool);
-// ... register all other tools
-```
-
----
-
-## 7. Agent Orchestration
-
-### 7.1 Orchestration Patterns
-
-#### Sequential Execution
-
-```
-Agent 1 → Agent 2 → Agent 3
-
-Use case: Linear workflow with dependencies
-Example: Research → Write → Review
-```
-
-#### Parallel Execution
-
-```
-Agent 1 ┐
-Agent 2 ├→ Aggregator
-Agent 3 ┘
-
-Use case: Independent tasks
-Example: Test multiple components simultaneously
-```
-
-#### Hierarchical
-
-```
-          Supervisor
-         /    |    \
-    Agent1 Agent2 Agent3
-       |      |      |
-    Worker Worker Worker
-
-Use case: Complex delegation
-Example: Project manager with specialists
-```
-
-#### Handoffs (OpenAI SDK)
-
-```
-User → Triage Agent
-         ↓
-    (classifies intent)
-         ↓
-    ┌────┼────┐
-    ↓    ↓    ↓
-  Coder QA  Researcher
-
-Use case: Intent-based routing
-Example: Customer support, code review
-```
-
-### 7.2 CrewAI Integration
-
-**Crew Definition:**
-
-```typescript
-import { Crew, Agent, Task } from 'crewai';
-
-const researcher = new Agent({
-  role: 'Senior Researcher',
-  goal: 'Find comprehensive information',
-  backstory: 'Expert at gathering and synthesizing information',
-  tools: [searchWebTool, readPDTool],
-});
-
-const writer = new Agent({
-  role: 'Senior Writer',
-  goal: 'Create engaging content',
-  backstory: 'Award-winning technical writer',
-  tools: [writeFileTool],
-});
-
-const reviewer = new Agent({
-  role: 'Editor',
-  goal: 'Ensure quality and accuracy',
-  backstory: 'Meticulous editor with eye for detail',
-  tools: [readFileTool, editFileTool],
-});
-
-const crew = new Crew({
-  agents: [researcher, writer, reviewer],
-  tasks: [
-    new Task({
-      description: 'Research the topic',
-      agent: researcher,
-    }),
-    new Task({
-      description: 'Write the article',
-      agent: writer,
-    }),
-    new Task({
-      description: 'Review and edit',
-      agent: reviewer,
-    }),
-  ],
-  process: 'sequential', // or 'parallel'
-});
-
-const result = await crew.run();
-```
-
-### 7.3 OpenAI Handoffs
-
-**Handoff Definition:**
-
-```typescript
-import { Agent, handoff } from '@openai/agents';
-
-const triageAgent = new Agent({
-  name: 'Triage',
-  instructions: 'Classify user intent and route to appropriate agent',
-  handoffs: [
-    handoff({
-      agent: coderAgent,
-      condition: 'User wants to write or modify code',
-    }),
-    handoff({
-      agent: researcherAgent,
-      condition: 'User wants to research a topic',
-    }),
-    handoff({
-      agent: qaAgent,
-      condition: 'User wants to test or review code',
-    }),
-  ],
-});
-
-const coderAgent = new Agent({
-  name: 'Coder',
-  instructions: 'Write clean, efficient code',
-  tools: [readFileTool, writeFileTool, runCommandTool],
-});
-
-// Run with handoffs
-const result = await runAgent(triageAgent, userMessage);
-```
-
-### 7.4 Agent Store Integration
-
-**Agent Definition for Store:**
-
-```typescript
-interface StoreAgent {
-  id: string;
-  name: string;
-  description: string;
-  category: 'coding' | 'research' | 'testing' | 'deployment' | 'monitoring';
-  systemPrompt: string;
-  recommendedModel: string;
-  tools: string[];
-  exampleUseCases: string[];
-  configuration: {
-    temperature?: number;
-    maxTokens?: number;
-    topP?: number;
+  return {
+    keyData: encrypted.toString('hex'),
+    iv: iv.toString('hex'),
+    tag: cipher.getAuthTag().toString('hex'),
   };
 }
 
-// Example: Frontend Expert
-const frontendExpert: StoreAgent = {
-  id: 'frontend-expert',
-  name: 'Frontend Expert',
-  description: 'Specialist in React, Vue, and modern web frameworks',
-  category: 'coding',
-  systemPrompt: `
-You are an expert frontend developer with deep knowledge of:
-- React, Vue, Angular, Svelte
-- CSS, Tailwind, styled-components
-- State management (Redux, Zustand, Pinia)
-- Build tools (Vite, Webpack, esbuild)
-
-You write clean, performant, accessible code.
-You follow best practices and modern patterns.
-  `.trim(),
-  recommendedModel: 'claude-3.5-sonnet',
-  tools: ['read_file', 'write_file', 'edit_file', 'run_command', 'codebase_search'],
-  exampleUseCases: [
-    'Build a React dashboard with charts',
-    'Optimize Vue component performance',
-    'Create a responsive landing page',
-  ],
-  configuration: {
-    temperature: 0.7,
-    maxTokens: 4096,
-  },
-};
+export function decryptApiKey(keyData: string, iv: string, tag: string): string {
+  const decipher = createDecipheriv(ALGORITHM, KEY, Buffer.from(iv, 'hex'));
+  decipher.setAuthTag(Buffer.from(tag, 'hex'));
+  
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(keyData, 'hex')),
+    decipher.final()
+  ]);
+  
+  // CRITICAL: This string must never be logged, stored, or included in errors
+  return decrypted.toString('utf8');
+}
 ```
+
+### Security Rules (Enforced in AGENTS.md)
+- `decryptApiKey()` result must NEVER be assigned to a variable named in a way that could be logged
+- Never `console.log` or `logger.info` anything containing an API key
+- Keys are decrypted **in the Ralph worker**, never in the Next.js API route
+- The Next.js route writes the encrypted key to the task queue — Ralph decrypts at execution time
+- `ENCRYPTION_KEY` rotates every 90 days (re-encrypt all keys on rotation)
 
 ---
 
-## 8. Pricing Tiers
+## 13. Infrastructure & Deployment
 
-### 8.1 BYOK (Free)
+### Service Map
 
-**What You Get:**
-
-| Feature | Availability |
-|---------|-------------|
-| LLM Access | ✅ Your API key (any provider) |
-| Context Window | ✅ Native to your LLM |
-| Basic Tools | ✅ Core tools (read/write/bash) |
-| Memory | ❌ Session-only (no persistence) |
-| Compaction | ❌ Manual (you manage context) |
-| Orchestration | ❌ Single agent only |
-| Codebase Search | ❌ Not available |
-| Actions | ❌ Basic set only |
-
-**Limitations:**
-- No persistent memory between sessions
-- Context limited to LLM's native window
-- No auto-compaction (must manually manage)
-- Single agent mode only
-- No semantic codebase search
-
-**Use Case:**
-- Quick questions
-- Simple code edits
-- Testing the platform
-- Users who want full control
-
-### 8.2 Subscription ($20/month)
-
-**Everything in BYOK plus:**
-
-| Feature | Availability |
-|---------|-------------|
-| Persistent Memory | ✅ Unlimited storage |
-| Auto-Compaction | ✅ Smart summarization |
-| Agent Orchestration | ✅ Multi-agent crews |
-| Codebase Search | ✅ QMD hybrid search |
-| Tool Ecosystem | ✅ 50+ pre-built tools |
-| Planning System | ✅ Task management |
-| Agent Store | ✅ Access all agents |
-| Actions | ✅ Full library |
-| Browser Automation | ✅ Puppeteer integration |
-| Priority Support | ✅ Discord + email |
-
-**Benefits:**
-- Remember everything across sessions
-- Never run out of context (auto-compact)
-- Run complex multi-step workflows
-- Find code by meaning, not just exact text
-- Access specialized agents from store
-- Full tool ecosystem
-
-**Use Case:**
-- Professional developers
-- Complex projects
-- Long-running tasks
-- Team collaboration
-
-### 8.3 Credits (Pay-per-use)
-
-**For occasional users:**
-
-| Credits | Price | What You Get |
-|---------|-------|--------------|
-| 500 | $5 | ~50 compactions OR ~100 memory queries |
-| 1000 | $9 | ~100 compactions OR ~200 memory queries |
-| 2500 | $20 | ~250 compactions OR ~500 memory queries |
-
-**Credit Costs:**
-
-| Action | Credits |
-|--------|---------|
-| Memory create/update | 1 |
-| Memory search | 2 |
-| Compaction | 5 |
-| Agent orchestration (per agent) | 3 |
-| Codebase search | 2 |
-| Browser automation (per minute) | 1 |
-
-**Use Case:**
-- Occasional users
-- Testing advanced features
-- Light usage
-
-### 8.4 Enterprise (Custom)
-
-**Everything in Subscription plus:**
-
-| Feature | Availability |
-|---------|-------------|
-| Self-hosted option | ✅ |
-| SSO/SAML | ✅ |
-| Custom agents | ✅ Unlimited |
-| Private tool registry | ✅ |
-| Audit logs | ✅ |
-| SLA | ✅ 99.9% uptime |
-| Dedicated support | ✅ |
-| Custom integrations | ✅ |
-
-**Pricing:** Custom quote based on:
-- Number of users
-- Deployment type (cloud vs self-hosted)
-- Custom development needs
-- Support level required
+| Service | Host | Scaling |
+|---------|------|---------|
+| nexus.aitlas.xyz | Vercel | Auto (edge) |
+| agents.aitlas.xyz | Vercel | Auto (edge) |
+| f.xyz (all actions) | Vercel | Auto (edge) |
+| f.loop (Ralph) | Hetzner CX21 | Manual horizontal |
+| PostgreSQL | Neon (serverless) | Auto |
+| Redis | Upstash | Auto |
+| Static assets | Vercel / Cloudflare CDN | Auto |
 
 ---
 
-## 9. Implementation Roadmap
+## 14. API Design Conventions
 
-### Phase 1: Foundation (Weeks 1-2)
+### URL Structure
+```
+/api/v1/[resource]/[id]/[action]
 
-**Goal:** Core infrastructure for BYOK mode.
-
-**Tasks:**
-- [ ] Implement tool router
-- [ ] Build basic tool set (read/write/bash)
-- [ ] Create LLM provider abstraction
-- [ ] Build Nexus chat interface
-- [ ] Implement streaming responses
-- [ ] Add token counting
-- [ ] Create user authentication
-- [ ] Set up PostgreSQL database
-- [ ] Build API endpoints
-
-**Deliverables:**
-- Working BYOK mode
-- Basic chat interface
-- Core tools functional
-- User accounts
-
-### Phase 2: Memory (Weeks 3-4)
-
-**Goal:** Persistent memory system.
-
-**Tasks:**
-- [ ] Design memory schema
-- [ ] Implement PostgreSQL storage
-- [ ] Integrate QMD for search
-- [ ] Build embedding generation (local)
-- [ ] Create memory tools
-- [ ] Build memory UI in Nexus
-- [ ] Add memory injection to context
-- [ ] Implement memory decay
-- [ ] Add memory analytics
-
-**Deliverables:**
-- Persistent memory across sessions
-- Semantic memory search
-- Memory management UI
-- Memory metrics
-
-### Phase 3: Compaction (Weeks 5-6)
-
-**Goal:** Auto-compaction system.
-
-**Tasks:**
-- [ ] Implement token counter
-- [ ] Build compaction trigger
-- [ ] Create summarization agent
-- [ ] Implement key info extraction
-- [ ] Build summary storage
-- [ ] Add compaction UI
-- [ ] Track compaction metrics
-- [ ] Optimize summary quality
-
-**Deliverables:**
-- Auto-compaction when context full
-- Summary generation
-- Compaction analytics
-- User control over compaction
-
-### Phase 4: Orchestration (Weeks 7-8)
-
-**Goal:** Multi-agent coordination.
-
-**Tasks:**
-- [ ] Integrate CrewAI
-- [ ] Implement handoffs (OpenAI SDK)
-- [ ] Build agent registry
-- [ ] Create orchestration UI
-- [ ] Add parallel execution
-- [ ] Implement agent communication
-- [ ] Build agent monitoring
-- [ ] Create agent templates
-
-**Deliverables:**
-- Multi-agent workflows
-- Sequential/parallel execution
-- Agent monitoring dashboard
-- Pre-built agent templates
-
-### Phase 5: Agent Store (Weeks 9-10)
-
-**Goal:** Curated agent marketplace.
-
-**Tasks:**
-- [ ] Design agent schema
-- [ ] Create 20+ starter agents
-- [ ] Build agent store UI
-- [ ] Implement agent installation
-- [ ] Add agent ratings/reviews
-- [ ] Create agent documentation
-- [ ] Build agent configuration UI
-- [ ] Add community submissions
-
-**Deliverables:**
-- Agent store with 20+ agents
-- Agent installation workflow
-- Community features
-- Agent documentation
-
-### Phase 6: Actions & MCP (Weeks 11-12)
-
-**Goal:** Tool ecosystem and external API.
-
-**Tasks:**
-- [ ] Build 50+ tool definitions
-- [ ] Implement MCP server
-- [ ] Create Actions API
-- [ ] Build Actions UI
-- [ ] Add credit system
-- [ ] Implement usage tracking
-- [ ] Create billing integration
-- [ ] Build API documentation
-
-**Deliverables:**
-- 50+ tools available
-- MCP server for external use
-- Actions API
-- Credit system
-- Billing integration
-
----
-
-## 10. System Prompts for Agents Store
-
-### 10.1 Coding Agents
-
-#### Frontend Expert
-
-```markdown
-# Role
-You are a Senior Frontend Developer specializing in modern web frameworks.
-
-# Expertise
-- React, Vue, Angular, Svelte
-- CSS frameworks (Tailwind, styled-components, CSS Modules)
-- State management (Redux, Zustand, Pinia, Jotai)
-- Build tools (Vite, Webpack, esbuild, Rollup)
-- Testing (Jest, Vitest, Testing Library, Cypress)
-
-# Principles
-1. Write clean, readable, maintainable code
-2. Follow framework best practices
-3. Ensure accessibility (WCAG 2.1 AA)
-4. Optimize for performance (Core Web Vitals)
-5. Write meaningful tests
-
-# Communication Style
-- Be concise and direct
-- Explain trade-offs when suggesting approaches
-- Provide code examples
-- Reference documentation when helpful
-
-# Tools Available
-- read_file, write_file, edit_file
-- codebase_search, grep_search
-- run_command (for npm, build, test)
+Examples:
+POST   /api/v1/tasks              ← Create task
+GET    /api/v1/tasks/:id          ← Get task status
+DELETE /api/v1/tasks/:id          ← Cancel task
+POST   /api/v1/credits/purchase   ← Buy credits
+GET    /api/v1/credits/balance    ← Get balance
+POST   /api/v1/keys               ← Store BYOK key
+DELETE /api/v1/keys/:provider     ← Remove BYOK key
+POST   /api/mcp                   ← MCP endpoint (all f.xyz services)
 ```
 
-#### Backend Expert
-
-```markdown
-# Role
-You are a Senior Backend Developer specializing in API design and system architecture.
-
-# Expertise
-- Node.js, Python, Go, Rust
-- RESTful APIs, GraphQL, gRPC
-- Databases (PostgreSQL, MongoDB, Redis)
-- Authentication (JWT, OAuth, SAML)
-- Microservices, event-driven architecture
-
-# Principles
-1. Design for scalability and reliability
-2. Write comprehensive tests
-3. Document APIs thoroughly
-4. Handle errors gracefully
-5. Optimize for performance
-
-# Communication Style
-- Explain architectural decisions
-- Provide code examples with comments
-- Suggest alternatives with trade-offs
-- Reference best practices
-
-# Tools Available
-- read_file, write_file, edit_file
-- run_command (for servers, tests, migrations)
-- query_database
-- http_get, http_post
-```
-
-#### DevOps Engineer
-
-```markdown
-# Role
-You are a DevOps Engineer specializing in infrastructure automation and CI/CD.
-
-# Expertise
-- Docker, Kubernetes, Terraform
-- CI/CD (GitHub Actions, GitLab CI, Jenkins)
-- Cloud platforms (AWS, GCP, Azure)
-- Monitoring (Prometheus, Grafana, Datadog)
-- Security (secrets management, RBAC)
-
-# Principles
-1. Infrastructure as Code
-2. Immutable infrastructure
-3. Automated testing and deployment
-4. Monitoring and observability
-5. Security by default
-
-# Communication Style
-- Provide complete, runnable configurations
-- Explain security implications
-- Suggest cost optimizations
-- Document procedures
-
-# Tools Available
-- read_file, write_file, edit_file
-- run_command (docker, kubectl, terraform)
-- http_get, http_post
-```
-
-### 10.2 Research Agents
-
-#### Technical Researcher
-
-```markdown
-# Role
-You are a Technical Researcher skilled at gathering and synthesizing information.
-
-# Expertise
-- Web research and fact-checking
-- Technical documentation analysis
-- Competitive analysis
-- Best practices identification
-- Technology evaluation
-
-# Principles
-1. Verify information from multiple sources
-2. Cite sources clearly
-3. Synthesize findings, don't just summarize
-4. Highlight actionable insights
-5. Identify knowledge gaps
-
-# Communication Style
-- Present findings in structured format
-- Highlight key insights first
-- Provide evidence for claims
-- Suggest next steps
-
-# Tools Available
-- search_web
-- read_file (for docs)
-- http_get (for APIs, documentation)
-```
-
-#### Code Reviewer
-
-```markdown
-# Role
-You are a Senior Code Reviewer focused on code quality and best practices.
-
-# Expertise
-- Code smell detection
-- Security vulnerability identification
-- Performance optimization
-- Architecture review
-- Testing strategies
-
-# Principles
-1. Be constructive and specific
-2. Explain the "why" behind suggestions
-3. Prioritize issues by severity
-4. Acknowledge good patterns
-5. Suggest concrete improvements
-
-# Communication Style
-- Use clear, respectful language
-- Provide code examples for suggestions
-- Reference style guides and best practices
-- Distinguish between critical and nice-to-have
-
-# Tools Available
-- read_file
-- codebase_search
-- grep_search
-```
-
-### 10.3 Testing Agents
-
-#### QA Engineer
-
-```markdown
-# Role
-You are a QA Engineer specializing in test automation and quality assurance.
-
-# Expertise
-- Unit testing, integration testing, E2E testing
-- Testing frameworks (Jest, Vitest, Cypress, Playwright)
-- Test-driven development (TDD)
-- Performance testing
-- Accessibility testing
-
-# Principles
-1. Tests should be fast, reliable, and maintainable
-2. Test behavior, not implementation
-3. Aim for high coverage on critical paths
-4. Use meaningful test descriptions
-5. Isolate tests from external dependencies
-
-# Communication Style
-- Explain testing strategy
-- Provide runnable test examples
-- Suggest edge cases to test
-- Document test setup
-
-# Tools Available
-- read_file, write_file, edit_file
-- run_command (for test runners)
-- codebase_search
-```
-
----
-
-## 11. MCP Actions API
-
-### 11.1 Overview
-
-**MCP (Model Context Protocol)** enables external applications to use Aitlas Actions.
-
-**Use Cases:**
-- IDE extensions (VS Code, JetBrains)
-- CLI tools
-- Custom integrations
-- Third-party applications
-
-### 11.2 Authentication
-
-**API Keys:**
+### Response Format (All APIs)
 
 ```typescript
-interface APIKey {
-  id: string;
-  userId: string;
-  key: string; // sk_live_xxx or sk_test_xxx
-  permissions: Permission[];
-  rateLimit: number; // requests per minute
-  createdAt: Date;
-  expiresAt?: Date;
-}
-
-interface Permission {
-  resource: 'actions' | 'memory' | 'agents';
-  actions: ('read' | 'write' | 'execute')[];
-}
-```
-
-**Authentication Header:**
-
-```
-Authorization: Bearer sk_live_xxxxxxxxxxxx
-```
-
-### 11.3 Endpoints
-
-#### List Available Actions
-
-```http
-GET /api/v1/actions
-
-Response:
-{
-  "actions": [
-    {
-      "id": "git-commit",
-      "name": "Git Commit",
-      "description": "Create a git commit with staged changes",
-      "category": "git",
-      "credits": 1
-    },
-    ...
-  ]
-}
-```
-
-#### Execute Action
-
-```http
-POST /api/v1/actions/{actionId}/execute
-
-Request:
-{
-  "parameters": {
-    "message": "feat: add user authentication",
-    "files": ["src/auth.ts", "src/user.ts"]
-  }
-}
-
-Response:
+// Success
 {
   "success": true,
-  "result": {
-    "commit": "abc123",
-    "message": "feat: add user authentication",
-    "files": 2
-  },
-  "creditsUsed": 1,
-  "creditsRemaining": 499
-}
-```
-
-#### Create Memory
-
-```http
-POST /api/v1/memory
-
-Request:
-{
-  "type": "preference",
-  "content": "User prefers TypeScript over JavaScript",
-  "tags": ["coding", "preference"]
+  "data": { ... },
+  "meta": {
+    "requestId": "req_01j...",
+    "timestamp": "2026-03-06T10:00:00Z"
+  }
 }
 
-Response:
+// Error
 {
-  "id": "mem_xxx",
-  "type": "preference",
-  "content": "User prefers TypeScript over JavaScript",
-  "tags": ["coding", "preference"],
-  "createdAt": "2026-03-08T20:00:00Z"
-}
-```
-
-#### Search Memory
-
-```http
-POST /api/v1/memory/search
-
-Request:
-{
-  "query": "coding preferences",
-  "limit": 10
-}
-
-Response:
-{
-  "memories": [
-    {
-      "id": "mem_xxx",
-      "content": "User prefers TypeScript over JavaScript",
-      "relevance": 0.95
-    }
-  ],
-  "creditsUsed": 2
-}
-```
-
-### 11.4 Rate Limiting
-
-| Tier | Rate Limit |
-|------|------------|
-| Free | 10 req/min |
-| Subscription | 100 req/min |
-| Enterprise | Custom |
-
-**Rate Limit Headers:**
-
-```
-X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 95
-X-RateLimit-Reset: 1617235200
-```
-
-### 11.5 Error Handling
-
-**Error Response:**
-
-```json
-{
+  "success": false,
   "error": {
     "code": "INSUFFICIENT_CREDITS",
-    "message": "Not enough credits to execute this action",
-    "required": 5,
-    "available": 2
-  }
-}
-```
-
-**Error Codes:**
-
-| Code | Description |
-|------|-------------|
-| `INSUFFICIENT_CREDITS` | Not enough credits |
-| `RATE_LIMIT_EXCEEDED` | Too many requests |
-| `UNAUTHORIZED` | Invalid API key |
-| `ACTION_NOT_FOUND` | Action doesn't exist |
-| `INVALID_PARAMETERS` | Missing or invalid params |
-| `EXECUTION_FAILED` | Action execution failed |
-
----
-
-## 12. Integration with Nexus
-
-### 12.1 UI Integration
-
-**Code View:**
-
-```typescript
-// Nexus Code Page
-function CodePage() {
-  return (
-    <div className="flex h-screen">
-      {/* Left: File tree */}
-      <FileTree className="w-64" />
-      
-      {/* Center: Code editor + Chat */}
-      <div className="flex-1 flex flex-col">
-        <TabBar tabs={['Code', 'Chat', 'Terminal']} />
-        <CodeEditor />
-        <ChatPanel />
-      </div>
-      
-      {/* Right: Tools */}
-      <div className="w-80 border-l">
-        <Accordion>
-          <Panel title="Memory">
-            <MemoryPanel />
-          </Panel>
-          <Panel title="Actions">
-            <ActionsPanel />
-          </Panel>
-          <Panel title="Agents">
-            <AgentsPanel />
-          </Panel>
-          <Panel title="Tasks">
-            <TasksPanel />
-          </Panel>
-        </Accordion>
-      </div>
-    </div>
-  );
-}
-```
-
-### 12.2 State Management
-
-**Zustand Store:**
-
-```typescript
-interface AppState {
-  // Current context
-  session: {
-    id: string;
-    messages: Message[];
-    tokenCount: number;
-  };
-  
-  // Memory
-  memories: {
-    recent: Memory[];
-    searchResults: Memory[];
-  };
-  
-  // Actions
-  actions: {
-    available: Action[];
-    running: ActionExecution[];
-    history: ActionExecution[];
-  };
-  
-  // Agents
-  agents: {
-    active: Agent | null;
-    store: Agent[];
-  };
-  
-  // Tasks
-  tasks: {
-    plan: Plan | null;
-    tasks: Task[];
-  };
-  
-  // Settings
-  settings: {
-    provider: 'claude' | 'openai' | 'gemini';
-    model: string;
-    temperature: number;
-    maxTokens: number;
-  };
-}
-```
-
-### 12.3 API Client
-
-```typescript
-class AitlasClient {
-  private baseUrl: string;
-  private apiKey: string;
-  
-  constructor(baseUrl: string, apiKey: string) {
-    this.baseUrl = baseUrl;
-    this.apiKey = apiKey;
-  }
-  
-  // Chat
-  async chat(messages: Message[]): Promise<AsyncIterable<ChatChunk>> {
-    const response = await fetch(`${this.baseUrl}/api/chat`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ messages }),
-    });
-    
-    return this.parseSSE(response.body);
-  }
-  
-  // Memory
-  async createMemory(params: CreateMemoryParams): Promise<Memory> {
-    return this.post('/api/memory', params);
-  }
-  
-  async searchMemory(query: string): Promise<Memory[]> {
-    return this.post('/api/memory/search', { query });
-  }
-  
-  // Actions
-  async executeAction(actionId: string, params: any): Promise<ActionResult> {
-    return this.post(`/api/actions/${actionId}/execute`, params);
-  }
-  
-  // Agents
-  async runAgent(agentId: string, input: string): Promise<AgentResult> {
-    return this.post(`/api/agents/${agentId}/run`, { input });
-  }
-  
-  // Tasks
-  async createPlan(plan: CreatePlanParams): Promise<Plan> {
-    return this.post('/api/plans', plan);
-  }
-  
-  async updateTask(taskId: string, updates: Partial<Task>): Promise<Task> {
-    return this.patch(`/api/tasks/${taskId}`, updates);
+    "message": "You need 5 credits, but have 3.",
+    "details": { "required": 5, "available": 3 }
   }
 }
 ```
 
 ---
 
-## Appendix A: Glossary
+## 15. Inter-Service Communication
 
-| Term | Definition |
-|------|------------|
-| **BYOK** | Bring Your Own Key (user provides API key) |
-| **Compaction** | Summarizing old context to free up tokens |
-| **MCP** | Model Context Protocol (external API) |
-| **QMD** | Query Markdown (hybrid search engine) |
-| **Orchestration** | Coordinating multiple agents |
-| **Handoffs** | Agent-to-agent delegation pattern |
-| **Actions** | Pre-built tools/integrations |
-| **Memory** | Persistent storage of context |
-| **Embedding** | Vector representation of text |
-| **Semantic Search** | Search by meaning, not exact text |
+### The Two Patterns
 
----
+**Pattern 1: Synchronous MCP call (short tasks)**
+```
+Nexus → HTTP POST f.xyz/api/mcp → Result → Stream to user
+Max duration: 25 seconds (Vercel limit)
+Use for: Single tool calls, quick lookups
+```
 
-## Appendix B: References
-
-- [CrewAI Documentation](https://docs.crewai.com)
-- [OpenAI Agents SDK](https://github.com/openai/openai-agents-python)
-- [Anthropic Tool Use Guide](https://docs.anthropic.com/claude/docs/tool-use)
-- [QMD Repository](https://github.com/Arakiss/qmd)
-- [MCP Specification](https://modelcontextprotocol.io)
+**Pattern 2: Async task dispatch (long tasks)**
+```
+Nexus → Write task to Postgres → Return taskId to UI
+                    ↓
+               Ralph picks up
+               Ralph executes (minutes)
+               Ralph writes steps + result
+                    ↓
+UI polls GET /api/tasks/:id every 3s → Shows live progress
+```
 
 ---
 
-*End of Architecture Documentation*
+## 16. AGENTS.md — AI Coding Rules
+
+This file lives in the root of every repo and is the first thing AI coding assistants (Cursor, Copilot, Claude Code) read. It prevents hallucinations and enforces Furma conventions.
+
+**See `/AGENTS.md` for the full rules.**
+
+Key rules:
+- NEVER create a monorepo. This is an isolated service.
+- NEVER log, console.log, or include in error messages anything that could be an API key.
+- ALL database mutations must use Prisma transactions.
+- ALL API routes return the standard response format.
+- ALL user inputs must be validated with Zod.
+- Rate limiting is REQUIRED on all public API routes.
+- NEVER deduct credits unless the tool call succeeded.
+
+---
+
+## 17. Repo Registry
+
+| Repo | Domain | Stack | Status |
+|------|--------|-------|--------|
+| `aitlas-core-template` | — | Next.js 15 + Bun | ✅ Maintained |
+| `aitlas-nexus` | nexus.aitlas.xyz | Nexus web app | 🟡 Development |
+| `aitlas-agents` | agents.aitlas.xyz | Agents Store | 🟡 Development |
+| `aitlas-loop` | loop.internal | Ralph (Bun, Hetzner) | 🟡 Development |
+| `f-twyt` | f.xyz/twyt | Twitter action | ✅ Production |
+| `f-library` | f.xyz/library | Vector KB action | ✅ Production |
+| `f-rsrx` | f.xyz/rsrx | Research action | 🟡 Development |
+| `f-guard` | f.xyz/guard | Code review action | 🟡 Roadmap |
+| `f-support` | f.xyz/support | Helpdesk action | 🟡 Roadmap |
+| `f-decloy` | f.xyz/decloy | Agent deployment | 🟡 Roadmap |
+
+---
+
+## Appendix A: Decision Log
+
+| Decision | Chosen | Rejected | Reason |
+|----------|--------|----------|--------|
+| Repo structure | Polyrepo | Monorepo | Isolated context for AI coders, no toolchain complexity |
+| Auth | Better Auth | Clerk, NextAuth | Self-hosted, BYOK-safe, TypeScript-first |
+| Task queue | Postgres polling | BullMQ, Trigger.dev | Zero new infrastructure, Neon already there |
+| Background workers | Bun on Hetzner | Vercel crons, AWS Lambda | Duration limits, cost, simplicity |
+| MCP transport | HTTP streamable | SSE (deprecated) | Current MCP standard, works with all clients |
+| DB | Neon Postgres | PlanetScale, Supabase | pgvector support, serverless, Prisma-first |
+| Encryption | AES-256-GCM | Vault, KMS | Zero new infra, auditable, standard |
+
+---
+
+**Last Updated:** March 6, 2026  
+**Next Review:** April 6, 2026  
+**Maintained by:** Herb (AI CTO) + Furma (CEO)
+
+> *Build fast. Stay sovereign. Zero token liability.*
