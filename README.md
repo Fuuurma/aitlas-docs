@@ -4,154 +4,108 @@
 
 ---
 
+## 🎯 What is Aitlas?
+
+**Aitlas = Nexus + Agents Store + Actions**
+
+| Component | Description |
+|-----------|-------------|
+| **Nexus** | AI Command Center UI |
+| **Agents Store** | Marketplace of 56 pre-configured agents |
+| **Actions** | 68 pre-built MCP tools |
+
+**Key insight:** f.loop is the backbone - everything else is UI or tools on top of it.
+
+---
+
 ## 📚 Documentation Index
 
-### Core Docs (Root)
+### Core Docs
 
 | Doc | Description |
 |-----|-------------|
-| [AITLAS_ARCHITECTURE.md](./AITLAS_ARCHITECTURE.md) | Full architecture spec - Memory, Compaction, Orchestration, Pricing |
+| [AITLAS_ARCHITECTURE.md](./AITLAS_ARCHITECTURE.md) | Full architecture spec |
 | [AITLAS_QUICK_REFERENCE.md](./AITLAS_QUICK_REFERENCE.md) | Quick reference card |
 
----
-
-### Research (`research/`)
+### Architecture
 
 | Doc | Description |
 |-----|-------------|
-| [OPENSANDBOX_RESEARCH.md](./research/OPENSANDBOX_RESEARCH.md) | OpenSandbox integration - Execution layer for Aitlas |
-| [DEXTER_INTEGRATION.md](./research/DEXTER_INTEGRATION.md) | Dexter financial research agent integration |
-| [AGENTIC_WORKFLOW_RESEARCH.md](./research/AGENTIC_WORKFLOW_RESEARCH.md) | 20+ open source frameworks research |
-| [LOCAL_VS_CLOUD.md](./research/LOCAL_VS_CLOUD.md) | BYOK model explanation |
-| [NEXUS_HYBRID_MODEL.md](./research/NEXUS_HYBRID_MODEL.md) | BYOK + subscription/credits pricing |
-| [OPEN_SOURCE_INTEGRATIONS.md](./research/OPEN_SOURCE_INTEGRATIONS.md) | 7 projects tracked for integration |
-| [AITLAS_ALIGNMENT_PLAN.md](./research/AITLAS_ALIGNMENT_PLAN.md) | Alignment plan |
-| [AITLAS_PROJECT_SPEC.md](./research/AITLAS_PROJECT_SPEC.md) | Project specifications |
+| [architecture/OVERVIEW.md](./architecture/OVERVIEW.md) | Consolidated architecture overview |
+| [architecture/DECISIONS.md](./architecture/DECISIONS.md) | Architecture Decision Records (ADRs) |
 
----
-
-### Architecture (`architecture/`)
+### Research
 
 | Doc | Description |
 |-----|-------------|
-| [ACTIONS_ARCHITECTURE.md](./architecture/ACTIONS_ARCHITECTURE.md) | Actions system architecture |
-| [AGENT_SPEC.md](./architecture/AGENT_SPEC.md) | Agent specifications |
-| [AGENT_SYSTEM_PROMPT_TEMPLATE.md](./architecture/AGENT_SYSTEM_PROMPT_TEMPLATE.md) | Professional system prompt template |
-| [AITLAS_MCP_SPEC.md](./architecture/AITLAS_MCP_SPEC.md) | MCP protocol spec |
-| [TECHNICAL_ARCHITECTURE.md](./architecture/TECHNICAL_ARCHITECTURE.md) | Technical architecture |
-| [DEPLOYMENT.md](./architecture/DEPLOYMENT.md) | Deployment guide |
-| [credit-system.md](./architecture/credit-system.md) | Credit system design |
-| [mcp-protocol.md](./architecture/mcp-protocol.md) | MCP protocol details |
-| [security.md](./architecture/security.md) | Security architecture |
-| [performance.md](./architecture/performance.md) | Performance considerations |
-
----
+| [research/RESEARCH_CONSOLIDATED.md](./research/RESEARCH_CONSOLIDATED.md) | Frameworks, integrations, deployment models |
 
 ### Products
 
-#### Nexus (AI Command Center)
-- [products/nexus/README.md](./products/nexus/README.md) - Nexus UI overview
+| Doc | Description |
+|-----|-------------|
+| [products/actions/f-loop.md](./products/actions/f-loop.md) | **f.loop spec (41KB)** - Durable agent runtime |
+| [products/actions/CATALOG.md](./products/actions/CATALOG.md) | Actions catalog (68 actions) |
+| [products/agents-store/ROADMAP.md](./products/agents-store/ROADMAP.md) | Agents roadmap (56 agents) |
+| [products/agents-store/specs/f.investor.md](./products/agents-store/specs/f.investor.md) | f.investor complete spec |
 
-#### Agents Store (Marketplace)
-- [products/agents-store/README.md](./products/agents-store/README.md) - Agents Store overview
-- [products/agents-store/ROADMAP.md](./products/agents-store/ROADMAP.md) - 56 agents planned
-- [products/agents-store/WEALTH_ARCHITECT_ANALYSIS.md](./products/agents-store/WEALTH_ARCHITECT_ANALYSIS.md) - Professional prompt analysis
-- [products/agents-store/specs/f.investor.md](./products/agents-store/specs/f.investor.md) - Complete f.investor spec
-
-#### Actions (MCP Tools)
-- [products/actions/README.md](./products/actions/README.md) - Actions overview
-- [products/actions/ROADMAP.md](./products/actions/ROADMAP.md) - 68 actions planned
-- [products/actions/f-loop.md](./products/actions/f-loop.md) - Orchestration engine (41KB)
-- [products/actions/f-library.md](./products/actions/f-library.md) - Knowledge management
-- [products/actions/f-twyt.md](./products/actions/f-twyt.md) - Twitter automation
-- [products/actions/f-rsrx.md](./products/actions/f-rsrx.md) - Research assistant
-- [products/actions/f-support.md](./products/actions/f-support.md) - Customer support
-- [products/actions/f-guard.md](./products/actions/f-guard.md) - Security monitoring
-- [products/actions/f-decloy.md](./products/actions/f-decloy.md) - Deployment automation
-
----
-
-### Guides
+### Developer
 
 | Doc | Description |
 |-----|-------------|
-| [research/BUILDING_ON_TOP.md](./research/BUILDING_ON_TOP.md) | How to build on templates |
-| [research/USAGE.md](./research/USAGE.md) | Usage guide |
-| [getting-started/setup.md](./getting-started/setup.md) | Setup guide |
-| [developer-guide/api-routes.md](./developer-guide/api-routes.md) | API routes guide |
-| [developer-guide/building-features.md](./developer-guide/building-features.md) | Building features guide |
-| [migration/nextauth-to-better-auth.md](./migration/nextauth-to-better-auth.md) | Auth migration guide |
+| [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) | Getting started, templates, API reference |
 
 ---
 
-### Business & Marketing
+## 🚀 Quick Start
 
-| Doc | Description |
-|-----|-------------|
-| [business/BUSINESS_PLAN.md](./business/BUSINESS_PLAN.md) | Business plan |
-| [marketing/MARKETING_STRATEGY.md](./marketing/MARKETING_STRATEGY.md) | Marketing strategy |
+```bash
+# Clone a template with docs
+git clone --recurse-submodules https://github.com/Fuuurma/aitlas-ui-template.git my-project
+
+# Install and run
+cd my-project
+pnpm install
+pnpm dev
+```
+
+---
+
+## 📊 Stats
+
+| Metric | Count |
+|--------|-------|
+| **Actions Planned** | 68 (9 categories) |
+| **Agents Planned** | 56 (10 categories) |
+| **Template Repos** | 4 |
 
 ---
 
 ## 🔗 Template Repositories
 
-These docs are included via git submodule in:
-
-| Template | Purpose | Tech Stack |
-|----------|---------|------------|
-| [aitlas-ui-template](https://github.com/Fuuurma/aitlas-ui-template) | UI apps | Next.js 16, React, shadcn |
+| Template | Purpose | Stack |
+|----------|---------|-------|
+| [aitlas-ui-template](https://github.com/Fuuurma/aitlas-ui-template) | Web apps | Next.js 16, React, shadcn |
 | [aitlas-action-template](https://github.com/Fuuurma/aitlas-action-template) | MCP tools | Hono, TypeScript |
-| [aitlas-worker-template](https://github.com/Fuuurma/aitlas-worker-template) | Background jobs | Bun, Redis |
+| [aitlas-worker-template](https://github.com/Fuuurma/aitlas-worker-template) | Background jobs | Bun, Postgres |
 | [aitlas-cli](https://github.com/Fuuurma/aitlas-cli) | CLI tools | Node.js, Commander |
 
 ---
 
-## 📋 Updating Docs
+## 📋 Architecture Decisions
 
-```bash
-# 1. Edit docs in this repo (aitlas-docs)
-vim architecture/AGENT_SPEC.md
+| ADR | Decision | Impact |
+|-----|----------|--------|
+| **001** | BYOK key cache: 5-min TTL | 90% fewer DB calls |
+| **002** | REFLECT opt-in, default OFF | 50% fewer LLM calls |
+| **003** | STUCK: SSE + optional email/webhook | Clear notification |
+| **004** | Phase 1 MVP: 3-phase loop | Defined scope |
 
-# 2. Commit and push
-git add . && git commit -m "docs: update" && git push
-
-# 3. Update submodules in templates
-cd /Users/sergi/Projects/aitlas-ui-template
-git submodule update --remote aitlas-docs
-git add aitlas-docs
-git commit -m "docs: update from aitlas-docs"
-git push
-```
+See: [architecture/DECISIONS.md](./architecture/DECISIONS.md)
 
 ---
 
-## 🚀 Using Templates
-
-```bash
-# Clone with submodules
-git clone --recurse-submodules https://github.com/Fuuurma/aitlas-ui-template.git my-project
-
-# If you forgot --recurse-submodules
-git clone https://github.com/Fuuurma/aitlas-ui-template.git my-project
-cd my-project
-git submodule init && git submodule update
-```
-
----
-
-## 📖 Key Concepts
-
-### What Aitlas Builds (LLMs Don't Have)
-
-| Capability | Why | Priority |
-|------------|-----|----------|
-| Persistent Memory | LLMs forget between sessions | P0 |
-| Auto-Compaction | LLMs don't auto-summarize | P0 |
-| Agent Orchestration | Multi-agent coordination | P1 |
-| Codebase Search | Semantic file search | P1 |
-| Tool Ecosystem | 68+ pre-built tools | P1 |
-
-### Pricing
+## 💰 Pricing
 
 | Tier | Cost | Features |
 |------|------|----------|
@@ -161,29 +115,62 @@ git submodule init && git submodule update
 
 ---
 
-## 📊 Stats
+## 📝 Updating Docs
 
-| Category | Count |
-|----------|-------|
-| **Total Docs** | 58 markdown files |
-| **Actions Planned** | 68 (7 current + 61 planned) |
-| **Agents Planned** | 56 across 10 categories |
-| **Research Docs** | 10 files |
-| **Architecture Docs** | 16 files |
+```bash
+# In this repo
+vim architecture/OVERVIEW.md
+git add . && git commit -m "docs: update" && git push
+
+# Update templates
+cd /path/to/aitlas-ui-template
+git submodule update --remote aitlas-docs
+git add aitlas-docs
+git commit -m "docs: update from aitlas-docs"
+git push
+```
 
 ---
 
-## 🎯 Current Status
+## 🗂️ Folder Structure
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| **Docs Structure** | ✅ Complete | Organized into research/, architecture/, products/ |
-| **Actions Roadmap** | ✅ Complete | 68 actions planned across 9 categories |
-| **Agents Roadmap** | ✅ Complete | 56 agents across 10 categories |
-| **System Prompt Template** | ✅ Complete | Professional-grade template |
-| **f.investor Spec** | ✅ Complete | Full agent specification |
-| **Dexter Integration** | ✅ Researched | Financial research agent |
-| **OpenSandbox Integration** | ✅ Researched | Execution layer |
+```
+aitlas-docs/
+├── README.md
+├── AITLAS_ARCHITECTURE.md
+├── AITLAS_QUICK_REFERENCE.md
+├── DEVELOPER_GUIDE.md
+│
+├── architecture/
+│   ├── OVERVIEW.md          # Consolidated overview
+│   └── DECISIONS.md         # ADRs
+│
+├── research/
+│   └── RESEARCH_CONSOLIDATED.md  # All research
+│
+└── products/
+    ├── actions/
+    │   ├── f-loop.md        # 41KB spec (keep)
+    │   └── CATALOG.md       # Actions catalog
+    └── agents-store/
+        ├── ROADMAP.md
+        ├── WEALTH_ARCHITECT_ANALYSIS.md
+        └── specs/
+            └── f.investor.md
+```
+
+---
+
+## 🎯 Current Focus
+
+| Status | Item |
+|--------|------|
+| ✅ Complete | Architecture docs consolidated |
+| ✅ Complete | Research docs consolidated |
+| ✅ Complete | Actions catalog created |
+| ✅ Complete | f.investor spec |
+| 📋 Next | More agent specs (f.coder, f.researcher) |
+| 📋 Next | Phase 1 implementation |
 
 ---
 
