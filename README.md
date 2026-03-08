@@ -10,7 +10,11 @@
 |-----|-------------|
 | [AITLAS_ARCHITECTURE.md](./AITLAS_ARCHITECTURE.md) | Full architecture spec (55KB) - Memory, Compaction, Orchestration, Pricing |
 | [AITLAS_QUICK_REFERENCE.md](./AITLAS_QUICK_REFERENCE.md) | Quick reference card (2KB) |
-| [OPENSANDBOX_RESEARCH.md](./OPENSANDBOX_RESEARCH.md) | OpenSandbox integration research - Execution layer for Aitlas |
+| [OPENSANDBOX_RESEARCH.md](./OPENSANDBOX_RESEARCH.md) | OpenSandbox integration - Execution layer for Aitlas |
+| [AGENTIC_WORKFLOW_RESEARCH.md](./AGENTIC_WORKFLOW_RESEARCH.md) | 20+ open source agentic frameworks research |
+| [LOCAL_VS_CLOUD.md](./LOCAL_VS_CLOUD.md) | BYOK model explanation |
+| [NEXUS_HYBRID_MODEL.md](./NEXUS_HYBRID_MODEL.md) | BYOK + subscription/credits pricing |
+| [OPEN_SOURCE_INTEGRATIONS.md](./OPEN_SOURCE_INTEGRATIONS.md) | 7 projects tracked for integration |
 
 ---
 
