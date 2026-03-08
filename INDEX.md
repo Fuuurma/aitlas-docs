@@ -29,7 +29,7 @@
 |--------|------|---------|--------|
 | **f.twyt** | [Docs](./products/actions/f-twyt.md) | 1/query | ✅ Production |
 | **f.library** | [Docs](./products/actions/f-library.md) | 2/ingest, 1/search | ✅ Production |
-| **f.rsrx** | [Docs](./products/actions/f-rsrx.md) | 5/report | 🟡 Development |
+| **f.research** | [Docs](./products/actions/f-research.md) | 5/query, 10/deep | 🟡 Development |
 | **f.guard** | [Docs](./products/actions/f-guard.md) | 2/review | 🟡 Roadmap |
 | **f.support** | [Docs](./products/actions/f-support.md) | 3/ticket | 🟡 Roadmap |
 | **f.decloy** | [Docs](./products/actions/f-decloy.md) | 75/deploy | 🟡 Roadmap |
