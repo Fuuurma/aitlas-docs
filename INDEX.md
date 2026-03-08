@@ -1,8 +1,8 @@
 # Aitlas Core Template - Documentation Index
 
-**Last Updated:** March 6, 2026  
-**Status:** ✅ Production Ready  
-**Template Version:** 1.0.0
+**Last Updated:** March 8, 2026  
+**Status:** ✅ CANONICAL  
+**Version:** 4.0
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Document | Location | Description |
 |----------|----------|-------------|
-| **AITLAS_ARCHITECTURE.md** | `/docs/AITLAS_ARCHITECTURE.md` | **THE definitive architecture spec** |
+| **MASTER_ARCHITECTURE.md** | `/MASTER_ARCHITECTURE.md` | **SINGLE SOURCE OF TRUTH** — supersedes all |
 | **AGENTS.md** | `/AGENTS.md` | AI coding guidelines (REQUIRED) |
 
 ---
@@ -23,17 +23,29 @@
 | **Agents Store** | agents.aitlas.xyz | [README](./products/agents-store/README.md) | 🟡 Development |
 | **Actions (f.xyz)** | f.xyz | [README](./products/actions/README.md) | 🟡 Mixed |
 
+### Research & Integration
+
+| Doc | Location | Description |
+|-----|----------|-------------|
+| **Pi Integration** | [Research](./products/research/PI_INTEGRATION.md) | Agent framework reference |
+| **Codex Reference** | [Research](./products/research/CODEX_REFERENCE.md) | Competitor reference |
+| **Symphony** | [Nexus](./products/nexus/SYMPHONY_INTEGRATION.md) | Tasks UI integration |
+
+---
+
 ### Actions Registry
 
 | Action | Docs | Credits | Status |
 |--------|------|---------|--------|
 | **f.twyt** | [Docs](./products/actions/f-twyt.md) | 1/query | ✅ Production |
 | **f.library** | [Docs](./products/actions/f-library.md) | 2/ingest, 1/search | ✅ Production |
-| **f.research** | [Docs](./products/actions/f-research.md) | 5/query, 10/deep | 🟡 Development |
-| **f.guard** | [Docs](./products/actions/f-guard.md) | 2/review | 🟡 Roadmap |
-| **f.support** | [Docs](./products/actions/f-support.md) | 3/ticket | 🟡 Roadmap |
-| **f.decloy** | [Docs](./products/actions/f-decloy.md) | 75/deploy | 🟡 Roadmap |
-| **f.loop** | [Docs](./products/actions/f-loop.md) | 10/hr | 🟡 Development |
+| **f.research** | [Docs](./products/actions/f-research.md) | 3-10/query | 🟡 Development (Perplexica) |
+| **f.finance** | [Docs](./products/actions/f-finance.md) | 1-5/analyze | 🔵 Research |
+| **f.guard** | [Docs](./products/actions/f-guard.md) | 2-5/scan | 🟡 Development (Warden) |
+| **f.support** | [Docs](./products/actions/f-support.md) | 1-3/ticket | 🟡 Roadmap |
+| **f.decloy** | [Docs](./products/actions/f-decloy.md) | 25/deploy | 🟡 Roadmap |
+| **f.bridge** | - | - | 🟡 Roadmap |
+| **f.loop** | [Docs](./products/actions/f-loop.md) | 1 + 2/hr | ✅ Production |
 
 ---
 
