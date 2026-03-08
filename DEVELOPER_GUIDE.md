@@ -1,308 +1,425 @@
 # Developer Guide
 
-**Everything developers need to build on Aitlas.**
+**Complete guide for developing with the Furma Core Template.**
 
 ---
 
-## Table of Contents
-
-1. [Getting Started](#1-getting-started)
-2. [Template System](#2-template-system)
-3. [Building Features](#3-building-features)
-4. [API Reference](#4-api-reference)
-5. [Migration Guides](#5-migration-guides)
-
----
-
-## 1. Getting Started
+## Part 1: Setup
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm (package manager)
+- Bun 1.0+
+- Node.js 18+
+- PostgreSQL database (Neon, Supabase, or local)
 - Git
-- API keys (OpenAI, Anthropic, etc. for BYOK)
 
-### Quick Start
+### Step 1: Clone the Template
 
 ```bash
-# Clone a template
-git clone --recurse-submodules https://github.com/Fuuurma/aitlas-ui-template.git my-project
-
-# Install dependencies
-cd my-project
-pnpm install
-
-# Set up environment
-cp .env.example .env
-# Edit .env with your keys
-
-# Start development
-pnpm dev
+git clone git@github.com:Fuuurma/furma-core-template.git my-product
+cd my-product
+rm -rf .git
+git init
 ```
 
-### Project Structure
+### Step 2: Install Dependencies
+
+```bash
+bun install
+```
+
+### Step 3: Configure Environment
+
+```bash
+cp .env.example .env.local
+bun run setup
+```
+
+The setup script will:
+- Create `.env.local` from `.env.example`
+- Generate a BYOK encryption key
+- Generate a NextAuth secret
+
+### Step 4: Configure Environment Variables
+
+Edit `.env.local` with your values:
+
+```env
+# Database (required)
+DATABASE_URL="postgresql://..."
+
+# OAuth (at least one required)
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+
+# Upstash Redis (optional, for rate limiting)
+UPSTASH_REDIS_REST_URL=""
+UPSTASH_REDIS_REST_TOKEN=""
+
+# Stripe (optional, for payments)
+STRIPE_SECRET_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+STRIPE_PRICE_ID_CREDITS=""
+```
+
+### Step 5: Set Up Database
+
+```bash
+bun run db:generate
+bun run db:migrate
+```
+
+### Step 6: Start Development Server
+
+```bash
+bun run dev
+```
+
+Visit http://localhost:3000 to see your application.
+
+---
+
+## Part 2: Project Structure
 
 ```
-my-project/
-├── aitlas-docs/          # Documentation (submodule)
-├── src/
-│   ├── app/              # Next.js app router
-│   ├── components/       # React components
-│   ├── lib/              # Utilities
-│   └── styles/           # CSS/Tailwind
+furma-core-template/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Auth pages (login, signup)
+│   ├── (dashboard)/       # Protected dashboard pages
+│   └── api/               # API routes
+├── components/            # React components
+│   ├── ui/                # shadcn/ui components
+│   ├── auth/              # Auth components
+│   └── layout/            # Layout components
+├── lib/                   # Core libraries
+│   ├── api-handler.ts     # Standard API wrapper
+│   ├── auth.ts            # NextAuth config
+│   ├── errors/            # Error classes
+│   ├── schemas/           # Zod validation schemas
+│   └── ...
 ├── prisma/               # Database schema
-├── public/               # Static assets
-└── package.json
+└── docs/                 # Documentation
 ```
 
 ---
 
-## 2. Template System
+## Part 3: Creating a New Feature
 
-### Available Templates
+### 1. Create the Database Schema
 
-| Template | Purpose | Stack |
-|----------|---------|-------|
-| **aitlas-ui-template** | Web applications | Next.js 16, React, shadcn |
-| **aitlas-action-template** | MCP tools | Hono, TypeScript |
-| **aitlas-worker-template** | Background jobs | Bun, Postgres |
-| **aitlas-cli** | Command-line tools | Node.js, Commander |
+Add models to `prisma/schema.prisma`:
 
-### Using Templates
+```prisma
+model YourModel {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-```bash
-# Clone with submodules (IMPORTANT)
-git clone --recurse-submodules https://github.com/Fuuurma/aitlas-ui-template.git
-
-# If you forgot --recurse-submodules
-git clone https://github.com/Fuuurma/aitlas-ui-template.git
-cd aitlas-ui-template
-git submodule init
-git submodule update
+  @@index([userId])
+}
 ```
 
-### Updating Docs
-
+Run migration:
 ```bash
-# Update docs from aitlas-docs
-cd my-project
-git submodule update --remote aitlas-docs
-git add aitlas-docs
-git commit -m "docs: update from aitlas-docs"
-git push
+bun run db:migrate
 ```
 
----
+### 2. Create Validation Schemas
 
-## 3. Building Features
-
-### Adding a New Page
+Add schemas to `lib/schemas/`:
 
 ```typescript
-// src/app/my-page/page.tsx
-import { DashboardLayout } from '@/components/layout';
+// lib/schemas/your-model.ts
+import { z } from 'zod';
 
-export default function MyPage() {
+export const yourModelSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string().min(1),
+  userId: z.string(),
+});
+
+export const yourModelCreateSchema = z.object({
+  name: z.string().min(1),
+});
+```
+
+### 3. Create API Routes
+
+Use the standard API handler:
+
+```typescript
+// app/api/your-model/route.ts
+import { apiHandler, createSuccessResponse } from '@/lib/api-handler';
+import { yourModelCreateSchema } from '@/lib/schemas/your-model';
+
+export const GET = apiHandler(
+  { requireAuth: true },
+  async (request, { session }) => {
+    const models = await prisma.yourModel.findMany({
+      where: { userId: session.user.id },
+    });
+    return createSuccessResponse(models);
+  }
+);
+
+export const POST = apiHandler(
+  { requireAuth: true, validate: yourModelCreateSchema },
+  async (request, { session, validatedBody }) => {
+    const model = await prisma.yourModel.create({
+      data: {
+        ...validatedBody,
+        userId: session.user.id,
+      },
+    });
+    return createSuccessResponse(model);
+  }
+);
+```
+
+### 4. Create UI Components
+
+Use existing components from `components/ui/`:
+
+```typescript
+// components/your-feature.tsx
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+export function YourFeature() {
   return (
-    <DashboardLayout>
-      <h1>My Page</h1>
-    </DashboardLayout>
+    <Card>
+      <Button>Click me</Button>
+    </Card>
   );
 }
 ```
 
-### Adding a New API Route
+### 5. Create Pages
 
 ```typescript
-// src/app/api/my-route/route.ts
-import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+// app/(dashboard)/your-feature/page.tsx
+import { YourFeature } from '@/components/your-feature';
 
-export async function GET(request: Request) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  
-  // Your logic here
-  return NextResponse.json({ data: 'success' });
+export default function YourFeaturePage() {
+  return (
+    <div>
+      <h1>Your Feature</h1>
+      <YourFeature />
+    </div>
+  );
 }
 ```
 
-### Adding a New Action
-
-```typescript
-// actions/my-action.ts
-export const myAction = {
-  name: 'my_action',
-  description: 'Does something useful',
-  input: {
-    type: 'object',
-    properties: {
-      param: { type: 'string', description: 'Parameter description' }
-    },
-    required: ['param']
-  },
-  execute: async ({ param }: { param: string }) => {
-    // Your logic here
-    return { result: `Processed: ${param}` };
-  }
-};
-```
-
-### Best Practices
-
-**1. Use the CLI**
-```bash
-# Always use aitlas CLI for new projects
-aitlas new action my-action
-aitlas new agent my-agent
-```
-
-**2. Follow naming conventions**
-- Actions: `f.{name}`
-- Agents: `f.{role}`
-- Components: PascalCase
-- Files: kebab-case
-
-**3. Keep it simple**
-- Don't over-engineer
-- Start with the minimum viable feature
-- Add complexity only when needed
-
 ---
 
-## 4. API Reference
+## Part 4: API Routes Guide
 
-### Authentication
+### Standard API Handler
 
-All API routes use Better Auth:
+All API routes should use the `apiHandler` wrapper from `lib/api-handler.ts`.
+
+### Basic Usage
 
 ```typescript
-import { auth } from '@/lib/auth';
+import { apiHandler, createSuccessResponse } from '@/lib/api-handler';
 
-const session = await auth();
-const userId = session?.user?.id;
+export const GET = apiHandler(
+  { requireAuth: true },
+  async (request, { session }) => {
+    const data = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+    return createSuccessResponse(data);
+  }
+);
 ```
 
-### REST API Endpoints
+### Options
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/tasks` | GET/POST | Task management |
-| `/api/memory` | GET/POST | Memory CRUD |
-| `/api/actions` | GET/POST | Action registry |
-| `/api/agents` | GET/POST | Agent configs |
-
-### MCP Tools
-
-Tools are registered via MCP:
+#### `requireAuth`
+Require authentication for the route:
 
 ```typescript
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+{ requireAuth: true }
+```
 
-const server = new Server({
-  name: 'f.my-tool',
-  version: '1.0.0',
-  tools: [myAction]
+#### `validate`
+Validate request body, query, or params:
+
+```typescript
+// Validate body only
+{ validate: mySchema }
+
+// Validate body, query, and params
+{ validate: { 
+  body: bodySchema, 
+  query: querySchema, 
+  params: paramsSchema 
+}}
+```
+
+#### `rateLimit`
+Enable rate limiting:
+
+```typescript
+{ rateLimit: true }           // Default 'api' limiter
+{ rateLimitType: 'search' }   // Use 'search' limiter
+{ rateLimit: false }           // Disable rate limiting
+```
+
+Available rate limit types:
+- `api` - 100 requests/minute
+- `auth` - 5 requests/minute
+- `search` - 30 requests/minute
+- `ingest` - 10 requests/minute
+- `mcp` - 50 requests/minute
+
+### Request Context
+
+The second parameter provides access to:
+
+```typescript
+async (request, { 
+  session,           // NextAuth session (if requireAuth: true)
+  validatedBody,     // Parsed and validated body
+  validatedQuery,    // Parsed and validated query params
+  validatedParams,   // Parsed and validated path params
+}) => {
+  // Your handler logic
+}
+```
+
+### Response Helpers
+
+#### Success Response
+```typescript
+return createSuccessResponse(data);
+```
+
+#### Success with Meta
+```typescript
+return createSuccessResponse(data, { 
+  pagination: { page: 1, limit: 20, total: 100 } 
 });
 ```
 
+### Error Handling
+
+The API handler automatically catches errors and returns formatted responses.
+
+#### Custom Errors
+Throw custom errors from `lib/errors`:
+
+```typescript
+import { NotFoundError, ValidationError } from '@/lib/errors';
+
+throw new NotFoundError('User');
+throw new ValidationError('Invalid input');
+```
+
+#### Error Response Format
+
+```json
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "User not found"
+  }
+}
+```
+
+### Example: Complete CRUD
+
+```typescript
+// app/api/items/route.ts
+import { NextRequest } from 'next/server';
+import { apiHandler, createSuccessResponse } from '@/lib/api-handler';
+import { itemSchema, itemCreateSchema } from '@/lib/schemas/item';
+import { prisma } from '@/lib/prisma';
+import { NotFoundError } from '@/lib/errors';
+
+export const GET = apiHandler(
+  { requireAuth: true },
+  async (request, { session }) => {
+    const items = await prisma.item.findMany({
+      where: { userId: session.user.id },
+    });
+    return createSuccessResponse(items);
+  }
+);
+
+export const POST = apiHandler(
+  { requireAuth: true, validate: itemCreateSchema },
+  async (request, { session, validatedBody }) => {
+    const item = await prisma.item.create({
+      data: {
+        ...validatedBody,
+        userId: session.user.id,
+      },
+    });
+    return createSuccessResponse(item, { message: 'Item created' });
+  }
+);
+```
+
 ---
 
-## 5. Migration Guides
+## Part 5: Code Standards
 
-### NextAuth → Better Auth
-
-**Before (NextAuth):**
-```typescript
-import { getServerSession } from 'next-auth';
-const session = await getServerSession(authOptions);
-```
-
-**After (Better Auth):**
-```typescript
-import { auth } from '@/lib/auth';
-const session = await auth();
-```
-
-**Database adapter:**
-```typescript
-// Before
-import { PrismaAdapter } from '@auth/prisma-adapter';
-
-// After
-import { prismaAdapter } from 'better-auth/adapters/prisma';
-database: prismaAdapter(prisma, { provider: 'postgresql' })
-```
-
-### Common Pitfalls
-
-1. **Forgetting submodules** - Always use `--recurse-submodules`
-2. **Wrong Next.js version** - Must use Next.js 16, not 15
-3. **Manual file copying** - Use `aitlas new` CLI instead
-4. **Missing env vars** - Check `.env.example` for required vars
+- Use TypeScript with strict mode
+- Use Zod for all validation
+- Use the API handler for all routes
+- Always include userId in queries
+- Use the provided error classes
+- Write tests for critical paths
 
 ---
 
-## Deployment
+## Part 6: Testing
 
-### Vercel (Recommended)
-
+Run tests:
 ```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
+bun run test
 ```
 
-### Environment Variables
+Run with coverage:
+```bash
+bun run test:coverage
+```
 
-Required:
-- `DATABASE_URL` - PostgreSQL connection
-- `BETTER_AUTH_SECRET` - Auth encryption key
-- `ENCRYPTION_KEY` - API key encryption
+---
 
-Optional:
-- `OPENAI_API_KEY` - For AI features
-- `ANTHROPIC_API_KEY` - For AI features
+## Part 7: Linting
+
+Run lint:
+```bash
+bun run lint
+```
 
 ---
 
 ## Troubleshooting
 
-### Build Errors
+### Database Connection Issues
 
-```bash
-# Clear Next.js cache
-rm -rf .next
+Make sure your `DATABASE_URL` is correct and the database is accessible.
 
-# Reinstall dependencies
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
-```
+### OAuth Not Working
 
-### Database Issues
+Verify your OAuth credentials are correct:
+- Google: Get credentials from Google Cloud Console
+- GitHub: Get credentials from GitHub Developer Settings
 
-```bash
-# Reset database
-pnpm prisma migrate reset
+### Missing Dependencies
 
-# Generate client
-pnpm prisma generate
-```
-
-### Submodule Issues
-
-```bash
-# Reinitialize submodules
-git submodule deinit -f --all
-git submodule init
-git submodule update
-```
+Run `bun install` to ensure all dependencies are installed.
 
 ---
 
-**Last Updated:** 2026-03-08
+**Last Updated:** March 6, 2026  
+**Maintained by:** Furma.tech Engineering
