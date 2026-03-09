@@ -1,5 +1,12 @@
 # Credit System Architecture
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Version:** 1.0.0  
 **Date:** March 6, 2026  
 **Status:** Production Ready
@@ -8,11 +15,19 @@
 
 ## Overview
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 The Aitlas credit system is the monetization layer that powers all compute-intensive Actions (f.xyz). It follows an append-only ledger pattern with atomic transactions to ensure consistency and prevent double-spending.
 
 ---
 
 ## Design Principles
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. **Append-Only Ledger** - Never UPDATE credits directly. Always INSERT ledger entries.
 2. **Atomic Operations** - Credit check and task creation in same transaction.
@@ -22,6 +37,10 @@ The Aitlas credit system is the monetization layer that powers all compute-inten
 ---
 
 ## Credit Pricing
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Action | Credits | USD Value (at $0.01/credit) |
 |--------|---------|------------------------------|
@@ -41,7 +60,15 @@ The Aitlas credit system is the monetization layer that powers all compute-inten
 
 ## Core Functions
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### getUserBalance(userId)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Returns current credit balance for a user.
 
@@ -54,6 +81,10 @@ const balance = await getUserBalance('user_abc123');
 
 ### checkCredits(userId, required)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Validates if user has sufficient credits.
 
 ```typescript
@@ -64,6 +95,10 @@ const hasCredits = await checkCredits('user_abc123', 5);
 ```
 
 ### deductCredits(params)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Atomically deducts credits with ledger entry.
 
@@ -86,6 +121,10 @@ if (result.success) {
 
 ### reserveCredits(params)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Reserves credits for async tasks. Prevents double-spending on parallel executions.
 
 ```typescript
@@ -106,6 +145,10 @@ if (reservation.success) {
 
 ### settleCredits(reservationId, actualAmount)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Uses reserved credits, returns unused portion.
 
 ```typescript
@@ -118,6 +161,10 @@ const result = await settleCredits(reservationId, 15);
 
 ### releaseCredits(reservationId)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Cancels reservation and returns all credits.
 
 ```typescript
@@ -128,6 +175,10 @@ const result = await releaseCredits(reservationId);
 ```
 
 ### addCredits(params)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Adds credits to user (purchase or grant).
 
@@ -146,7 +197,15 @@ const result = await addCredits({
 
 ## Database Schema
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### CreditLedgerEntry (Immutable)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```prisma
 model CreditLedgerEntry {
@@ -165,6 +224,10 @@ model CreditLedgerEntry {
 ```
 
 ### CreditReservation (For Async Tasks)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```prisma
 model CreditReservation {
@@ -188,7 +251,15 @@ model CreditReservation {
 
 ## Usage Patterns
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Pattern 1: Synchronous Tool Call
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 For short tasks (< 30 seconds) that execute immediately.
 
@@ -221,6 +292,10 @@ export async function POST(request: Request) {
 ```
 
 ### Pattern 2: Asynchronous Task with Reservation
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 For long tasks (> 30 seconds) that run in Nexus runtime.
 
@@ -277,7 +352,15 @@ async function executeTask(task: Task) {
 
 ## Credit Flow Diagrams
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Successful Execution
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 User (100 credits)
@@ -291,6 +374,10 @@ User (100 credits)
 ```
 
 ### Async Task with Settlement
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 User (100 credits)
@@ -311,6 +398,10 @@ User (100 credits)
 
 ### Failed Task
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```
 User (100 credits)
   │
@@ -328,7 +419,15 @@ User (100 credits)
 
 ## Security Considerations
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### 1. Never Expose Balance in Errors
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 // ❌ Bad
@@ -341,6 +440,10 @@ throw new InsufficientCreditsError(required, balance, action);
 
 ### 2. Validate User Ownership
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 // Always include userId in queries
 await prisma.creditLedgerEntry.findMany({
@@ -349,6 +452,10 @@ await prisma.creditLedgerEntry.findMany({
 ```
 
 ### 3. Use Transactions
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 await prisma.$transaction(async (tx) => {
@@ -381,6 +488,10 @@ await prisma.$transaction(async (tx) => {
 
 ## Testing
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 All credit functions have 100% test coverage:
 
 ```bash
@@ -390,6 +501,10 @@ bun test __tests__/credit-middleware.test.ts
 ---
 
 ## Monitoring
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Key metrics to track:
 

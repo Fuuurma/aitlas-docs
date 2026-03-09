@@ -1,5 +1,12 @@
 # Aitlas MCP Specification
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **File:** `AITLAS_MCP_SPEC.md`
 **Protocol:** MCP over HTTP
 **Version:** 1.0
@@ -8,6 +15,10 @@
 ---
 
 ## Overview
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 The **Aitlas MCP Specification** defines how:
 
@@ -30,6 +41,10 @@ This specification ensures:
 ---
 
 ## Protocol Foundation
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Aitlas MCP is based on:
 
@@ -55,6 +70,10 @@ Content-Type: application/json
 
 ## Core MCP Methods
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Aitlas supports the following MCP methods:
 
 | Method | Purpose |
@@ -66,6 +85,10 @@ Aitlas supports the following MCP methods:
 ---
 
 ## Request Format
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 All requests follow **JSON-RPC 2.0**.
 
@@ -97,6 +120,10 @@ All requests follow **JSON-RPC 2.0**.
 ---
 
 ## Tool Discovery
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Agents discover tools via:
 
@@ -141,6 +168,10 @@ tools/list
 
 ## Tool Schema Conventions
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 All tools **must define JSON Schema input definitions**.
 
 **Required fields:**
@@ -181,6 +212,10 @@ All tools **must define JSON Schema input definitions**.
 
 ## Tool Naming Rules
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Tool names must follow:
 
 ```
@@ -206,6 +241,10 @@ verbsWithNoContext
 ---
 
 ## Tool Execution
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Tool execution uses:
 
@@ -233,6 +272,10 @@ tools/call
 
 ## Tool Result Format
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Successful responses must return:
 
 ```json
@@ -256,6 +299,10 @@ Successful responses must return:
 ---
 
 ## Error Handling
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Errors must follow **JSON-RPC error structure**.
 
@@ -296,6 +343,10 @@ Errors must follow **JSON-RPC error structure**.
 
 ## Authentication
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 All Aitlas actions require:
 
 ```
@@ -323,6 +374,10 @@ auth-bridge
 ---
 
 ## Streaming Responses
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Some tools produce **large or long-running outputs**.
 
@@ -355,6 +410,10 @@ data: {"report": "..."}
 
 ## Timeouts
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Recommended tool execution limits:
 
 | Tool Type | Timeout |
@@ -372,6 +431,10 @@ Nexus runtime
 ---
 
 ## Agent Compatibility
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Aitlas MCP servers must work with:
 
@@ -394,6 +457,10 @@ Aitlas MCP servers must work with:
 ---
 
 ## Tool Best Practices
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Tools should:
 
@@ -418,6 +485,10 @@ extract_entities
 
 ## Versioning
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Every action must declare:
 
 ```
@@ -435,6 +506,10 @@ Versioning allows agents to adapt to API changes.
 
 ## Rate Limiting
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Default rate limits:
 
 | Endpoint | Limit |
@@ -450,6 +525,10 @@ error code -32004
 ---
 
 ## Observability
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 All tool calls must log:
 
@@ -472,6 +551,10 @@ All tool calls must log:
 
 ## Security Guidelines
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Actions must:**
 
 - Validate tool parameters
@@ -488,6 +571,10 @@ All tool calls must log:
 ---
 
 ## Compliance
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 All Aitlas actions must pass:
 
@@ -507,6 +594,10 @@ mcp-validator
 
 ## Future Extensions
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Planned MCP enhancements:
 
 - Tool metadata
@@ -519,6 +610,10 @@ Planned MCP enhancements:
 
 ## Summary
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 The **Aitlas MCP Spec** ensures:
 
 - Stable agent integrations
@@ -530,6 +625,10 @@ The **Aitlas MCP Spec** ensures:
 ---
 
 ## Next Critical Document
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 **`AITLAS_TOOL_DESIGN_GUIDE.md`** covers:
 

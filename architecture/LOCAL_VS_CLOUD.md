@@ -1,5 +1,12 @@
 # Local vs Cloud Architecture
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Last Updated:** 2026-03-08  
 **Purpose:** Explain where data lives, what's local vs cloud, and how components connect
 
@@ -7,11 +14,19 @@
 
 ## The Question: Where is ~/.aitlas/?
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Short Answer:** `~/.aitlas/` is **LOCAL** to the user's machine, managed by `aitlas-cli`. It syncs WITH Nexus (cloud), but lives on your machine.
 
 ---
 
 ## Architecture Overview
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -74,7 +89,15 @@
 
 ## What Lives Where
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Local (~/.aitlas/)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Path | Purpose | Who Manages |
 |------|---------|-------------|
@@ -85,6 +108,10 @@
 | `~/.aitlas/workspaces/` | Isolated task workspaces | Nexus runtime (local mode) |
 
 ### Cloud (Nova DB)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Table | Purpose | Who Manages |
 |-------|---------|-------------|
@@ -99,7 +126,15 @@
 
 ## How They Sync
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Sync Flow
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 User works in Nova (web)
@@ -125,6 +160,10 @@ Next session: instincts loaded into context
 
 ### API Endpoints for Sync
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```
 POST /api/sync/instincts         → Upload local instincts to cloud
 GET  /api/sync/instincts         → Download cloud instincts to local
@@ -136,7 +175,15 @@ GET  /api/sync/config            → Get user config
 
 ## When Each Is Used
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Local (~/.aitlas/) Used When:
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. **Running aitlas-cli** - Local agent execution
 2. **Offline work** - Cache for when offline
@@ -145,6 +192,10 @@ GET  /api/sync/config            → Get user config
 5. **Credential storage** - API keys never leave machine
 
 ### Cloud (Nexus) Used When:
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. **Using web UI** - nexus.aitlas.xyz
 2. **Multi-device** - Access from anywhere
@@ -156,7 +207,15 @@ GET  /api/sync/config            → Get user config
 
 ## The Confusion: ECC's ~/.claude/ vs Aitlas
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### How ECC Does It
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 ~/.claude/                      ← Everything in ONE place
@@ -170,6 +229,10 @@ GET  /api/sync/config            → Get user config
 **ECC is single-harness** - one Claude Code instance, one user, one machine.
 
 ### How Aitlas Does It
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 ~/.aitlas/                      ← LOCAL brain (CLI)
@@ -197,7 +260,15 @@ f.xyz                           ← TOOLS
 
 ## Why Split Local/Cloud?
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Benefits of Local (~/.aitlas/)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. **Privacy** - Some learning stays on your machine
 2. **Speed** - Local cache, no network latency
@@ -206,6 +277,10 @@ f.xyz                           ← TOOLS
 5. **Credentials** - API keys never leave machine
 
 ### Benefits of Cloud (Nexus)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. **Multi-device** - Access from anywhere
 2. **Collaboration** - Team features
@@ -217,29 +292,65 @@ f.xyz                           ← TOOLS
 
 ## Implementation
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### aitlas-cli Commands
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```bash
 # Initialize local brain
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas init
 
 # Sync with cloud
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas sync
 
 # View local instincts
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas instincts list
 
 # Add instinct
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas instincts add "prefer-functional-style"
 
 # Run local agent
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas run "frontend-wizard"
 
 # Connect to project
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas connect ./my-project
 ```
 
 ### Nova Settings
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 // In Nova settings page
@@ -257,6 +368,10 @@ aitlas connect ./my-project
 
 ## Summary
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 | Question | Answer |
 |----------|--------|
 | Where is ~/.aitlas/? | LOCAL on user's machine |
@@ -273,9 +388,17 @@ aitlas connect ./my-project
 
 ## BYOK (Bring Your Own Keys)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Aitlas is a BYOK product.** Users provide their own model API keys.
 
 ### Why BYOK?
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Benefit | Explanation |
 |---------|-------------|
@@ -286,6 +409,10 @@ aitlas connect ./my-project
 | **Transparency** | User sees exact API costs |
 
 ### What We Provide (Paid)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Feature | Free | Pro ($20/mo) |
 |---------|------|--------------|
@@ -300,6 +427,10 @@ aitlas connect ./my-project
 | Multi-agent teams | ❌ | ✅ |
 
 ### How It Works
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 User signs up
@@ -319,13 +450,29 @@ We provide orchestration, tools, memory
 
 ### Key Storage
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 API keys are stored locally in `~/.aitlas/credentials/` and **never sent to our servers**:
 
 ```bash
 ~/.aitlas/credentials/
 ├── openai.key      # Encrypted at rest
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ├── anthropic.key   # Encrypted at rest
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 └── glm.key         # Encrypted at rest
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ```
 
 **Encryption:** AES-256-GCM, key derived from user password.
@@ -333,6 +480,10 @@ API keys are stored locally in `~/.aitlas/credentials/` and **never sent to our 
 ---
 
 ## File Locations
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 This file is shared across all templates:
 - `aitlas-ui-template/docs/architecture/LOCAL_VS_CLOUD.md`

@@ -17,7 +17,7 @@
 ## 1. Project Types
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -27,7 +27,7 @@ Aitlas projects fall into three categories:
 ### 1.1 UI Projects
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -47,28 +47,28 @@ my-ui-project/
 ├── app/                    # Next.js App Router
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── (auth)/            # Public auth routes
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── (dashboard)/       # Protected routes
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── api/               # API routes
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -77,7 +77,7 @@ my-ui-project/
 │   └── ui/               # shadcn/ui components
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -85,14 +85,14 @@ my-ui-project/
 │   ├── auth.ts           # Better Auth config
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── db.ts             # Prisma client
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -117,7 +117,7 @@ my-ui-project/
 ### 1.2 Action Projects
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -138,14 +138,14 @@ my-action/
 │   ├── index.ts           # Entry point
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── routes/            # API routes
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -153,14 +153,14 @@ my-action/
 │   │   ├── mcp/           # MCP server
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   │   ├── tools/         # Tool implementations
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -168,7 +168,7 @@ my-action/
 │   └── tools/             # Auto-registered tools
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -178,7 +178,7 @@ my-action/
 │   └── create-tool.ts     # Tool generator
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -199,7 +199,7 @@ my-action/
 ### 1.3 Worker Projects
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -220,28 +220,28 @@ my-worker/
 │   ├── index.ts           # Entry point
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── worker.ts          # Worker implementation
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── queue.ts           # Queue management
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
 │   ├── jobs/              # Job definitions
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -267,7 +267,7 @@ my-worker/
 ## 2. Shared Standards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -275,7 +275,7 @@ my-worker/
 ### 2.1 Database
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -299,7 +299,7 @@ Prefix with service name (e.g., `TwytQuery`, `NovaProject`)
 ### 2.2 Authentication
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -316,7 +316,7 @@ Prefix with service name (e.g., `TwytQuery`, `NovaProject`)
 ### 2.3 Encryption (BYOK)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -332,7 +332,7 @@ Prefix with service name (e.g., `TwytQuery`, `NovaProject`)
 ### 2.4 Credit System
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -359,7 +359,7 @@ await deductCredits({
 ### 2.5 Rate Limiting
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -377,7 +377,7 @@ await deductCredits({
 ### 2.6 Logging
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -399,7 +399,7 @@ logger.error({ error }, 'Operation failed');
 ## 3. Environment Variables
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -407,7 +407,7 @@ logger.error({ error }, 'Operation failed');
 ### 3.1 Required (All Projects)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -416,7 +416,7 @@ logger.error({ error }, 'Operation failed');
 # Database
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -426,7 +426,7 @@ DATABASE_URL_UNPOOLED="postgresql://..."
 # Auth
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -436,7 +436,7 @@ BETTER_AUTH_URL="http://localhost:3000"
 # Encryption
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -445,7 +445,7 @@ ENCRYPTION_KEY="..."
 # Inter-service Auth
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -454,7 +454,7 @@ FURMA_INTERNAL_SECRET="..."
 # Service Identity
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -465,7 +465,7 @@ NODE_ENV="production"
 ### 3.2 Optional
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -474,7 +474,7 @@ NODE_ENV="production"
 # Redis (Rate Limiting)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -484,7 +484,7 @@ UPSTASH_REDIS_REST_TOKEN="..."
 # OAuth
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -496,7 +496,7 @@ GITHUB_CLIENT_SECRET="..."
 # Monitoring
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -508,7 +508,7 @@ HEALTHCHECK_UUID="..."
 ## 4. Testing Standards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -516,7 +516,7 @@ HEALTHCHECK_UUID="..."
 ### 4.1 Framework
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -527,7 +527,7 @@ HEALTHCHECK_UUID="..."
 ### 4.2 Test Categories
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -539,7 +539,7 @@ HEALTHCHECK_UUID="..."
 ### 4.3 Test Structure
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -559,7 +559,7 @@ describe('Feature Name', () => {
 ### 4.4 Required Tests
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -587,7 +587,7 @@ describe('Feature Name', () => {
 ## 5. Documentation Standards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -595,7 +595,7 @@ describe('Feature Name', () => {
 ### 5.1 Required Files
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -609,7 +609,7 @@ Every project MUST have:
 ### 5.2 README Structure
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -618,7 +618,7 @@ Every project MUST have:
 # Project Name
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -630,7 +630,7 @@ Every project MUST have:
 ## Features
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -638,7 +638,7 @@ Every project MUST have:
 ## Quick Start
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -646,7 +646,7 @@ Every project MUST have:
 ## Configuration
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -654,7 +654,7 @@ Every project MUST have:
 ## Usage
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -662,7 +662,7 @@ Every project MUST have:
 ## Development
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -670,7 +670,7 @@ Every project MUST have:
 ## Deployment
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -678,7 +678,7 @@ Every project MUST have:
 ## License
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -687,7 +687,7 @@ Every project MUST have:
 ### 5.3 Documentation Folder
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -706,7 +706,7 @@ docs/
 ## 6. Deployment Standards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -714,7 +714,7 @@ docs/
 ### 6.1 Platforms
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -726,7 +726,7 @@ docs/
 ### 6.2 Environment Variables
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -736,7 +736,7 @@ All required env vars must be set in deployment platform.
 ### 6.3 Health Checks
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -746,7 +746,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 6.4 Monitoring
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -761,7 +761,7 @@ All projects must expose `/health` endpoint for monitoring.
 ## 7. Security Standards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -769,7 +769,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 7.1 Authentication
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -781,7 +781,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 7.2 Authorization
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -793,7 +793,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 7.3 Data Protection
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -805,7 +805,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 7.4 Rate Limiting
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -819,7 +819,7 @@ All projects must expose `/health` endpoint for monitoring.
 ## 8. Quality Standards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -827,7 +827,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 8.1 Code Quality
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -840,7 +840,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 8.2 Performance
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -852,7 +852,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 8.3 Reliability
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -866,7 +866,7 @@ All projects must expose `/health` endpoint for monitoring.
 ## 9. Project Lifecycle
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -874,7 +874,7 @@ All projects must expose `/health` endpoint for monitoring.
 ### 9.1 Creation
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -887,7 +887,7 @@ cp .env.example .env
 # Edit .env
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -899,7 +899,7 @@ bun dev
 ### 9.2 Development
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -908,7 +908,7 @@ bun dev
 # Run dev server
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -917,7 +917,7 @@ bun dev
 # Run tests
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -926,7 +926,7 @@ bun test
 # Type check
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -935,7 +935,7 @@ bun run typecheck
 # Commit
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -947,7 +947,7 @@ git push
 ### 9.3 Deployment
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -956,7 +956,7 @@ git push
 # Build
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -965,7 +965,7 @@ bun run build
 # Deploy (Vercel example)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -975,7 +975,7 @@ vercel --prod
 ### 9.4 Maintenance
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -990,7 +990,7 @@ vercel --prod
 ## 10. Examples
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -998,7 +998,7 @@ vercel --prod
 ### 10.1 UI Project: Nova
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -1011,7 +1011,7 @@ vercel --prod
 ### 10.2 Action Project: f-twyt
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -1024,7 +1024,7 @@ vercel --prod
 ### 10.3 Worker Project: (TBD)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -1039,7 +1039,7 @@ vercel --prod
 ## Appendix A: Checklist
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -1047,7 +1047,7 @@ vercel --prod
 ### Pre-Launch Checklist
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -1066,7 +1066,7 @@ vercel --prod
 ### Post-Launch Checklist
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -1082,7 +1082,7 @@ vercel --prod
 ## Appendix B: Resources
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 

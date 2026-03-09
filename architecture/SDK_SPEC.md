@@ -1,5 +1,12 @@
 # Aitlas SDK Specification
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Version:** 1.0.0  
 **Date:** March 6, 2026  
 **Status:** Production Design
@@ -7,6 +14,10 @@
 ---
 
 ## Overview
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 The Aitlas SDK allows developers to create, test, and publish agents, actions, and workflows.
 
@@ -18,7 +29,15 @@ npm install @aitlas/sdk
 
 ## Core Concepts
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### 1. Agent
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 import { Agent } from "@aitlas/sdk";
@@ -58,6 +77,10 @@ export default Agent({
 
 ### 2. Action
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 import { Action, Input, Output } from "@aitlas/sdk";
 
@@ -89,6 +112,10 @@ export default Action({
 
 ### 3. Workflow
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 import { Workflow, Node, Edge } from "@aitlas/sdk";
 
@@ -117,35 +144,103 @@ export default Workflow({
 
 ## CLI Reference
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```bash
 # Create
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas create agent my-agent
 aitlas create action my-action
 aitlas create workflow my-workflow
 
 # Development
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas dev# Start local dev server
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas test# Run tests
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 # Deployment
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas deploy# Deploy to Aitlas cloud
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 # Publishing
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas publish# Publish to Agent Store
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 # Management
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas list# List all agents/actions
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas logs [id]# View execution logs
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas stats [id]# View usage stats
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 # Credits
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas credits balance# Check balance
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas credits purchase 1000# Buy credits
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ```
 
 ---
 
 ## Context Object
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Actions and agents receive a context object:
 
@@ -184,11 +279,23 @@ interface Context {
 
 ## Project Structure
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```
 my-agent/
 ├── agent.json
 ├── persona.md# Optional: persona in markdown
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ├── tools.ts# Optional: custom tools
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ├── tests/
 │   └── agent.test.ts
 └── README.md
@@ -198,19 +305,35 @@ my-agent/
 
 ## Best Practices
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Agent Design
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 - Keep `maxSteps` reasonable (10-20)
 - Provide clear fallback logic
 - Use memory for context
 - Test edge cases
 
 ### Action Design
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 - Validate all inputs with Zod
 - Return structured outputs
 - Handle errors gracefully
 - Document credit costs
 
 ### Workflow Design
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 - Keep DAGs simple
 - Add error handling nodes
 - Test all paths

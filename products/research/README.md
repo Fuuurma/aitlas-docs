@@ -1,5 +1,7 @@
 # Aitlas Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 Categorized research for Aitlas products.
 
 ## Structure
@@ -25,19 +27,27 @@ Skills stores and agent marketplaces:
 - Antigravity Skills
 - Sanyuan Skills
 
-### Nexus (5 files)
+### Nexus (12 files)
 Workflow orchestration platforms:
-- Coze, Dify (no-code workflow platforms)
-- Trigger.dev (background execution)
-- AionUi (desktop UI alternative)
-- Floop Analysis (runtime analysis)
+- **Foundation:** trigger.dev (cloned for Nexus runtime)
+- Runtime: Temporal, LangGraph, AutoGen (research)
+- Competitors: Coze, Dify (no-code platforms)
+- Desktop: AionUi (desktop UI)
+- Internal: aitlas-loop (original implementation)
+- Integration: Open source map
 
 ### Nova (7 files)
 Multi-provider UI and coding agents:
-- T3Code (Chat UI)
+- T3Code (Chat UI - foundation)
 - Codex, OpenCode (coding agents)
 - Multi-provider integration
-- Nexus hybrid model
+- CCSwitch, Nexus hybrid model
+
+## Key Insights
+
+- **Nexus** is cloned from **trigger.dev**
+- **Nova** is built on **T3 Code**
+- All products are **proprietary** - not open source
 
 ## Contributing
 

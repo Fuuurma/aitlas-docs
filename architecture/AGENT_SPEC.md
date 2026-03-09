@@ -1,5 +1,12 @@
 # Aitlas - Agent Specification
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Version:** 1.0.0  
 **Date:** March 6, 2026  
 **Status:** Production Design
@@ -7,6 +14,10 @@
 ---
 
 ## Overview
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Agents in Aitlas are **real software agents**, not just prompts. They are installable packages with:
 
@@ -22,7 +33,15 @@ Think: **npm for AI Agents**
 
 ## Agent Package Structure
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### `agent.json`
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```json
 {
@@ -85,7 +104,15 @@ Think: **npm for AI Agents**
 
 ## Agent Manifest Schema
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Persona
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -95,6 +122,10 @@ Think: **npm for AI Agents**
 
 ### Tools
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 | Field | Type | Description |
 |-------|------|-------------|
 | `native` | array | f.xyz actions (high trust) |
@@ -102,6 +133,10 @@ Think: **npm for AI Agents**
 | `fallback` | object | Alternative logic if tool unavailable |
 
 ### Memory
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -112,6 +147,10 @@ Think: **npm for AI Agents**
 
 ### Execution
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 | Field | Type | Description |
 |-------|------|-------------|
 | `maxSteps` | number | Safety limit for Nexus Loop |
@@ -120,6 +159,10 @@ Think: **npm for AI Agents**
 | `safetyLimits` | object | Credit/call limits |
 
 ### Pricing
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Model | Description |
 |-------|-------------|
@@ -131,6 +174,10 @@ Think: **npm for AI Agents**
 ---
 
 ## Agent Installation Flow
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 1. User browses Agent Store
@@ -146,6 +193,10 @@ Think: **npm for AI Agents**
 ---
 
 ## Agent Execution Flow
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```
 1. User invokes agent from Nexus
@@ -180,22 +231,42 @@ Think: **npm for AI Agents**
 
 ## Agent Types
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### 1. Research Agents
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 - f.rsrx for deep research
 - Long execution time
 - High credit cost
 
 ### 2. Code Agents
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 - f.guard for review
 - f.decloy for deployment
 - Medium execution time
 
 ### 3. Automation Agents
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 - f.support for helpdesk
 - f.twyt for social
 - Continuous execution
 
 ### 4. Creative Agents
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 - Writing, design, content
 - Short execution time
 - Low credit cost
@@ -204,7 +275,15 @@ Think: **npm for AI Agents**
 
 ## Agent Marketplace Rules
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Publishing
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. Agent must pass validation
 2. Agent must have tests
@@ -212,6 +291,10 @@ Think: **npm for AI Agents**
 4. Agent must have safety limits
 
 ### Revenue Share
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | Tier | Creator Share | Platform Share |
 |------|---------------|----------------|
@@ -221,6 +304,10 @@ Think: **npm for AI Agents**
 
 ### Quality Metrics
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 - Success rate > 95%
 - User rating > 4.0
 - Response time < 30s (p95)
@@ -229,7 +316,15 @@ Think: **npm for AI Agents**
 
 ## Developer SDK
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Creating an Agent
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 import { Agent, Tool, Memory } from "@aitlas/sdk";
@@ -268,17 +363,37 @@ export default Agent({
 
 ## CLI Commands
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```bash
 # Create new agent
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas create agent my-agent
 
 # Test agent locally
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas agent test
 
 # Publish to store
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas agent publish
 
 # View agent stats
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 aitlas agent stats
 ```
 

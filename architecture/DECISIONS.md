@@ -1,12 +1,27 @@
 # Architecture Decision Records (ADRs)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Last Updated:** 2026-03-08
 
 ---
 
 ## ADR-001: BYOK Key Flow for Workers
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Context
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 When a worker needs to make an LLM call on behalf of a BYOK user, it needs access to the user's API key. Current spec says:
 
@@ -19,7 +34,15 @@ When a worker needs to make an LLM call on behalf of a BYOK user, it needs acces
 
 ### Options Considered
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 #### Option A: Status Quo (Fetch on Every Call)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ```
 Worker → DB (get key) → Decrypt → LLM Call
 ```
@@ -34,6 +57,10 @@ Worker → DB (get key) → Decrypt → LLM Call
 - Decrypt overhead on every call
 
 #### Option B: Ephemeral Encrypted Token in Task Record
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ```
 Task created → Encrypt key with session key → Store in task record
 Worker → Decrypt from task record → LLM Call
@@ -50,6 +77,10 @@ Worker → Decrypt from task record → LLM Call
 - What if task is retried later with rotated key?
 
 #### Option C: Worker Cache with TTL
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ```
 First call → DB fetch + decrypt → Cache in memory (5 min TTL)
 Subsequent calls → Use cache
@@ -65,6 +96,10 @@ Subsequent calls → Use cache
 - Multi-worker coordination (if using shared cache)
 
 ### Decision
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 **Use Option C: Worker Cache with TTL (5 minutes)**
 
@@ -114,7 +149,15 @@ async function getDecryptedKey(userId: string, provider: string): Promise<string
 
 ## ADR-002: REFLECT Phase Configuration
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Context
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 The 5-phase loop (OBSERVE → PLAN → ACT → REFLECT → PERSIST) adds 2 extra LLM calls per step:
 - PLAN call before action
@@ -125,6 +168,10 @@ For a 20-step task, that's **40 extra LLM calls** on the user's BYOK key.
 **Concern:** Is this acceptable? Should REFLECT be optional/configurable?
 
 ### Analysis
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 **What REFLECT provides:**
 1. Quality assessment of tool output
@@ -143,6 +190,10 @@ For a 20-step task, that's **40 extra LLM calls** on the user's BYOK key.
 - Low-stakes tasks
 
 ### Decision
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 **Make REFLECT configurable per task, default OFF for Phase 1**
 
@@ -197,13 +248,25 @@ await db.task.create({
 
 ## ADR-003: STUCK State Notification
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Context
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 When a task enters STUCK state (3 consecutive poor reflections), someone needs to be notified. Current spec is unclear on:
 1. Who gets notified?
 2. How? (email, SSE push, both?)
 
 ### Decision
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 **STUCK notification flow:**
 
@@ -265,11 +328,23 @@ async function handleStuckTask(task: Task) {
 
 ## ADR-004: Phase 1 Minimum Viable f.rsrx
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Context
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Phase 1 ships without REFLECT. What's the minimum to get a real f.rsrx research task running end-to-end?
 
 ### Decision
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 **Phase 1 Scope for f.rsrx:**
 
@@ -368,6 +443,10 @@ Step 4: PLAN → "DONE - Report complete"
 ---
 
 ## Summary
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 | ADR | Decision | Impact |
 |-----|----------|--------|

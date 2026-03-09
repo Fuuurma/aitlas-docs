@@ -14,7 +14,7 @@
 ## The Core Insight
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -37,7 +37,7 @@ This is the distinction that drives the entire architecture.
 ## The Two Action Types
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -45,7 +45,7 @@ This is the distinction that drives the entire architecture.
 ### Type 1: Mini-App Actions (Next.js)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -71,7 +71,7 @@ rsrx.f.xyz
 ### Type 2: Utility Actions (Hono, headless)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -95,7 +95,7 @@ guard.f.xyz (or internally routed)
 ## Revised Action Registry
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -115,7 +115,7 @@ guard.f.xyz (or internally routed)
 ## How Mini-App Actions Work
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -123,7 +123,7 @@ guard.f.xyz (or internally routed)
 ### Part 1: The Standalone Product
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -199,7 +199,7 @@ library.f.xyz
 ### Part 2: The MCP Endpoint (same app, same domain)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -227,7 +227,7 @@ export async function POST(req: Request) {
 ### Part 3: The Nexus Integration — Result Cards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -280,7 +280,7 @@ The result is already saved in f.rsrx's database. The user clicks through to the
 ## Data Model: Results Belong to the Action
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -328,7 +328,7 @@ Deep link: `https://rsrx.f.xyz/reports/{id}`
 ## How Nexus Renders Result Cards
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -368,7 +368,7 @@ export function ToolResultCard({ toolName, output }: ToolResult) {
 ## Authentication Across Mini-Apps
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -399,7 +399,7 @@ This means: **one account, all products**. Sign into Nexus, open f.rsrx — alre
 ## Updated Template Assignment
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -426,7 +426,7 @@ aitlas-worker-template (Bun, no HTTP)
 ## Updated Deployment Map
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -452,7 +452,7 @@ aitlas-worker-template (Bun, no HTTP)
 ## GTM Implication: Three Standalone Products
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -475,7 +475,7 @@ The funnel: **standalone product → Aitlas account → discover Nexus → upgra
 ## Summary of Changes from Previous Spec
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 

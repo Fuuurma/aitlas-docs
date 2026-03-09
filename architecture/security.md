@@ -11,7 +11,7 @@ This document outlines security requirements for all Furma products.
 ## Critical Security Rules
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -19,7 +19,7 @@ This document outlines security requirements for all Furma products.
 ### 1. BYOK Encryption (CRITICAL)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -43,7 +43,7 @@ const apiKey = decryptApiKey(encrypted, iv, authTag);
 ### 2. Multi-Tenancy (CRITICAL)
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -63,7 +63,7 @@ const data = await prisma.yourModel.findMany();
 ### 3. Environment Variables
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -81,7 +81,7 @@ const dbUrl = env.DATABASE_URL;
 ### 4. Authentication
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -100,7 +100,7 @@ if (!session) {
 ### 5. Rate Limiting
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -119,7 +119,7 @@ export const GET = apiHandler(
 ### 6. Input Validation
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -139,7 +139,7 @@ export const POST = apiHandler(
 ### 7. Error Handling
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -157,7 +157,7 @@ throw new APIError('INTERNAL_ERROR', 'An error occurred');
 ## Security Checklist
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 
@@ -177,7 +177,7 @@ Before deploying:
 ## Environment Variables
 
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+ — All Aitlas products are **closed source**. No open source license.
 
 ---
 

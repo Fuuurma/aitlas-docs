@@ -1,5 +1,12 @@
 # Performance Optimizations
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Version:** 1.0.0  
 **Date:** March 6, 2026  
 **Status:** Production Ready
@@ -8,7 +15,15 @@
 
 ## Database Indexes
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Essential Indexes (Already in Schema)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```sql
 -- Credit ledger queries
@@ -30,6 +45,10 @@ CREATE INDEX idx_event_user_type ON "Event"("userId", "type");
 ```
 
 ### Additional Recommended Indexes
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 For high-traffic production deployments:
 
@@ -57,7 +76,15 @@ CREATE INDEX idx_tool_user ON "ToolRegistry"("userId");
 
 ## Caching Strategies
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### User Credit Balance (Short TTL)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 import { cache } from '@/lib/cache';
@@ -90,6 +117,10 @@ export function invalidateUserCreditCache(userId: string): void {
 
 ### Agent Manifests (Medium TTL)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 export async function getCachedAgentManifest(agentId: string): Promise<Agent | null> {
   const cacheKey = `agent:manifest:${agentId}`;
@@ -114,6 +145,10 @@ export async function getCachedAgentManifest(agentId: string): Promise<Agent | n
 
 ### MCP Tool Registry (Long TTL)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 export async function getCachedMCPTools(): Promise<MCPTool[]> {
   const cacheKey = 'mcp:tools:all';
@@ -135,6 +170,10 @@ export async function getCachedMCPTools(): Promise<MCPTool[]> {
 ```
 
 ### Public Agent Store Listings
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 export async function getCachedPublicAgents(): Promise<Agent[]> {
@@ -169,7 +208,15 @@ export async function getCachedPublicAgents(): Promise<Agent[]> {
 
 ## Query Optimization Patterns
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Use Select for Specific Fields
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 // ❌ Bad - fetches all fields
@@ -188,6 +235,10 @@ const user = await prisma.user.findUnique({
 
 ### Batch Queries
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 // ❌ Bad - N+1 query problem
 const tasks = await prisma.task.findMany();
@@ -202,6 +253,10 @@ const tasks = await prisma.task.findMany({
 ```
 
 ### Use Transactions for Atomic Operations
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 await prisma.$transaction([
@@ -219,10 +274,18 @@ await prisma.$transaction([
 
 ## Connection Pooling
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Prisma handles connection pooling automatically, but for optimal performance:
 
 ```env
 # .env
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 DATABASE_URL="postgresql://user:pass@host:5432/db?connection_limit=10&pool_timeout=30"
 ```
 
@@ -230,7 +293,15 @@ DATABASE_URL="postgresql://user:pass@host:5432/db?connection_limit=10&pool_timeo
 
 ## Monitoring
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Key Metrics
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 - Query latency (p50, p95, p99)
 - Connection pool utilization
@@ -238,6 +309,10 @@ DATABASE_URL="postgresql://user:pass@host:5432/db?connection_limit=10&pool_timeo
 - Slow query count
 
 ### Slow Query Detection
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 import { logger } from '@/lib/logger';
@@ -258,6 +333,10 @@ prisma.$on('query', (e) => {
 ---
 
 ## Best Practices
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. **Always use indexes** for frequently queried fields
 2. **Cache aggressively** but with appropriate TTLs

@@ -1,5 +1,12 @@
 # MCP Protocol Implementation Guide
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 **Version:** 1.0.0  
 **Date:** March 6, 2026  
 **Status:** Production Ready  
@@ -9,15 +16,27 @@
 
 ## Overview
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Aitlas implements the Model Context Protocol (MCP) for inter-service communication. Every Action (f.xyz) exposes an MCP endpoint at `/api/mcp` following JSON-RPC 2.0 specification.
 
 ---
 
 ## JSON-RPC 2.0 Format
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 All requests and responses follow JSON-RPC 2.0:
 
 ### Request Format
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```json
 {
@@ -36,6 +55,10 @@ All requests and responses follow JSON-RPC 2.0:
 
 ### Success Response
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -53,6 +76,10 @@ All requests and responses follow JSON-RPC 2.0:
 
 ### Error Response
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -69,7 +96,15 @@ All requests and responses follow JSON-RPC 2.0:
 
 ## Standard Methods
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### initialize
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Initialize MCP session with client capabilities.
 
@@ -112,6 +147,10 @@ Initialize MCP session with client capabilities.
 
 ### tools/list
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 List all available tools.
 
 **Request:**
@@ -150,6 +189,10 @@ List all available tools.
 
 ### tools/call
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 Execute a specific tool.
 
 **Request:**
@@ -186,6 +229,10 @@ Execute a specific tool.
 
 ### resources/list
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 List available resources.
 
 **Response:**
@@ -207,6 +254,10 @@ List available resources.
 
 ### prompts/list
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 List available prompts.
 
 **Response:**
@@ -221,6 +272,10 @@ List available prompts.
 ```
 
 ### ping
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 Health check.
 
@@ -249,6 +304,10 @@ Health check.
 
 ## Error Codes
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 | Code | Message | Description |
 |------|---------|-------------|
 | -32700 | Parse error | Invalid JSON |
@@ -264,7 +323,15 @@ Health check.
 
 ## Using the MCP Server
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Register a Tool
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 import { MCPServer } from '@/lib/mcp/server';
@@ -292,6 +359,10 @@ server.registerTool({
 
 ### Handle Requests
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 // In API route
 import { MCPServer, parseMCPRequest } from '@/lib/mcp/server';
@@ -318,6 +389,10 @@ export async function POST(request: Request) {
 
 ### Credit Integration
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 server.setCreditMiddleware(async ({ userId, amount, reason }) => {
   const result = await deductCredits({
@@ -334,7 +409,15 @@ server.setCreditMiddleware(async ({ userId, amount, reason }) => {
 
 ## Authentication
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### User Session Auth
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 const session = await auth.api.getSession({
@@ -351,6 +434,10 @@ if (!session?.user) {
 ```
 
 ### Service Token Auth
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 For cross-service calls (Nexus → f.twyt):
 
@@ -379,7 +466,15 @@ if (!result.valid) {
 
 ## Client Implementation
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### Using fetch
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 async function callMCPTool(
@@ -417,6 +512,10 @@ async function callMCPTool(
 
 ### Using MCP Client Library
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```typescript
 import { createMCPClient } from '@/lib/mcp/client';
 
@@ -436,6 +535,10 @@ const result = await client.callTool('search_twitter', {
 
 ## Testing
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ```bash
 bun test __tests__/mcp/server.test.ts
 ```
@@ -443,6 +546,10 @@ bun test __tests__/mcp/server.test.ts
 ---
 
 ## Best Practices
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 1. **Always validate input** - Use inputSchema with JSON Schema
 2. **Handle errors gracefully** - Return proper error codes
@@ -455,7 +562,15 @@ bun test __tests__/mcp/server.test.ts
 
 ## Examples
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+
 ### f.twyt MCP Server
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 
 ```typescript
 // app/api/mcp/route.ts
