@@ -28,9 +28,9 @@ By the creators of **t3** (the popular Next.js stack).
 
 ---
 
-## For Aitlas: Nexus Core
+## For Aitlas: Nova Core
 
-### This is the CORE of Nexus!
+### This is the CORE of Nova!
 
 Nova is built on **T3 Code** - this is the chat UI where users interact with agents.
 
@@ -55,9 +55,9 @@ Nova is built on **T3 Code** - this is the chat UI where users interact with age
 └─────────────────────────────────────────┘
 ```
 
-### What Nexus Adds on Top of T3 Code
+### What Nova Adds on Top of T3 Code
 
-| Feature | T3 Code | Nexus |
+| Feature | T3 Code | Nova |
 |---------|---------|-------|
 | Chat UI | ✅ | ✅ |
 | Codex | ✅ | ✅ |
