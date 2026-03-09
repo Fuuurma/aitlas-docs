@@ -159,7 +159,7 @@ Function timeout:
 
 ### Nexus runtime (Nexus) — Hetzner
 ```
-Repo:     github.com/Fuuurma/aitlas-loop
+Repo:     github.com/Fuuurma/aitlas-nexus
 Platform: Hetzner CX21 (€4.51/mo)
           Location: Falkenstein (EU, low latency to Neon EU)
 
@@ -314,8 +314,8 @@ echo 'export PATH="$HOME/.bun/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 # 3. Clone repo
-git clone git@github.com:Fuuurma/aitlas-loop.git /opt/aitlas-loop
-cd /opt/aitlas-loop
+git clone git@github.com:Fuuurma/aitlas-nexus.git /opt/aitlas-nexus
+cd /opt/aitlas-nexus
 bun install
 
 # 4. Copy environment
@@ -354,8 +354,8 @@ After=network.target
 [Service]
 Type=simple
 User=Nexus
-WorkingDirectory=/opt/aitlas-loop
-EnvironmentFile=/opt/aitlas-loop/.env
+WorkingDirectory=/opt/aitlas-nexus
+EnvironmentFile=/opt/aitlas-nexus/.env
 Environment=WORKER_ID=%i
 ExecStart=/root/.bun/bin/bun run src/worker.ts
 Restart=always
@@ -376,8 +376,8 @@ After=network.target
 [Service]
 Type=simple
 User=Nexus
-WorkingDirectory=/opt/aitlas-loop
-EnvironmentFile=/opt/aitlas-loop/.env
+WorkingDirectory=/opt/aitlas-nexus
+EnvironmentFile=/opt/aitlas-nexus/.env
 ExecStart=/root/.bun/bin/bun run src/watchdog.ts
 Restart=always
 RestartSec=30
@@ -395,7 +395,7 @@ WantedBy=multi-user.target
 ssh Nexus@your-hetzner-ip
 
 # Pull + restart (zero-downtime: workers finish current task before stopping)
-cd /opt/aitlas-loop
+cd /opt/aitlas-nexus
 git pull origin main
 bun install
 systemctl restart Nexus-worker@{1,2,3,4}
@@ -457,7 +457,7 @@ Its only "address" is the Postgres connection string — it pulls work from the 
 | `BETTER_AUTH_SECRET` | Vercel project env | Nova, Agents Store, Actions |
 | `FURMA_INTERNAL_SECRET` | Vercel team env | All Vercel services |
 | `UPSTASH_*` | Vercel team env | All Vercel services |
-| Hetzner `.env` | `/opt/aitlas-loop/.env` (chmod 600) | Nexus workers only |
+| Hetzner `.env` | `/opt/aitlas-nexus/.env` (chmod 600) | Nexus workers only |
 
 **Source of truth for secret values:** 1Password vault `Aitlas/Production`.  
 Never store secrets in git. Never store secrets in Notion/Slack/email.
@@ -531,7 +531,7 @@ jobs:
           username: Nexus
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
-            cd /opt/aitlas-loop
+            cd /opt/aitlas-nexus
             git pull origin main
             bun install
             sudo systemctl restart Nexus-worker@{1,2,3,4}

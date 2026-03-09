@@ -1083,7 +1083,7 @@ Nexus becomes the **operating system of the ecosystem**.
 
 | Phase | Component | Based On |
 |-------|-----------|----------|
-| **v1** | Task queue, Agent loop, Tool executor | aitlas-loop |
+| **v1** | Task queue, Agent loop, Tool executor | aitlas-nexus |
 | **v2** | Background jobs, Retries | Trigger.dev |
 | **v3** | Checkpointing | LangGraph |
 | **v4** | Multi-agent | AutoGen |
@@ -1095,7 +1095,7 @@ Nexus becomes the **operating system of the ecosystem**.
 2. **Provider Router** — Swap OpenAI/Anthropic/Google
 3. **Memory System** — Short + Long term
 4. **Observability** — Logs, traces, metrics
-5. **Task Queue** — Postgres-based like aitlas-loop
+5. **Task Queue** — Postgres-based like aitlas-nexus
 
 ### Integration Points
 

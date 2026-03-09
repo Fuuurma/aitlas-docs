@@ -769,8 +769,8 @@ Workers are **stateless**. Scaling is adding boxes.
 
 ```bash
 # On the new Hetzner box:
-git clone git@github.com:furma/aitlas-loop.git /opt/aitlas-loop
-cd /opt/aitlas-loop && bun install
+git clone git@github.com:furma/aitlas-nexus.git /opt/aitlas-nexus
+cd /opt/aitlas-nexus && bun install
 cp /etc/aitlas/.env .env               # Shared env from config box
 WORKER_ID=worker-5 bun run worker.ts  # Start immediately
 ```

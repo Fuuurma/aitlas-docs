@@ -122,7 +122,7 @@ aitlas new ui aitlas-nexus
 aitlas new ui aitlas-agents
 aitlas new action f-twyt
 aitlas new action f-rsrx
-aitlas new worker aitlas-loop
+aitlas new worker aitlas-nexus
 ```
 
 ### What the CLI does
@@ -179,6 +179,6 @@ UPSTASH_REDIS_REST_TOKEN=
 FURMA_INTERNAL_SECRET=           # Shared secret for service-to-service calls
 
 # ─── Service identity ───────────────────────────────────────────
-SERVICE_NAME=                    # e.g., "f.twyt", "nexus", "aitlas-loop"
+SERVICE_NAME=                    # e.g., "f.twyt", "nexus", "aitlas-nexus"
 NODE_ENV=                        # "development" | "production"
 ```

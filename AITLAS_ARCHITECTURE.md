@@ -827,7 +827,7 @@ Key rules:
 | `aitlas-core-template` | — | Next.js 15 + Bun | ✅ Maintained |
 | `aitlas-nexus` | nexus.aitlas.xyz | Nova web app | 🟡 Development |
 | `aitlas-agents` | agents.aitlas.xyz | Agents Store | 🟡 Development |
-| `aitlas-loop` | loop.internal | Nexus (Bun, Hetzner) | 🟡 Development |
+| `aitlas-nexus` | loop.internal | Nexus (Bun, Hetzner) | 🟡 Development |
 | `f-twyt` | f.xyz/twyt | Twitter action | ✅ Production |
 | `f-library` | f.xyz/library | Vector KB action | ✅ Production |
 | `f-rsrx` | f.xyz/rsrx | Research action | 🟡 Development |
