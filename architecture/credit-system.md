@@ -1,5 +1,9 @@
 # Credit System Architecture
 
+
+> ⚠️ **Proprietary** — All Aitlas products are closed source. No open source license.
+
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---

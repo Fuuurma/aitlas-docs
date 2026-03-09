@@ -1,5 +1,9 @@
 # Aitlas Agent System Prompt Template
 
+
+> ⚠️ **Proprietary** — All Aitlas products are closed source. No open source license.
+
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
