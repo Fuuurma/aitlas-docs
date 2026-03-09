@@ -1368,3 +1368,80 @@ Aitlas
 
 =======
 >>>>>>> Stashed changes
+
+---
+
+## 41. Inter-Service Communication
+
+### The Two Patterns
+
+**Pattern 1: Synchronous MCP call (short tasks)**
+`
+Nexus → HTTP POST f.xyz/api/mcp → Result → Stream to user
+Max duration: 25 seconds (Vercel limit)
+Use for: Single tool calls, quick lookups
+`
+
+**Pattern 2: Async task dispatch (long tasks)**
+`
+Nexus → Write task to Postgres → Return taskId to UI
+                    ↓
+               Nexus picks up
+               Nexus executes (minutes)
+               Nexus writes steps + result
+                    ↓
+UI polls GET /api/tasks/:id every 3s → Shows live progress
+`
+
+---
+
+## 42. Repo Registry
+
+| Repo | Domain | Stack | Status |
+|------|--------|-------|--------|
+| itlas-core-template | — | Next.js 15 + Bun | ✅ Maintained |
+| itlas-nexus | nexus.aitlas.xyz | Nova web app | 🟡 Development |
+| itlas-agents | agents.aitlas.xyz | Agents Store | 🟡 Development |
+| itlas-nexus | loop.internal | Nexus (Bun, Hetzner) | 🟡 Development |
+| -twyt | f.xyz/twyt | Twitter action | ✅ Production |
+| -library | f.xyz/library | Vector KB action | ✅ Production |
+| -rsrx | f.xyz/rsrx | Research action | 🟡 Development |
+| -guard | f.xyz/guard | Code review action | 🟡 Roadmap |
+| -support | f.xyz/support | Helpdesk action | 🟡 Roadmap |
+| -decloy | f.xyz/decloy | Agent deployment | 🟡 Roadmap |
+---
+
+## 43. Monitoring & Observability
+
+### Logging Strategy
+`	ypescript
+// Structured logging (Pino)
+logger.info('Task created', { taskId: '123', userId: '456' });
+logger.error('Task failed', error, { taskId: '123' });
+`
+**Production:** JSON format (log aggregation ready)  
+**Development:** Pretty-print with colors
+
+### Metrics to Track
+| Metric | Target |
+|--------|--------|
+| Latency p95 | <500ms |
+| Error Rate | <1% |
+
+---
+
+## 44. Disaster Recovery
+
+### Backup Strategy
+| Component | Frequency | Retention |
+|-----------|-----------|-----------|
+| Database | Daily | 30 days |
+| Code | Every commit | Forever (GitHub) |
+| Environment | Manual | 90 days |
+
+### Incident Response
+1. **Detect** (monitoring alerts)
+2. **Triage** (severity assessment)
+3. **Contain** (rollback if needed)
+4. **Fix** (hotfix deployment)
+5. **Review** (post-mortem)
