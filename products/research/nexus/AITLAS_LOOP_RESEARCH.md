@@ -174,6 +174,64 @@ Nexus-worker@4.service  # Worker process 4
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | ✅ **Direct** | Foundation of runtime |
+| **Nova** | 🔵 Reference | Task status UI |
+| **Actions** | ✅ Direct | Tool execution |
+| **Agents Store** | ❌ | Agent marketplace |
+
+### This is the FOUNDATION
+
+aitlas-loop **IS** the original Nexus. It's not external — it's what we built.
+
+### What to Keep (Already in Nexus)
+
+1. **5-Phase Loop** — Core to Nexus
+   ```
+   PLAN → REFLECT → ACT → OBSERVE → STORE
+   ```
+
+2. **Postgres Polling** — Simple queue
+   ```typescript
+   // Poll for pending tasks
+   const task = await db.task.findFirst({
+     where: { status: 'PENDING' }
+   })
+   ```
+
+3. **Worker Pattern** — Scaling
+   ```typescript
+   // Worker process
+   while (true) {
+     const task = await claimTask()
+     await executeTask(task)
+   }
+   ```
+
+4. **Task Status Machine** — State transitions
+   ```typescript
+   PENDING → RUNNING → WAITING_TOOL → COMPLETED
+                         ↓
+                       FAILED → RETRY
+   ```
+
+### Migration to Current Nexus
+
+| aitlas-loop | Current Nexus |
+|-------------|--------------|
+| worker.ts | nexus-workers |
+| 5-phase loop | Enhanced with Trigger.dev |
+| Simple memory | 3-layer memory |
+| No MCP | MCP-first |
+| Basic DB | Enhanced schema |
+
+---
+
 ## What Changed
 
 | Original | Current (Nexus) |

@@ -215,6 +215,120 @@ code_agent = AssistantAgent(
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | 🔵 Medium | Multi-agent patterns |
+| **Nova** | 🔵 Reference | UI patterns for agent chat |
+| **Actions** | ❌ | Tool execution |
+| **Agents Store** | 🔵 High | Agent definition patterns |
+
+### How to Use AutoGen for Aitlas
+
+#### Option 1: Agent Design Patterns (Recommended)
+Use AutoGen's agent patterns for **Agents Store**:
+
+```typescript
+// Nexus agent definition (inspired by AutoGen)
+interface Agent {
+  name: string
+  description: string
+  model: ModelConfig
+  skills: Skill[]
+  tools: Tool[]
+  humanInLoop?: boolean
+  maxIterations?: number
+}
+```
+
+#### Option 2: Multi-Agent Orchestration
+For complex tasks, agents can invoke other agents:
+
+```typescript
+// Nexus: agent can call sub-agent
+const agent = {
+  name: 'research-team',
+  subAgents: [
+    'web-searcher',
+    'data-analyzer',
+    'report-writer'
+  ],
+  orchestration: 'sequential' // or 'parallel', 'group'
+}
+```
+
+#### Option 3: Human-in-the-Loop
+For approval workflows in Nexus:
+
+```typescript
+// Nexus approval workflow
+const workflow = {
+  steps: [
+    { agent: 'planner', action: 'plan' },
+    { type: 'approval', approver: 'user' },
+    { agent: 'executor', action: 'execute' }
+  ]
+}
+```
+
+### What to Extract
+
+1. **Agent-as-Tool Pattern** — Agents can use other agents
+   ```typescript
+   // Nexus: agent can invoke sub-agent
+   const researchAgent = {
+     name: 'research',
+     canInvoke: ['search', 'scrape', 'summarize']
+   }
+   ```
+
+2. **Selector Routing** — Dynamic agent selection
+   ```typescript
+   // Nexus: dynamic agent selection
+   async function selectAgent(task: Task): Promise<Agent> {
+     if (task.requiresCoding) return coderAgent
+     if (task.requiresResearch) return researcherAgent
+     return generalAgent
+   }
+   ```
+
+3. **Group Chat** — Multiple agents collaborate
+   ```typescript
+   // Nexus: agent team collaboration
+   const team = {
+     agents: [planner, executor, reviewer],
+     mode: 'round_robin', // or 'selector'
+     termination: 'all_agreed' // or 'first_response'
+   }
+   ```
+
+4. **Layered API** — Core vs high-level
+   ```typescript
+   // Nexus: layered design
+   nexus.core        // Low-level: message passing, events
+   nexus.agents     // High-level: agent patterns
+   nexus.extensions  // Extensions: MCP, providers
+   ```
+
+5. **AutoGen Studio** — For Nova UI inspiration
+   - No-code agent builder UI
+   - Agent configuration interface
+   - Team composition visualizer
+
+### What NOT to Take
+
+| Don't Take | Reason |
+|------------|--------|
+| Python framework | Use patterns only |
+| Full AutoGen | Too heavy for Nexus |
+| Microsoft SDK | Keep independent |
+| AutoGen Studio | Build custom for Nova |
+
+---
+
 ## Comparison
 
 | Feature | AutoGen | LangGraph | Temporal | Nexus |

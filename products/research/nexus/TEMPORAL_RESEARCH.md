@@ -178,6 +178,97 @@ temporal server start-dev
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | 🔵 Reference | Durable execution patterns |
+| **Nova** | ❌ | UI layer, doesn't need this |
+| **Actions** | ❌ | Tool execution layer |
+| **Agents Store** | ❌ | Agent marketplace |
+
+### How to Use Temporal for Aitlas
+
+#### Option 1: Reference Only (Recommended)
+Study Temporal's patterns but don't integrate directly:
+
+```
+Temporal Patterns → Nexus Implementation
+├── Event sourcing → Nexus task history
+├── Activity retries → Tool retry logic
+└── Worker polling → Nexus worker pattern
+```
+
+**Why:** Too heavy for AI agents. Nexus should be lighter.
+
+#### Option 2: Hybrid (Advanced)
+Run Temporal alongside Nexus for specific workflows:
+
+```
+┌─────────────────────────────────────────┐
+│              Aitlas                      │
+│  ┌─────────────┐    ┌─────────────┐   │
+│  │   Nexus     │    │  Temporal   │   │
+│  │ (agents,    │    │ (complex    │   │
+│  │  tools)     │    │  workflows) │   │
+│  └─────────────┘    └─────────────┘   │
+└─────────────────────────────────────────┘
+```
+
+**Use case:** Long-running business workflows that need enterprise durability.
+
+#### Option 3: Inspiration for Nexus v2
+Use Temporal's concepts for future Nexus improvements:
+
+| Temporal Feature | Nexus v2 Implementation |
+|-----------------|------------------------|
+| Event sourcing | Task step history for debugging |
+| Activity retries | Tool failure retry with backoff |
+| Deterministic replay | Agent loop replay after failures |
+
+### What to Extract
+
+1. **Retry Policies** — Implement in tool executor
+   ```typescript
+   const retryPolicy = {
+     maxAttempts: 3,
+     backoff: 'exponential',
+     initialInterval: 1000
+   }
+   ```
+
+2. **Task History** — Store every step for debugging
+   ```typescript
+   await db.taskStep.create({
+     taskId: task.id,
+     phase: 'ACT',
+     toolCalls: [...],
+     results: [...]
+   })
+   ```
+
+3. **Worker Pattern** — Use for scaling Nexus workers
+   ```typescript
+   // Multiple workers polling same queue
+   while (true) {
+     const task = await claimTask()
+     await executeTask(task)
+   }
+   ```
+
+### What NOT to Take
+
+| Don't Take | Reason |
+|------------|--------|
+| Full Temporal server | Too complex for AI agents |
+| Kafka requirement | PostgreSQL is enough |
+| Java/Go SDKs | TypeScript-first for Aitlas |
+| Enterprise features | Keep Nexus lightweight |
+
+---
+
 ## Comparison to Nexus Goals
 
 | Temporal | Nexus |

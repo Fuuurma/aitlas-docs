@@ -224,6 +224,134 @@ result = agent.invoke({"messages": [("user", "What's 2+2?")])
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | 🔵 Medium | State management patterns |
+| **Nova** | ❌ | UI layer, doesn't need this |
+| **Actions** | ❌ | Tool execution layer |
+| **Agents Store** | 🔵 Reference | Agent design patterns |
+
+### How to Use LangGraph for Aitlas
+
+#### Option 1: Reference Only (Recommended)
+Extract patterns without integration:
+
+```
+LangGraph Patterns → Nexus Implementation
+├── Graph nodes → Tool orchestration
+├── Checkpointing → Task state persistence
+├── Conditional edges → Dynamic tool routing
+└── Memory layers → Nexus memory system
+```
+
+**Why:** Python-first, heavy LangChain dependency.
+
+#### Option 2: Patterns for Agent Design
+Use LangGraph concepts for **agent definitions**:
+
+```typescript
+// Nexus agent definition (inspired by LangGraph)
+const agent = {
+  name: 'research-agent',
+  nodes: ['analyze', 'search', 'summarize'],
+  edges: {
+    'analyze': 'search',
+    'search': 'summarize',
+    'summarize': END
+  },
+  state: {
+    query: '',
+    results: [],
+    summary: ''
+  }
+}
+```
+
+#### Option 3: Checkpointing for Long-Running Tasks
+Implement similar to LangGraph's checkpointing:
+
+```typescript
+// Nexus checkpoint system
+interface Checkpoint {
+  taskId: string
+  step: number
+  state: AgentState
+  toolsUsed: string[]
+}
+
+async function saveCheckpoint(taskId: string, state: AgentState) {
+  await db.checkpoint.create({
+    taskId,
+    step: currentStep,
+    state: JSON.stringify(state),
+    toolsUsed: [...]
+  })
+}
+
+async function restoreCheckpoint(taskId: string): Checkpoint {
+  return await db.checkpoint.findFirst({
+    where: { taskId },
+    orderBy: { step: 'desc' }
+  })
+}
+```
+
+### What to Extract
+
+1. **Graph-Based Tool Execution** — For complex agent flows
+   ```typescript
+   // Nexus tool graph
+   const toolGraph = {
+     nodes: ['web_search', 'file_read', 'code_execute'],
+     edges: [
+       { from: 'web_search', to: 'file_read', condition: 'needs_context' },
+       { from: 'file_read', to: 'code_execute', condition: 'needs_code' }
+     ]
+   }
+   ```
+
+2. **Checkpointing** — For durable agents
+   ```typescript
+   // Save state after each step
+   await nexus.checkpoint.save(taskId, {
+     step: 3,
+     memory: [...],
+     toolsUsed: ['search', 'read']
+   })
+   ```
+
+3. **Memory Layers** — Short + long term
+   ```typescript
+   const memory = {
+     shortTerm: { type: 'redis', ttl: '1h' },
+     longTerm: { type: 'vector', index: 'memories' }
+   }
+   ```
+
+4. **Human-in-Loop** — For approvals
+   ```typescript
+   const approvalNode = {
+     type: 'interrupt',
+     action: 'pause',
+     resumeOn: 'user_approval'
+   }
+   ```
+
+### What NOT to Take
+
+| Don't Take | Reason |
+|------------|--------|
+| Python SDK | Use TypeScript patterns only |
+| LangChain dependency | Keep Nexus independent |
+| Full graph runtime | Build simpler agent loop |
+| LangSmith | Build own observability |
+
+---
+
 ## Comparison
 
 | Feature | LangGraph | Temporal | Nexus |
