@@ -86,7 +86,7 @@ developers → build agents → agents use tools → tools use credits
 
 | Doc | Description |
 |-----|-------------|
-| [products/nexus/nexus.md](./products/nexus/nexus.md) | **Nexus runtime spec (41KB)** - Durable agent runtime |
+| [products/nexus/nexus.md](./products/nexus/nexus.md) | **Nexus runtime spec (41KB)** - Based on trigger.dev |
 | [products/actions/CATALOG.md](./products/actions/CATALOG.md) | Actions catalog (68 actions) |
 | [products/agents-store/ROADMAP.md](./products/agents-store/ROADMAP.md) | Agents roadmap (56 agents) |
 | [products/agents-store/specs/f.investor.md](./products/agents-store/specs/f.investor.md) | f.investor complete spec |

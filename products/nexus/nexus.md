@@ -1,9 +1,14 @@
 # Nexus — Durable Agent Runtime (Orchestration)
 
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
+**Foundation:** **Cloned from trigger.dev** (Apache 2.0) — customized for AI agents  
 **Repo:** `aitlas-nexus` | **Host:** Hetzner (Bun workers) + Vercel (API gateway)  
 **Formerly:** Nexus runtime  
 **Maintained by:** Herb (AI CTO)
+
+---
+
+> ⚠️ **Nexus is based on trigger.dev** — forked their architecture and customized for AI agent workloads.
 
 ---
 

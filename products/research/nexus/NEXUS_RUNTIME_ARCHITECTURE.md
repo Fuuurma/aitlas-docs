@@ -1,8 +1,17 @@
 # Nexus Runtime Architecture — Deep Research
 
-**Status:** 🔵 ACTIVE RESEARCH  
+**Status:** 🔵 ACTIVE  
 **Date:** 2026-03-09  
+**Foundation:** Cloned from **trigger.dev** (Apache 2.0)  
 **Focus:** Agent runtime layer design
+
+---
+
+## ⚠️ Important
+
+**Nexus is based on trigger.dev** — we forked their architecture and customized it for AI agents.
+
+Original: `trigger.dev` → Customized: `Nexus`
 
 ---
 

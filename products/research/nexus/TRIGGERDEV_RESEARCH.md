@@ -1,8 +1,8 @@
-# trigger.dev — Research
+# trigger.dev — Foundation for Nexus
 
-**Status:** 🔵 CORE  
+**Status:** 🔵 CORE - **FOUNDATION**  
 **Reference:** [triggerdotdev/trigger.dev](https://github.com/triggerdotdev/trigger.dev) (13.9K stars, Apache 2.0)  
-**Use:** Nexus runtime / Background execution layer - CORE of Aitlas
+**Use:** Nexus runtime is **CLONED FROM** trigger.dev
 
 ---
 

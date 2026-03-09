@@ -2,6 +2,8 @@
 
 **Goal:** Create Nexus runtime that beats the competition by learning from what's good in each.
 
+**Foundation:** Nexus is **CLONED FROM trigger.dev** and enhanced for AI agents.
+
 ---
 
 ## The 6 Competitors

@@ -1,5 +1,6 @@
 # Aitlas — Deployment Architecture
 **Version:** 1.0 | **Date:** March 2026 | **Status:** LOCKED  
+**Foundation:** Nexus runtime is **cloned from trigger.dev**
 **Maintained by:** Herb (AI CTO)
 
 ---
