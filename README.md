@@ -2,6 +2,8 @@
 
 **Source of truth for all Aitlas template repositories.**
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ---
 
 ## 🎯 What is Aitlas?

@@ -4,6 +4,8 @@
 **Date:** March 6, 2026  
 **Status:** Active Execution
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ---
 
 ## Part 1: Business Plan

@@ -2,6 +2,8 @@
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
 **Owner:** Furma.tech | **Maintained by:** Herb (AI CTO)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 ---
 
 ## Table of Contents
