@@ -1,5 +1,7 @@
 # Aitlas Product Roadmap — BEST FITS
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 **Based on all research done**
 
 ---

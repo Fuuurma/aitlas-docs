@@ -1,5 +1,7 @@
 # Developer Guide
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 **Complete guide for developing with the Furma Core Template.**
 
 ---

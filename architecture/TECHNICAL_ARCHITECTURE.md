@@ -1,5 +1,11 @@
 # Furma.tech - Technical Architecture
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Version:** 1.0.0  
 **Date:** March 6, 2026  
 **Status:** Production Ready
@@ -7,6 +13,12 @@
 ---
 
 ## System Overview
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -29,7 +41,19 @@
 
 ## Core Architecture Principles
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 1. Standardized Polyrepo Strategy
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Why:** Prevent AI context collapse (Cursor/Claude Code)
 
@@ -40,6 +64,12 @@
 - Communication via MCP only
 
 ### 2. Furma DNA (Every Repo Must Have)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Component | File | Purpose |
 |-----------|------|---------|
@@ -53,6 +83,12 @@
 
 ### 3. Zero Token Liability (BYOK Model)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```
 User provides API key → Furma never pays for tokens
                       ↓
@@ -63,7 +99,19 @@ Furma monetizes compute (Nexus runtime) + infrastructure (f.decloy)
 
 ## Technology Stack
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Framework Layer
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
@@ -75,6 +123,12 @@ Furma monetizes compute (Nexus runtime) + infrastructure (f.decloy)
 
 ### AI & Integration
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 | Component | Technology | Purpose |
 |-----------|------------|---------|
 | **AI Protocol** | MCP (Model Context Protocol) | Tool standardization |
@@ -84,6 +138,12 @@ Furma monetizes compute (Nexus runtime) + infrastructure (f.decloy)
 | **Encryption** | AES-256-GCM | BYOK key storage |
 
 ### Infrastructure
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Layer | Platform | Purpose |
 |-------|----------|---------|
@@ -96,7 +156,19 @@ Furma monetizes compute (Nexus runtime) + infrastructure (f.decloy)
 
 ## Asynchronous Execution Pattern (Nexus runtime)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### The Problem
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 Next.js (Vercel) → 60s timeout
@@ -105,6 +177,12 @@ Result → TIMEOUT ❌
 ```
 
 ### The Solution (Nexus runtime)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 ┌─────────────────┐
@@ -130,6 +208,12 @@ Result → TIMEOUT ❌
 ```
 
 ### Code Pattern
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```typescript
 // API route (returns immediately)
@@ -168,7 +252,19 @@ async function processQueue() {
 
 ## Database Schema (Furma DNA)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Core Models (Every Product)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```prisma
 model User {
@@ -208,6 +304,12 @@ model TaskQueue {
 
 ### Product-Specific Models
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **f.library:**
 - Item (documents, PDFs, highlights)
 - Topic (categorization)
@@ -222,7 +324,19 @@ model TaskQueue {
 
 ## Security Architecture
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### BYOK Encryption (AES-256-GCM)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```typescript
 // Encrypt before storage
@@ -237,6 +351,12 @@ const apiKey = decryptApiKey(encrypted, iv, authTag);
 ```
 
 ### Multi-Tenancy Isolation
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Rule:** userId in EVERY Prisma query
 
@@ -254,6 +374,12 @@ const items = await prisma.item.findMany({
 
 ### Rate Limiting
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 | Endpoint | Limit | Window |
 |----------|-------|--------|
 | API | 100 req | 1 minute |
@@ -265,7 +391,19 @@ const items = await prisma.item.findMany({
 
 ## Credit System (The Paywall)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Free Tier (Nova Chat)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 User logs in → Pastes BYOK key → Chats with agents → FREE
@@ -274,6 +412,12 @@ User logs in → Pastes BYOK key → Chats with agents → FREE
 **Furma cost:** $0 (user pays OpenAI/Anthropic directly)
 
 ### Paid Actions (f.xyz Tools)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Action | Credits | USD Value |
 |--------|---------|-----------|
@@ -284,6 +428,12 @@ User logs in → Pastes BYOK key → Chats with agents → FREE
 | Nexus loop | 10/hour | ~$0.10/hr |
 
 ### Credit Flow
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 User purchases credits → Stored in User.computeCredits
@@ -297,7 +447,19 @@ CreditTransaction logged (audit trail)
 
 ## Deployment Architecture
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Production Stack
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -328,22 +490,64 @@ CreditTransaction logged (audit trail)
 
 ### Environment Variables
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```env
 # Database
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 DATABASE_URL="postgresql://..."
 
 # NextAuth
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 NEXTAUTH_URL="https://furma.tech"
 NEXTAUTH_SECRET=""
 
 # BYOK Encryption (CRITICAL)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 BYOK_ENCRYPTION_KEY=""  # openssl rand -base64 32
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 # Rate Limiting
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 UPSTASH_REDIS_REST_URL=""
 UPSTASH_REDIS_REST_TOKEN=""
 
 # AI (for local LLM routing in Nexus runtime)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 OPENAI_API_KEY=""
 ANTHROPIC_API_KEY=""
 ```
@@ -352,7 +556,19 @@ ANTHROPIC_API_KEY=""
 
 ## Monitoring & Observability
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Logging Strategy
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```typescript
 // Structured logging (Pino)
@@ -364,6 +580,12 @@ logger.error('Task failed', error, { taskId: '123' });
 **Development:** Pretty-print with colors
 
 ### Metrics to Track
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Metric | Target | Alert Threshold |
 |--------|--------|-----------------|
@@ -377,7 +599,19 @@ logger.error('Task failed', error, { taskId: '123' });
 
 ## Disaster Recovery
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Backup Strategy
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Component | Frequency | Retention |
 |-----------|-----------|-----------|
@@ -386,6 +620,12 @@ logger.error('Task failed', error, { taskId: '123' });
 | Environment | Manual | 90 days |
 
 ### Incident Response
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 1. **Detect** (monitoring alerts)
 2. **Triage** (severity assessment)

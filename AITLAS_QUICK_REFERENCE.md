@@ -1,5 +1,7 @@
 # Aitlas Architecture - Quick Reference
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
 **Full Doc:** `/Users/sergi/atlas/AITLAS_ARCHITECTURE.md` (50KB)
 
 ---

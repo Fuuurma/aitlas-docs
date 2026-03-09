@@ -1,10 +1,28 @@
 # Security Practices
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 This document outlines security requirements for all Furma products.
 
 ## Critical Security Rules
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 1. BYOK Encryption (CRITICAL)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Never store API keys in plain text.**
 
@@ -24,6 +42,12 @@ const apiKey = decryptApiKey(encrypted, iv, authTag);
 
 ### 2. Multi-Tenancy (CRITICAL)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Every query MUST include userId.**
 
 ```typescript
@@ -38,6 +62,12 @@ const data = await prisma.yourModel.findMany();
 
 ### 3. Environment Variables
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Validate all environment variables at startup.**
 
 ```typescript
@@ -49,6 +79,12 @@ const dbUrl = env.DATABASE_URL;
 ```
 
 ### 4. Authentication
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Use NextAuth for all auth.**
 
@@ -63,6 +99,12 @@ if (!session) {
 
 ### 5. Rate Limiting
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Enable rate limiting on all API routes.**
 
 ```typescript
@@ -75,6 +117,12 @@ export const GET = apiHandler(
 ```
 
 ### 6. Input Validation
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Validate all inputs with Zod.**
 
@@ -90,6 +138,12 @@ export const POST = apiHandler(
 
 ### 7. Error Handling
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Never expose raw errors to clients.**
 
 ```typescript
@@ -101,6 +155,12 @@ throw new APIError('INTERNAL_ERROR', 'An error occurred');
 ```
 
 ## Security Checklist
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Before deploying:
 
@@ -115,6 +175,12 @@ Before deploying:
 - [ ] CORS configured
 
 ## Environment Variables
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Never commit these to git:
 - `.env.local`

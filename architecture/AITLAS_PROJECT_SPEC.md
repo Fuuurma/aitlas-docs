@@ -1,5 +1,11 @@
 # AITLAS_PROJECT_SPEC.md
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Version:** 1.0.0  
 **Created:** 2026-03-07  
 **Status:** ✅ Production Standard
@@ -10,9 +16,21 @@
 
 ## 1. Project Types
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Aitlas projects fall into three categories:
 
 ### 1.1 UI Projects
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Template:** `aitlas-ui-template`  
 **Stack:** Next.js 16 + React 19 + TypeScript + Tailwind + shadcn/ui
@@ -27,15 +45,57 @@ Aitlas projects fall into three categories:
 ```
 my-ui-project/
 ├── app/                    # Next.js App Router
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── (auth)/            # Public auth routes
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── (dashboard)/       # Protected routes
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── api/               # API routes
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   └── layout.tsx
 ├── components/
 │   └── ui/               # shadcn/ui components
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ├── lib/
 │   ├── auth.ts           # Better Auth config
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── db.ts             # Prisma client
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   └── ...
 ├── prisma/
 │   └── schema.prisma
@@ -56,6 +116,12 @@ my-ui-project/
 
 ### 1.2 Action Projects
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Template:** `aitlas-action-template`  
 **Stack:** Hono + MCP + TypeScript + Prisma
 
@@ -70,16 +136,52 @@ my-ui-project/
 my-action/
 ├── src/
 │   ├── index.ts           # Entry point
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── routes/            # API routes
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── lib/
 │   │   ├── mcp/           # MCP server
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   │   ├── tools/         # Tool implementations
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   │   └── ...
 │   └── tools/             # Auto-registered tools
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ├── prisma/
 ├── __tests__/
 ├── scripts/
 │   └── create-tool.ts     # Tool generator
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 └── docs/
 ```
 
@@ -96,6 +198,12 @@ my-action/
 
 ### 1.3 Worker Projects
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Template:** `aitlas-worker-template`  
 **Stack:** Bun + PostgreSQL + Prisma
 
@@ -110,9 +218,33 @@ my-action/
 my-worker/
 ├── src/
 │   ├── index.ts           # Entry point
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── worker.ts          # Worker implementation
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── queue.ts           # Queue management
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   ├── jobs/              # Job definitions
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 │   └── lib/
 │       ├── db.ts
 │       ├── logger.ts
@@ -134,7 +266,19 @@ my-worker/
 
 ## 2. Shared Standards
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 2.1 Database
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Provider:** Neon PostgreSQL  
 **ORM:** Prisma  
@@ -154,6 +298,12 @@ Prefix with service name (e.g., `TwytQuery`, `NovaProject`)
 
 ### 2.2 Authentication
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Provider:** Better Auth  
 **Secret:** Shared across all services (`BETTER_AUTH_SECRET`)
 
@@ -165,6 +315,12 @@ Prefix with service name (e.g., `TwytQuery`, `NovaProject`)
 
 ### 2.3 Encryption (BYOK)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Algorithm:** AES-256-GCM  
 **Key:** Shared across all services (`ENCRYPTION_KEY`)
 
@@ -174,6 +330,12 @@ Prefix with service name (e.g., `TwytQuery`, `NovaProject`)
 - Never log or expose decrypted keys
 
 ### 2.4 Credit System
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Purpose:** Track and deduct credits for actions
 
@@ -196,6 +358,12 @@ await deductCredits({
 
 ### 2.5 Rate Limiting
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Provider:** Upstash Redis  
 **Types:**
 - `api` - 100 requests/60s
@@ -207,6 +375,12 @@ await deductCredits({
 **Fallback:** In-memory for development
 
 ### 2.6 Logging
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Provider:** Pino  
 **Format:** JSON  
@@ -224,42 +398,108 @@ logger.error({ error }, 'Operation failed');
 
 ## 3. Environment Variables
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 3.1 Required (All Projects)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```bash
 # Database
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 DATABASE_URL="postgresql://..."
 DATABASE_URL_UNPOOLED="postgresql://..."
 
 # Auth
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 BETTER_AUTH_SECRET="..."
 BETTER_AUTH_URL="http://localhost:3000"
 
 # Encryption
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ENCRYPTION_KEY="..."
 
 # Inter-service Auth
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 FURMA_INTERNAL_SECRET="..."
 
 # Service Identity
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 SERVICE_NAME="my-service"
 NODE_ENV="production"
 ```
 
 ### 3.2 Optional
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```bash
 # Redis (Rate Limiting)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 UPSTASH_REDIS_REST_URL="..."
 UPSTASH_REDIS_REST_TOKEN="..."
 
 # OAuth
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 GOOGLE_CLIENT_ID="..."
 GOOGLE_CLIENT_SECRET="..."
 GITHUB_CLIENT_ID="..."
 GITHUB_CLIENT_SECRET="..."
 
 # Monitoring
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 HEALTHCHECK_UUID="..."
 ```
 
@@ -267,18 +507,42 @@ HEALTHCHECK_UUID="..."
 
 ## 4. Testing Standards
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 4.1 Framework
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Provider:** Vitest  
 **Coverage Target:** 70%+
 
 ### 4.2 Test Categories
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 1. **Unit Tests** - Individual functions/components
 2. **Integration Tests** - API routes, database
 3. **E2E Tests** - Full user flows (optional)
 
 ### 4.3 Test Structure
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```typescript
 // __tests__/feature.test.ts
@@ -293,6 +557,12 @@ describe('Feature Name', () => {
 ```
 
 ### 4.4 Required Tests
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **UI Projects:**
 - Auth flows (signup, login, logout)
@@ -316,7 +586,19 @@ describe('Feature Name', () => {
 
 ## 5. Documentation Standards
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 5.1 Required Files
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Every project MUST have:
 - `README.md` - Project overview, quick start
@@ -326,8 +608,20 @@ Every project MUST have:
 
 ### 5.2 README Structure
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```markdown
 # Project Name
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Type:** UI/Action/Worker | **Stack:** ... | **Status:** ...
 
@@ -335,20 +629,68 @@ Every project MUST have:
 
 ## Features
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ## Quick Start
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ## Configuration
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ## Usage
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ## Development
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ## Deployment
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ## License
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 
 ### 5.3 Documentation Folder
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 docs/
@@ -363,7 +705,19 @@ docs/
 
 ## 6. Deployment Standards
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 6.1 Platforms
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **UI Projects:** Vercel (preferred), Netlify, Docker  
 **Action Projects:** Docker, Hetzner, Railway  
@@ -371,13 +725,31 @@ docs/
 
 ### 6.2 Environment Variables
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 All required env vars must be set in deployment platform.
 
 ### 6.3 Health Checks
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 All projects must expose `/health` endpoint for monitoring.
 
 ### 6.4 Monitoring
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Recommended:**
 - Healthchecks.io for uptime monitoring
@@ -388,7 +760,19 @@ All projects must expose `/health` endpoint for monitoring.
 
 ## 7. Security Standards
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 7.1 Authentication
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - All user-facing routes must require auth
 - API routes must validate tokens
@@ -396,17 +780,35 @@ All projects must expose `/health` endpoint for monitoring.
 
 ### 7.2 Authorization
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 - Users can only access their own data
 - Implement row-level security in Prisma queries
 - Validate user ownership
 
 ### 7.3 Data Protection
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 - Encrypt sensitive data (BYOK keys)
 - Never log sensitive information
 - Use HTTPS in production
 
 ### 7.4 Rate Limiting
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - All public endpoints must be rate-limited
 - Auth endpoints: 5 requests/minute
@@ -416,7 +818,19 @@ All projects must expose `/health` endpoint for monitoring.
 
 ## 8. Quality Standards
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 8.1 Code Quality
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - TypeScript strict mode
 - ESLint passing
@@ -425,11 +839,23 @@ All projects must expose `/health` endpoint for monitoring.
 
 ### 8.2 Performance
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 - Database queries optimized (use indexes)
 - API responses < 500ms
 - Bundle size < 500KB (UI projects)
 
 ### 8.3 Reliability
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - Error handling on all async operations
 - Graceful degradation (mock data fallback)
@@ -439,7 +865,19 @@ All projects must expose `/health` endpoint for monitoring.
 
 ## 9. Project Lifecycle
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 9.1 Creation
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```bash
 aitlas new <type> <project-name>
@@ -447,6 +885,12 @@ cd <project-name>
 bun install
 cp .env.example .env
 # Edit .env
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 bun db:generate
 bun db:migrate
 bun dev
@@ -454,17 +898,47 @@ bun dev
 
 ### 9.2 Development
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```bash
 # Run dev server
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 bun dev
 
 # Run tests
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 bun test
 
 # Type check
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 bun run typecheck
 
 # Commit
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 git add -A
 git commit -m "feat: description"
 git push
@@ -472,15 +946,39 @@ git push
 
 ### 9.3 Deployment
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```bash
 # Build
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 bun run build
 
 # Deploy (Vercel example)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 vercel --prod
 ```
 
 ### 9.4 Maintenance
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - Monitor health endpoints
 - Review error logs weekly
@@ -491,7 +989,19 @@ vercel --prod
 
 ## 10. Examples
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### 10.1 UI Project: Nova
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - **Type:** UI
 - **Purpose:** AI Command Center
@@ -500,12 +1010,24 @@ vercel --prod
 
 ### 10.2 Action Project: f-twyt
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 - **Type:** Action
 - **Purpose:** Twitter/X API integration
 - **Features:** MCP tools, web dashboard, search, timeline
 - **Deployed:** Vercel
 
 ### 10.3 Worker Project: (TBD)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - **Type:** Worker
 - **Purpose:** Background job processing
@@ -516,7 +1038,19 @@ vercel --prod
 
 ## Appendix A: Checklist
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Pre-Launch Checklist
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - [ ] All required env vars configured
 - [ ] Database migrations run
@@ -531,6 +1065,12 @@ vercel --prod
 
 ### Post-Launch Checklist
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 - [ ] Monitoring set up
 - [ ] Error alerts configured
 - [ ] Backup strategy implemented
@@ -540,6 +1080,12 @@ vercel --prod
 ---
 
 ## Appendix B: Resources
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 - **Templates:** https://github.com/Fuuurma/aitlas-*-template
 - **CLI:** https://github.com/Fuuurma/aitlas-cli

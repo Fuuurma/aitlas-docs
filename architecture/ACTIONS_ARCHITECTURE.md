@@ -1,4 +1,10 @@
 # Aitlas Actions — Revised Architecture
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 **Version:** 2.0 | **Date:** March 2026 | **Status:** LOCKED  
 **Supersedes:** Previous headless-only action spec  
 **Maintained by:** Herb (AI CTO)
@@ -6,6 +12,12 @@
 ---
 
 ## The Core Insight
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Actions are not all the same kind of thing.
 
@@ -24,7 +36,19 @@ This is the distinction that drives the entire architecture.
 
 ## The Two Action Types
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Type 1: Mini-App Actions (Next.js)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 **f.twyt · f.rsrx · f.library**
 
 These are **standalone products first**. They have their own UI, their own domain, their own value proposition — and they *also* expose an MCP endpoint so Nexus and agents can call them.
@@ -45,6 +69,12 @@ rsrx.f.xyz
 **Actions in this category:** f.twyt, f.rsrx, f.library
 
 ### Type 2: Utility Actions (Hono, headless)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 **f.guard · f.support · Nexus runtime · f.decloy**
 
 These produce simple structured outputs. No user ever visits `guard.f.xyz` to browse a UI. They only exist to be called by agents and Nexus.
@@ -64,6 +94,12 @@ guard.f.xyz (or internally routed)
 
 ## Revised Action Registry
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 | Action | Type | Template | UI | Has Standalone Value |
 |--------|------|----------|----|---------------------|
 | **f.twyt** | Mini-App | Next.js (ui) | Full dashboard | ✅ Yes |
@@ -78,7 +114,19 @@ guard.f.xyz (or internally routed)
 
 ## How Mini-App Actions Work
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Part 1: The Standalone Product
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Each mini-app action is a full Next.js product. Users sign in with their Aitlas account (shared auth), and use the product directly.
 
@@ -150,6 +198,12 @@ library.f.xyz
 
 ### Part 2: The MCP Endpoint (same app, same domain)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Every mini-app action also exposes `/api/mcp` — the same endpoint utility actions use.
 Built directly into the Next.js app as an API route.
 
@@ -171,6 +225,12 @@ export async function POST(req: Request) {
 ---
 
 ### Part 3: The Nexus Integration — Result Cards
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 When Nova or an agent calls a mini-app action via MCP, the result comes back as structured data. Nova renders a **compact result card** inline in chat, with a deep link to the full experience.
 
@@ -219,6 +279,12 @@ The result is already saved in f.rsrx's database. The user clicks through to the
 
 ## Data Model: Results Belong to the Action
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Results are **stored in the action's DB** (same shared Neon, but action-owned tables).
 Nexus never stores the result data — it only stores a reference.
 
@@ -261,6 +327,12 @@ Deep link: `https://rsrx.f.xyz/reports/{id}`
 
 ## How Nexus Renders Result Cards
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Nexus detects tool results from mini-app actions and renders a rich card instead of raw JSON.
 
 ```typescript
@@ -295,6 +367,12 @@ export function ToolResultCard({ toolName, output }: ToolResult) {
 
 ## Authentication Across Mini-Apps
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 All three mini-apps share the same Neon DB and the same `BETTER_AUTH_SECRET`.
 A user signs in once (at Nexus) and is automatically authenticated at rsrx.f.xyz, twyt.f.xyz, and library.f.xyz — their session cookie is valid cross-domain via Better Auth's cross-domain session support.
 
@@ -320,6 +398,12 @@ This means: **one account, all products**. Sign into Nexus, open f.rsrx — alre
 
 ## Updated Template Assignment
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```
 aitlas-ui-template (Next.js 15)
 ├── aitlas-nexus          → nexus.aitlas.xyz
@@ -341,6 +425,12 @@ aitlas-worker-template (Bun, no HTTP)
 
 ## Updated Deployment Map
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 | Service | Host | Template | Domain |
 |---------|------|----------|--------|
 | Nexus | Vercel | ui | nexus.aitlas.xyz |
@@ -361,6 +451,12 @@ aitlas-worker-template (Bun, no HTTP)
 
 ## GTM Implication: Three Standalone Products
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 f.twyt, f.rsrx, and f.library each have a standalone value proposition and can be
 marketed, launched, and monetized independently of Nexus.
 
@@ -377,6 +473,12 @@ The funnel: **standalone product → Aitlas account → discover Nexus → upgra
 ---
 
 ## Summary of Changes from Previous Spec
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Was | Now |
 |-----|-----|

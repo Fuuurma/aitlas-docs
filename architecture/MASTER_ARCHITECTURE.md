@@ -2,6 +2,8 @@
 **Version:** 4.0 | **Date:** March 2026 | **Status:** CANONICAL  
 **Owner:** Furma.tech | **Maintained by:** Herb (AI CTO)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+>
 > Single source of truth. Supersedes all previous versions.
 
 ---

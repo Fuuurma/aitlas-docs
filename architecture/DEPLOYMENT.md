@@ -1,4 +1,10 @@
 # Aitlas — Deployment Architecture
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 **Version:** 1.0 | **Date:** March 2026 | **Status:** LOCKED  
 **Foundation:** Nexus runtime is **cloned from trigger.dev**
 **Maintained by:** Herb (AI CTO)
@@ -6,6 +12,12 @@
 ---
 
 ## The Answer in One Table
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Service | Host | Why | Monthly Cost |
 |---------|------|-----|-------------|
@@ -27,7 +39,19 @@
 
 ## 1. Why Each Platform Was Chosen
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Vercel — Nova, Agents Store, All Actions
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Why Vercel over Railway, Fly.io, or raw VPS:**
 - Zero configuration for Next.js and Hono — push to GitHub, it deploys
@@ -48,6 +72,12 @@ This is the architectural split that makes Vercel viable for actions.
 
 ### Hetzner — Nexus runtime (Nexus workers only)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Why Hetzner over Vercel/Railway for Nexus:**
 - Nexus runs an infinite `while(true)` loop — not a serverless function
 - Vercel kills functions after 25s (Pro) or 60s (Enterprise) — Nexus needs hours
@@ -66,6 +96,12 @@ This is the architectural split that makes Vercel viable for actions.
 - Any static files (use Vercel/Cloudflare for that)
 
 ### Neon — PostgreSQL
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Why Neon over Supabase:**
 
@@ -87,6 +123,12 @@ We don't need Supabase's auth (using Better Auth), storage (no files), or Edge F
 
 ### Upstash — Redis
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 **Why Upstash over Vercel KV or self-hosted Redis:**
 - Serverless: no persistent connection, works perfectly with Vercel edge functions
 - Per-request pricing: ~$0 until significant traffic
@@ -94,6 +136,12 @@ We don't need Supabase's auth (using Better Auth), storage (no files), or Edge F
 - Self-hosted Redis on Hetzner: don't waste a box on Redis when Upstash is free
 
 ### Cloudflare — DNS + Proxy
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 **Why Cloudflare for DNS:**
 - Free tier covers everything needed: DNS, DDoS protection, SSL, analytics
@@ -105,7 +153,19 @@ We don't need Supabase's auth (using Better Auth), storage (no files), or Edge F
 
 ## 2. Service → Deploy Mapping
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Nexus
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 Repo:     github.com/Fuuurma/aitlas-nexus
 Platform: Vercel
@@ -125,6 +185,12 @@ Environment:
 ```
 
 ### Agents Store
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 Repo:     github.com/Fuuurma/aitlas-agents
 Platform: Vercel
@@ -136,6 +202,12 @@ Build: identical to Nexus (same template type)
 ```
 
 ### f.xyz Actions (each is its own Vercel project)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 Repos:    github.com/Fuuurma/f-twyt
           github.com/Fuuurma/f-rsrx
@@ -158,6 +230,12 @@ Function timeout:
 ```
 
 ### Nexus runtime (Nexus) — Hetzner
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 Repo:     github.com/Fuuurma/aitlas-nexus
 Platform: Hetzner CX21 (€4.51/mo)
@@ -182,7 +260,19 @@ Deploy process:
 
 ## 3. Database Setup (Neon)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### One Project, One Database, Multiple Branches
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 Neon Project: aitlas-prod
@@ -193,14 +283,38 @@ Neon Project: aitlas-prod
 
 ### Connection Strings Per Service
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Every service gets the **same database** but two connection strings:
 
 ```bash
 # Pooled — use in all running services (Vercel functions, Hetzner workers)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 # pgBouncer handles connection pooling → prevents "too many connections"
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 DATABASE_URL=postgresql://aitlas:xxx@ep-xxx.eu-central-1.aws.neon.tech/aitlas?pgbouncer=true&connection_limit=1
 
 # Direct — use ONLY for Prisma migrations (never in running code)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 DATABASE_URL_UNPOOLED=postgresql://aitlas:xxx@ep-xxx.eu-central-1.aws.neon.tech/aitlas
 ```
 
@@ -209,17 +323,41 @@ Vercel serverless functions spin up many instances simultaneously. Each instance
 
 ### Migrations
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Migrations run from **one repo only** — `aitlas-nexus` (the canonical service).
 This prevents two services from running conflicting migrations simultaneously.
 
 ```bash
 # In aitlas-nexus repo only:
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 bun db:migrate   # Uses DATABASE_URL_UNPOOLED
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 
 Other services run `bun db:generate` (generates the Prisma client from the schema) but never `bun db:migrate`.
 
 ### pgvector Setup (one-time)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```sql
 -- Run once in Neon SQL editor after project creation
@@ -230,7 +368,19 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 ## 4. Vercel Setup
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Organization Structure
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 Vercel Organization: furma-tech
@@ -245,31 +395,115 @@ Vercel Organization: furma-tech
 
 ### Shared Environment Variables
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Set these in **Vercel Team Settings → Environment Variables** so they're inherited by all projects:
 
 ```bash
 # All projects share these automatically
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 FURMA_INTERNAL_SECRET=    # Service-to-service auth
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 NODE_ENV=production
 ```
 
 ### Per-project Environment Variables
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Set these in each project's Settings → Environment Variables:
 
 ```bash
 # Every project
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 DATABASE_URL=             # Neon pooled
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 DATABASE_URL_UNPOOLED=    # Neon direct (Nexus only needs this)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 BETTER_AUTH_SECRET=       # SAME value across all projects (shared auth)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 BETTER_AUTH_URL=          # THIS project's URL (different per project)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ENCRYPTION_KEY=           # SAME value across all projects (same keys DB)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 UPSTASH_REDIS_REST_URL=   # Same Upstash instance
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 UPSTASH_REDIS_REST_TOKEN= # Same Upstash instance
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 SERVICE_NAME=             # Different per project: "nexus", "f.twyt", etc.
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 
 ### Vercel + Neon Integration
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Enable the Neon integration in Vercel:
 - Automatically creates preview DB branches for each PR
@@ -284,7 +518,19 @@ Vercel Dashboard → nexus project → Integrations → Neon → Connect
 
 ## 5. Hetzner Setup (Nexus)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Server Sizing
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Tasks/day | Server | Workers | Cost |
 |-----------|--------|---------|------|
@@ -297,39 +543,105 @@ Vercel Dashboard → nexus project → Integrations → Neon → Connect
 
 ### Server Location
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Choose **Falkenstein (FSN1)** or **Nuremberg (NBG1)** — EU datacenter, low latency to Neon's EU region (`eu-central-1.aws`). Never use US datacenter for Nexus — adds 100ms+ to every DB query in the loop.
 
 ### One-Time Server Setup
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```bash
 # Run as root after first login via SSH
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 # 1. Create non-root user
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 adduser Nexus
 usermod -aG sudo Nexus
 
 # 2. Install Bun
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 curl -fsSL https://bun.sh/install | bash
 echo 'export PATH="$HOME/.bun/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 # 3. Clone repo
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 git clone git@github.com:Fuuurma/aitlas-nexus.git /opt/aitlas-nexus
 cd /opt/aitlas-nexus
 bun install
 
 # 4. Copy environment
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 cp .env.example .env
 nano .env   # Fill in DATABASE_URL, ENCRYPTION_KEY, etc.
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 chmod 600 .env   # Only root can read it
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 # 5. Install systemd services
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 cp scripts/Nexus-worker@.service /etc/systemd/system/
 cp scripts/Nexus-watchdog.service /etc/systemd/system/
 cp scripts/Nexus-scheduler.service /etc/systemd/system/
 systemctl daemon-reload
 
 # 6. Enable + start
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 systemctl enable Nexus-worker@{1,2,3,4}
 systemctl enable Nexus-watchdog
 systemctl enable Nexus-scheduler
@@ -338,15 +650,39 @@ systemctl start Nexus-watchdog
 systemctl start Nexus-scheduler
 
 # 7. Verify
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 systemctl status Nexus-worker@1
 journalctl -u Nexus-worker@1 -f
 ```
 
 ### systemd Service Files
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```ini
 # scripts/Nexus-worker@.service
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 # The @ makes it a template — Nexus-worker@1, Nexus-worker@2, etc.
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 [Unit]
 Description=Aitlas Nexus Worker %i
 After=network.target
@@ -369,6 +705,12 @@ WantedBy=multi-user.target
 
 ```ini
 # scripts/Nexus-watchdog.service
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 [Unit]
 Description=Aitlas Nexus Watchdog
 After=network.target
@@ -390,11 +732,29 @@ WantedBy=multi-user.target
 
 ### Deploying Updates to Hetzner
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```bash
 # SSH into server
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ssh Nexus@your-hetzner-ip
 
 # Pull + restart (zero-downtime: workers finish current task before stopping)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 cd /opt/aitlas-nexus
 git pull origin main
 bun install
@@ -403,6 +763,12 @@ systemctl restart Nexus-watchdog
 ```
 
 ### Hetzner Firewall Rules
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 Inbound:  22 (SSH, your IP only) — ONLY this. No web ports.
@@ -415,7 +781,19 @@ Nexus workers have **no inbound HTTP**. They only make outbound calls (to Neon, 
 
 ## 6. DNS & Domain Setup (Cloudflare)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Zone: aitlas.xyz
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 Type    Name              Value                    Proxy
@@ -426,6 +804,12 @@ A       @                 76.76.21.21 (Vercel)     DNS only*
 ```
 
 ### Zone: f.xyz (Actions)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 Type    Name              Value                    Proxy
@@ -441,6 +825,12 @@ CNAME   support           cname.vercel-dns.com     DNS only
 
 ### Hetzner (Nexus) — No Public Domain Needed
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Nexus has no HTTP server and no public domain. It connects outbound only.
 Its only "address" is the Postgres connection string — it pulls work from the DB.
 
@@ -448,7 +838,19 @@ Its only "address" is the Postgres connection string — it pulls work from the 
 
 ## 7. Environment Variables — Master Reference
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### How Secrets Are Managed
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Secret | Where stored | Who accesses |
 |--------|-------------|--------------|
@@ -464,40 +866,124 @@ Never store secrets in git. Never store secrets in Notion/Slack/email.
 
 ### Critical: ENCRYPTION_KEY must be identical everywhere
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 The `ENCRYPTION_KEY` is used to encrypt/decrypt BYOK API keys stored in Postgres.
 If it differs between Nexus (which encrypts) and Nexus (which decrypts), all decryption fails.
 
 ```bash
 # Generate once, use everywhere
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 openssl rand -hex 32
 # → Copy this value to ALL services' ENCRYPTION_KEY
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 # → Store in 1Password immediately
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 
 ### BETTER_AUTH_SECRET must be identical across all Vercel projects
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Sessions are validated cross-service. The secret must match.
 
 ```bash
 # Generate once
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 openssl rand -base64 32
 # → Same value in: aitlas-nexus, aitlas-agents, f-twyt, f-rsrx, ...
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 
 ### BETTER_AUTH_URL is different per project
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ```bash
 # aitlas-nexus:    BETTER_AUTH_URL=https://nexus.aitlas.xyz
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 # aitlas-agents:   BETTER_AUTH_URL=https://agents.aitlas.xyz
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 # f-twyt:          BETTER_AUTH_URL=https://twyt.f.xyz
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 # For preview:     BETTER_AUTH_URL=https://aitlas-nexus-git-feat-xxx.vercel.app
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 ```
 
 ---
 
 ## 8. CI/CD Pipeline
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Vercel (automatic — no configuration needed)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 ```
 Push to feat/*  → Vercel builds preview deployment automatically
@@ -508,6 +994,12 @@ PR merged       → Vercel deploys main to production + Neon branch deleted
 
 ### Hetzner (manual deploy — intentional)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Nexus deploys are manual via SSH. This is intentional:
 - Workers are stateful (they're in the middle of tasks)
 - Auto-deploy on push could interrupt running tasks
@@ -517,7 +1009,19 @@ When automatic deploys become needed (multiple engineers, multiple boxes), add a
 
 ```yaml
 # .github/workflows/deploy-Nexus.yml
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 # Only when manual — triggered via GitHub Actions UI
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 on:
   workflow_dispatch:
 jobs:
@@ -541,7 +1045,19 @@ jobs:
 
 ## 9. Monitoring & Alerts
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### What to watch
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Signal | Tool | Alert threshold |
 |--------|------|-----------------|
@@ -552,6 +1068,12 @@ jobs:
 | Credit anomaly | Pino log + query | Single task >200 credits |
 
 ### Healthchecks.io (Free tier)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Heartbeat check for Nexus — each worker pings a URL every minute:
 
@@ -565,6 +1087,12 @@ Cost: $0. No other monitoring tool needed at launch.
 
 ### Vercel Analytics
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 Enable in Vercel Dashboard → each project → Analytics.
 Free tier shows: error rates, function duration, cold starts.
 No configuration needed.
@@ -572,6 +1100,12 @@ No configuration needed.
 ---
 
 ## 10. Launch Sequence
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 Do this in order. Do not skip steps.
 
@@ -634,7 +1168,19 @@ Do this in order. Do not skip steps.
 
 ## Appendix: Cost Breakdown at Scale
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 ### Launch (Month 1–3, <100 users)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Service | Plan | Cost |
 |---------|------|------|
@@ -647,6 +1193,12 @@ Do this in order. Do not skip steps.
 
 ### Growth (Month 4–8, 500–2,000 users)
 
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+
 | Service | Plan | Cost |
 |---------|------|------|
 | Vercel | Pro ($20/mo) | $20 |
@@ -657,6 +1209,12 @@ Do this in order. Do not skip steps.
 | **TOTAL** | | **~$55/mo** |
 
 ### Scale (Month 9–12, 5,000–10,000 users)
+
+
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
 
 | Service | Plan | Cost |
 |---------|------|------|
