@@ -17,7 +17,11 @@ The Internet             →  Browser
 The OS                   →  Nexus (T3 Code fork)
 The App Store            →  Agents Store
 The System Utilities     →  Actions (f.xyz)
+<<<<<<< Updated upstream
 The Background Daemons   →  Nexus runtime (Ralph)
+=======
+The Background Daemons   →  Nexus ()
+>>>>>>> Stashed changes
 The File System          →  f.library
 The Execution Sandbox    →  OpenSandbox
 The Universal Connector  →  f.bridge (MCP gateway)
@@ -31,7 +35,11 @@ The Network Layer        →  MCP
 | BYOK always — even paid tier | Zero token liability. Furma charges compute, never tokens. |
 | T3 Code fork not custom UI | Proven chat UX + free Electron desktop. Weeks saved. |
 | Open source extraction | Warden, OpenSandbox, RTK, Agency Agents — don't rebuild battle-tested tools. |
+<<<<<<< Updated upstream
 | Nexus runtime as platform, not infra | External devs calling `POST /tasks` = real moat. |
+=======
+| Nexus as platform, not infra | External devs calling `POST /tasks` = real moat. |
+>>>>>>> Stashed changes
 
 ---
 
@@ -88,7 +96,7 @@ Aitlas
 │   ├── support.f.xyz     → f.support [Utility, Hono headless]
 │   ├── decloy.f.xyz      → f.decloy [Utility, Hono headless]
 │   └── bridge.f.xyz      → f.bridge [Utility, Hono headless]
-├── loop.internal         → Ralph workers (Hetzner, Bun)
+├── loop.internal         →  workers (Hetzner, Bun)
 └── aitlas-cli (npm)      → Local brain + repo scaffolder
 ```
 
@@ -111,7 +119,11 @@ T3 Code UI (Nexus fork)
 │  Claude Code → user's key    f.xyz Actions           │
 │  OpenCode → user's key       Agents Store            │
 │  Gemini → user's key         Memory (pgvector)       │
+<<<<<<< Updated upstream
 │                              Tasks (Nexus runtime)          │
+=======
+│                              Tasks (Nexus)          │
+>>>>>>> Stashed changes
 │                              OpenSandbox exec        │
 │                              (still BYOK for LLM)   │
 └──────────────────────────────────────────────────────┘
@@ -130,7 +142,11 @@ Requires: Pro subscription ($20/mo) OR credit balance >= 500
 | Chat Panel | ✅ | ✅ |
 | Actions Sidebar | ❌ Locked | ✅ |
 | Agent Panel | ❌ | ✅ |
+<<<<<<< Updated upstream
 | Task Monitor | ❌ | ✅ Live Nexus runtime |
+=======
+| Task Monitor | ❌ | ✅ Live Nexus |
+>>>>>>> Stashed changes
 | Workflow Builder | ❌ | ✅ DAG editor |
 
 ### Instinct System (ECC Pattern)
@@ -276,7 +292,11 @@ Long-term vision: `aitlas-runner` = Modal/Fly competitor.
 ```typescript
 f.bridge("mcp://plaid.com/api")  // → instantly has Plaid tools
 ```
+<<<<<<< Updated upstream
 Registers to external MCP registries: Smithery, Pulse, mcp.get. Monetized via Nexus runtime credits.
+=======
+Registers to external MCP registries: Smithery, Pulse, mcp.get. Monetized via Nexus credits.
+>>>>>>> Stashed changes
 
 ### MCP Result Card Protocol
 ```typescript
@@ -292,11 +312,19 @@ Nexus renders inline result card with deep link.
 
 ---
 
+<<<<<<< Updated upstream
 ## 8. Nexus runtime — Ralph Engine
 
 ### Strategic Position
 > Current: Nexus runtime powers Nexus + Agents  
 > Future: Nexus runtime IS the product — REST API for external devs = real moat
+=======
+## 8. Nexus —  Engine
+
+### Strategic Position
+> Current: Nexus powers Nexus + Agents  
+> Future: Nexus IS the product — REST API for external devs = real moat
+>>>>>>> Stashed changes
 
 ### 5-Phase Execution Loop
 ```
@@ -475,7 +503,11 @@ const result = await sandbox.commands.run('python3 -c "print(1+1)"');
 await sandbox.kill();
 ```
 
+<<<<<<< Updated upstream
 Security: gVisor (default) / Kata / Firecracker. Used by Nexus runtime workers + f.decloy.
+=======
+Security: gVisor (default) / Kata / Firecracker. Used by Nexus workers + f.decloy.
+>>>>>>> Stashed changes
 
 Sandbox MCP tools: `execute_code` (2cr), `run_command` (1cr), `browse_web` (3cr).
 
@@ -492,7 +524,11 @@ Sandbox MCP tools: `execute_code` (2cr), `run_command` (1cr), `browse_web` (3cr)
 | Agency Agents | MIT | 61 agent templates |
 | ECC | MIT | Hooks + instinct format |
 | Crush | FSL-1.1 | AGENTS.md format |
+<<<<<<< Updated upstream
 | Trigger.dev | Apache 2.0 | Nexus runtime patterns |
+=======
+| Trigger.dev | Apache 2.0 | Nexus patterns |
+>>>>>>> Stashed changes
 | CrewAI | MIT | Orchestration patterns |
 | OpenCode | MIT | BYOK arch reference |
 
@@ -518,7 +554,11 @@ Key models (see full schema in aitlas-nexus prisma/schema.prisma):
 
 **Credits:** CreditLedgerEntry (append-only, balance snapshot), CreditReservation
 
+<<<<<<< Updated upstream
 **Nexus runtime:** Task, TaskStep, ToolCall, ScheduledTask  
+=======
+**Nexus:** Task, TaskStep, ToolCall, ScheduledTask  
+>>>>>>> Stashed changes
 - Task status: `PENDING | CLAIMED | RUNNING | COMPLETED | FAILED | TIMEOUT | STUCK | CANCELLED`
 - TaskStep type: `PLAN | ACTION | REFLECTION | FINAL`
 - ToolCall status: `PENDING | SUCCESS | FAILED | TIMEOUT`
@@ -563,8 +603,13 @@ Service-to-service: `Authorization: Bearer <session_token>` + `X-Furma-Internal:
 | f.guard PR scan | 3 |
 | f.support auto-resolve | 3 |
 | execute_code | 2 |
+<<<<<<< Updated upstream
 | Nexus runtime orchestration | 1 (flat) |
 | Nexus runtime compute | 2/hr |
+=======
+| Nexus orchestration | 1 (flat) |
+| Nexus compute | 2/hr |
+>>>>>>> Stashed changes
 | f.decloy deploy | 25 |
 | f.decloy runtime | 1/min |
 
@@ -624,7 +669,11 @@ Tool naming: `snake_case`. Each declares `inputSchema` (JSON Schema) + `creditCo
 | Agents Store | Vercel | ui-template |
 | f.twyt/rsrx/library | Vercel | ui-template |
 | f.guard/support/decloy/bridge | Vercel | action-template |
+<<<<<<< Updated upstream
 | Nexus runtime + watchdog + scheduler | Hetzner CX21 | worker-template |
+=======
+| Nexus + watchdog + scheduler | Hetzner CX21 | worker-template |
+>>>>>>> Stashed changes
 | OpenSandbox | Hetzner (Docker) | internal |
 | PostgreSQL | Neon eu-west-2 | — |
 | Redis | Upstash | — |
@@ -680,7 +729,11 @@ Error:   { success: false, error: { code, message, details } }
 
 | Doc | Issue |
 |-----|-------|
+<<<<<<< Updated upstream
 | MASTER_ARCHITECTURE v1-v3 | Missing RTK, Tool Gateway, Workflow, Event system, full Nexus runtime spec |
+=======
+| MASTER_ARCHITECTURE v1-v3 | Missing RTK, Tool Gateway, Workflow, Event system, full Nexus spec |
+>>>>>>> Stashed changes
 | TECHNICAL_ARCHITECTURE.md | Older patterns, pre-Tool Gateway |
 | ARCHITECTURE_SPEC.md (queue section) | Says Redis Streams — superseded by Postgres polling decision |
 | Any doc: "10 credits/hr" | Revised: 1cr flat + 2/hr + tool credits |
@@ -692,9 +745,15 @@ Error:   { success: false, error: { code, message, details } }
 ## 30. Extensible Loop (Developer Platform)
 
 ### The Core Question
+<<<<<<< Updated upstream
 > **Is Nexus runtime an internal runtime... or a programmable economic layer?**
 
 **Answer: Nexus runtime is a Public Runtime Protocol.**
+=======
+> **Is Nexus an internal runtime... or a programmable economic layer?**
+
+**Answer: Nexus is a Public Runtime Protocol.**
+>>>>>>> Stashed changes
 
 ### Hook System
 Developers can plug into the execution loop:
@@ -809,7 +868,11 @@ agent:
   version: 1.2
 
 runtime:
+<<<<<<< Updated upstream
   loop: Nexus runtime
+=======
+  loop: Nexus
+>>>>>>> Stashed changes
 
 skills:
   - web_research
@@ -988,7 +1051,11 @@ Agent Spec → f.deploy → Agent Store
 **Last Updated:** March 2026  
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
 
+<<<<<<< Updated upstream
 > *Build fast. Stay sovereign. Zero token liability. Nexus runtime is the product.*
+=======
+> *Build fast. Stay sovereign. Zero token liability. Nexus is the product.*
+>>>>>>> Stashed changes
 
 | Capability | Why | Priority |
 |------------|-----|----------|
@@ -1007,7 +1074,11 @@ Nova ─────────────────────────
 Agents Store ──────────────────────┐ │
 f.twyt / f.rsrx / f.library ────┐ │ │
                                 ▼ ▼ ▼
+<<<<<<< Updated upstream
                               Nexus runtime (Ralph)
+=======
+                              Nexus ()
+>>>>>>> Stashed changes
                                   │
                     ┌─────────────┴─────────────┐
                     ▼                           ▼
@@ -1019,7 +1090,11 @@ f.twyt / f.rsrx / f.library ────┐ │ │
     actions                MCPs
 ```
 
+<<<<<<< Updated upstream
 **Key insight:** Without Nexus runtime, Aitlas is just a chat UI. With it, Aitlas is an agent that works while you sleep.
+=======
+**Key insight:** Without Nexus, Aitlas is just a chat UI. With it, Aitlas is an agent that works while you sleep.
+>>>>>>> Stashed changes
 
 ---
 
@@ -1046,7 +1121,7 @@ f.twyt / f.rsrx / f.library ────┐ │ │
                        │
                        ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ F.LOOP (Orchestrator)                                        │
+│ Nexus (Orchestrator)                                        │
 │                                                              │
 │   1. CLASSIFY → Frontend Specialist agent                   │
 │   2. CREATE CREW:                                            │
@@ -1115,7 +1190,11 @@ f.twyt / f.rsrx / f.library ────┐ │ │
 
 | Action | Purpose | Monetization |
 |--------|---------|--------------|
+<<<<<<< Updated upstream
 | Nexus runtime | Execution layer | API usage, premium capacity |
+=======
+| Nexus | Execution layer | API usage, premium capacity |
+>>>>>>> Stashed changes
 | f.deploy | Deployment | Developer subscription |
 | f.flow | Workflow orchestration | Premium workflows |
 | f.mcp | MCP gateway | API access |
@@ -1158,6 +1237,7 @@ f.twyt / f.rsrx / f.library ────┐ │ │
 | f.hack | Security tools | Premium access |
 
 
+<<<<<<< Updated upstream
 ### 6. Support / Safety Actions
 
 | Action | Purpose | Monetization |
@@ -1284,3 +1364,5 @@ Aitlas
     └── Workers (Bun) ───────────── Durable agent execution
 ```
 
+=======
+>>>>>>> Stashed changes
