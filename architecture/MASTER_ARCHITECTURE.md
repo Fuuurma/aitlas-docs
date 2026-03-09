@@ -1,1447 +1,1352 @@
-# AITLAS — Master Architecture Document
-**Version:** 4.0 | **Date:** March 2026 | **Status:** CANONICAL  
+# Aitlas — Master Architecture Document
+**Version:** 6.0 | **Date:** March 2026 | **Status:** CANONICAL  
 **Owner:** Furma.tech | **Maintained by:** Herb (AI CTO)
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
->
-> Single source of truth. Supersedes all previous versions.
+> ⚠️ Proprietary. All Aitlas products are closed source.  
+> This is the single source of truth. Supersedes all previous versions.
 
 ---
 
-## 1. Vision & Mental Model
+## Changelog from v5
 
-### One Sentence
-Aitlas is a **sovereign agentic OS** — users bring their own AI keys, connect tools via MCP, hire autonomous agents, and run long background tasks without trusting or paying any cloud AI vendor for tokens.
+| Change | Type | Reason |
+|--------|------|--------|
+| Agent loop: added `max_tool_calls`, `max_tokens`, `credit_budget` hard stops | 🔴 V1 Fix | Runaway agents burn keys |
+| Tool Registry: added as first-class module | 🔴 V1 Fix | Tool discovery was undefined |
+| Prompt injection guard + tool argument allowlist | 🔴 V1 Fix | Security gap |
+| Secrets redaction middleware in all Elixir services | 🔴 V1 Fix | Log hygiene |
+| pgvector HNSW index specified | 🔴 V1 Fix | Vector search at scale |
+| DB indexes on `tasks`, `tool_calls`, `task_steps` | 🔴 V1 Fix | Missing, would degrade fast |
+| Short-term memory: active context in GenServer state, Redis for persistence across restarts | 🔴 V1 Fix | Reduced Redis round-trips |
+| **Agent State Replay + Deterministic Execution** | 🟢 V1 Feature | Core moat — details in §12 |
+| Split database logical namespaces | 🟡 V2 Future | Premature now, planned |
+| libcluster / Phoenix clustering | 🟡 V2 Future | Multi-node Nexus |
+| Tool versioning (`tool@v2`) | 🟡 V2 Future | Needed at first breaking change |
+| Task step retention policy | 🟡 V2 Future | Archive after 90 days |
+| OpenTelemetry + Prometheus + Grafana | 🟡 V2 Future | Add when volume warrants it |
+| Streaming tool results (`tools/stream`) | 🟡 V2 Future | When UX demands it |
+
+---
+
+## Table of Contents
+
+1. [What Aitlas Is](#1-what-aitlas-is)
+2. [The Four Products](#2-the-four-products)
+3. [Tech Stack (Locked)](#3-tech-stack-locked)
+4. [Nova — The UI](#4-nova--the-ui)
+5. [Nexus — The Agent OS](#5-nexus--the-agent-os)
+6. [Agents Store](#6-agents-store)
+7. [Actions](#7-actions)
+8. [How They Connect](#8-how-they-connect)
+9. [Templates](#9-templates)
+10. [Agent Definition & Deployment](#10-agent-definition--deployment)
+11. [Nexus Runtime — Deep Spec](#11-nexus-runtime--deep-spec)
+12. [Agent State Replay + Deterministic Execution](#12-agent-state-replay--deterministic-execution)
+13. [MCP Protocol](#13-mcp-protocol)
+14. [Credit System](#14-credit-system)
+15. [BYOK Model](#15-byok-model)
+16. [Auth Architecture](#16-auth-architecture)
+17. [Database Architecture](#17-database-architecture)
+18. [Security](#18-security)
+19. [Infrastructure & Deployment](#19-infrastructure--deployment)
+20. [Open Source Leverage](#20-open-source-leverage)
+21. [Future Roadmap (V2+)](#21-future-roadmap-v2)
+22. [Decision Log](#22-decision-log)
+
+---
+
+## 1. What Aitlas Is
+
+**One sentence:** Aitlas is a sovereign agentic OS — users bring their own AI keys, connect tools via MCP, hire autonomous agents, run long background tasks, and can replay, fork, and audit every execution step-by-step.
 
 ### Mental Model
+
 ```
-The Internet             →  Browser
-The OS                   →  Nexus (T3 Code fork)
+The Browser              →  Nova (UI)
+The Operating System     →  Nexus (Agent Runtime)
 The App Store            →  Agents Store
 The System Utilities     →  Actions (f.xyz)
-<<<<<<< Updated upstream
-The Background Daemons   →  Nexus runtime (Nexus)
-=======
-The Background Daemons   →  Nexus ()
->>>>>>> Stashed changes
-The File System          →  f.library
-The Execution Sandbox    →  OpenSandbox
-The Universal Connector  →  f.bridge (MCP gateway)
-The Local Brain          →  ~/.aitlas/ (aitlas-cli)
 The Network Layer        →  MCP
+The File System          →  f.library (an Action)
+The Git + Debugger       →  Replay Engine (§12) ← NEW
 ```
 
 ### Core Bets
+
 | Bet | Why |
 |-----|-----|
-| BYOK always — even paid tier | Zero token liability. Furma charges compute, never tokens. |
-| T3 Code fork not custom UI | Proven chat UX + free Electron desktop. Weeks saved. |
-| Open source extraction | Warden, OpenSandbox, RTK, Agency Agents — don't rebuild battle-tested tools. |
-<<<<<<< Updated upstream
-| Nexus runtime as platform, not infra | External devs calling `POST /tasks` = real moat. |
-=======
-| Nexus as platform, not infra | External devs calling `POST /tasks` = real moat. |
->>>>>>> Stashed changes
+| BYOK always, even paid tier | Zero token liability. Furma charges compute, never tokens. |
+| Elixir/OTP for the runtime | BEAM concurrency maps perfectly to agent execution. |
+| Clone + extend over build from scratch | T3 Code, Symphony, Mission Control — weeks saved. |
+| MCP as the standard | Any MCP-compatible agent works in Aitlas automatically. |
+| Credits for compute only | Users never get surprised by a token bill from Furma. |
+| **Deterministic replay** | Every agent run can be inspected, replayed, forked. No other platform does this. |
 
 ---
 
-## 2. How Ambitious Is This? (Honest Assessment)
-
-**Ambitious product vision. Manageable build.**
-
-The "orchestration layer" sounds scary. The actual custom code:
-
-| What sounds scary | What it actually is |
-|-------------------|---------------------|
-| "Durable agent runtime" | ~300 lines Bun: poll DB, 5-phase loop, heartbeat |
-| "Tool Gateway" | ~200 lines: fetch + retry + timeout + deduct credits |
-| "Watchdog / recovery" | ~100 lines: find stale heartbeats, reset to PENDING |
-| "Scheduler" | ~100 lines: cron loop that inserts task records |
-| "Task queue" | A Postgres table + `FOR UPDATE SKIP LOCKED` |
-
-**Total custom infrastructure: ~700-900 lines of TypeScript/Bun.**
-
-What comes for free via open source:
-| Component | Source | Status |
-|-----------|--------|--------|
-| Chat UI + Electron desktop | T3 Code (MIT) | Fork & modify |
-| Code review engine | Warden/Sentry (FSL) | Wrap in MCP |
-| Code execution sandbox | OpenSandbox/Alibaba (Apache 2.0) | Integrate TS SDK |
-| Token compression | RTK (MIT, 4700★) | Drop-in library |
-| 61 agent templates | Agency Agents (MIT) | Adapt YAML |
-| Auth | Better Auth | Configure once |
-| Vector search | pgvector (in Neon) | Already included |
-
-**The real work:**
-1. f.twyt — X API costs (~$100/mo for Basic API — verify pricing)
-2. f.rsrx — research synthesis + web scraping pipeline (spec doc missing, needs writing)
-3. Nexus provider router — T3 Code fork integration with Aitlas backend
-4. Credit/billing UI — Stripe + balance display + purchase flow
-5. Agent persona content — actual prompts for Rainmaker, Tax Ghost, etc.
-
-**The moat:** BYOK + MCP + credits + marketplace + persistent memory, all connected. Nobody has assembled this stack.
-
----
-
-## 3. Full Product Map
+## 2. The Four Products
 
 ```
-Aitlas
-├── nexus.aitlas.xyz      → Nexus Web (T3 Code fork, Next.js 16)
-├── nexus-desktop         → Electron app (T3 Code fork)
-├── agents.aitlas.xyz     → Agents Store (Next.js 16)
-├── f.xyz
-│   ├── twyt.f.xyz        → f.twyt  [Mini-App, Next.js 16]
-│   ├── rsrx.f.xyz        → f.rsrx  [Mini-App, Next.js 16]
-│   ├── library.f.xyz     → f.library [Mini-App, Next.js 16]
-│   ├── guard.f.xyz       → f.guard [Utility, Hono headless]
-│   ├── support.f.xyz     → f.support [Utility, Hono headless]
-│   ├── decloy.f.xyz      → f.decloy [Utility, Hono headless]
-│   └── bridge.f.xyz      → f.bridge [Utility, Hono headless]
-├── loop.internal         →  workers (Hetzner, Bun)
-└── aitlas-cli (npm)      → Local brain + repo scaffolder
+┌─────────────────────────────────────────────────────────────┐
+│                        AITLAS                               │
+│                                                             │
+│  ┌──────────┐   ┌──────────────┐   ┌──────────────────┐   │
+│  │  NOVA    │   │    AGENTS    │   │     ACTIONS      │   │
+│  │  (UI)    │   │    STORE     │   │    (f.xyz)       │   │
+│  │ Next.js  │   │  Next.js +   │   │  Next.js (FE)    │   │
+│  │          │   │   Elixir     │   │  Elixir (BE)     │   │
+│  └────┬─────┘   └──────┬───────┘   └────────┬─────────┘   │
+│       │                │                    │              │
+│       └────────────────┴────────────────────┘              │
+│                        │                                    │
+│                        ▼                                    │
+│              ┌─────────────────┐                           │
+│              │     NEXUS       │                           │
+│              │  (Agent OS)     │                           │
+│              │  Pure Elixir    │                           │
+│              │  + Replay Engine│                           │
+│              └─────────────────┘                           │
+│                        │                                    │
+│                   Providers                                 │
+│         (OpenAI / Anthropic / Gemini / local)              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. Nexus (T3 Code Fork)
+## 3. Tech Stack (Locked)
 
-**Not a custom Next.js app.** Fork of `github.com/pingdotgg/t3code` + Provider Router.
+| Product | Frontend | Backend | DB | Host |
+|---------|----------|---------|-----|------|
+| Nova | Next.js 16 + TypeScript | Next.js API routes | Neon Postgres | Vercel |
+| Nexus | — | Pure Elixir / Phoenix / Oban | Neon Postgres | Hetzner |
+| Agents Store | Next.js 16 + TypeScript | Elixir / Phoenix | Neon Postgres | Vercel (FE) + Hetzner (BE) |
+| Actions (UI) | Next.js 16 + TypeScript | Elixir / Phoenix | Neon Postgres | Vercel (FE) + Hetzner (BE) |
+| Actions (headless) | — | Pure Elixir / Phoenix | Neon Postgres | Hetzner |
 
-### Provider Router
+**All backends:** Elixir/Phoenix + Oban + Neon Postgres (from `aitlas-elixir-template`)  
+**All frontends:** Next.js 16 + Bun + shadcn/ui (from `aitlas-ui-template`)  
+**Shared infra:** Neon Postgres (eu-west-2), Upstash Redis, Cloudflare DNS
+
+---
+
+## 4. Nova — The UI
+
+### What It Is
+Nova is the user-facing shell. Intentionally a "zombie" of cloned open source repos glued together. No novel UI engineering — only integration work.
+
+### Three Zones, Three Sources
+
+| Zone | Source | Purpose |
+|------|--------|---------|
+| **Chat** | T3 Code (pingdotgg) — MIT | BYOK chat interface, provider switcher |
+| **Tasks** | Symphony (OpenAI) — MIT | Task monitor, live agent progress + **Replay Viewer** |
+| **Dashboard** | Mission Control (builderz-labs) — MIT | Overview, metrics, agent management |
+
+### Two Tiers
+
+**Free (BYOK only)**
+- Chat panel with Codex, Claude Code, OpenCode integrations
+- User brings their own key
+- No Nexus compute, no Actions, no Agents
+- Cost to Furma: $0
+
+**Paid (subscription or credits)**
+- Full Nova: chat + tasks + dashboard
+- Nexus unlocked → real agent execution
+- Actions available → f.xyz tools via MCP
+- Agents Store → hire and run agents
+- **Replay Viewer** → step-by-step agent inspection, fork, export
+
+### Nova Data Flow
+
 ```
-T3 Code UI (Nexus fork)
+User sends message in Chat
         │
-        ▼
-┌──────────────────────────────────────────────────────┐
-│                PROVIDER ROUTER                       │
-│  BYOK Mode (Free)           Aitlas Mode ($20/mo)    │
-│  ─────────────────           ──────────────         │
-│  Codex → user's key          Nexus Backend           │
-│  Claude Code → user's key    f.xyz Actions           │
-│  OpenCode → user's key       Agents Store            │
-│  Gemini → user's key         Memory (pgvector)       │
-<<<<<<< Updated upstream
-│                              Tasks (Nexus runtime)          │
-=======
-│                              Tasks (Nexus)          │
->>>>>>> Stashed changes
-│                              OpenSandbox exec        │
-│                              (still BYOK for LLM)   │
-└──────────────────────────────────────────────────────┘
+        ├── Simple message? 
+        │   → Call provider directly (BYOK key)
+        │   → Stream tokens back via SSE
+        │
+        └── Needs agent loop?
+            → POST /api/tasks (Nexus)
+            → Receive taskId immediately
+            → Subscribe to Phoenix Channel (taskId)
+            → Task Monitor shows live steps
+            → Each PLAN/ACT/REFLECT streamed in real-time
 ```
 
-**Critical:** Aitlas mode is ALSO BYOK. The user brings their model key. Furma provides orchestration + tools. Furma never pays tokens.
+### Nova Replay UI (New)
 
-### Aitlas Mode Gate
+Task Monitor panel gains replay controls:
+
 ```
-Requires: Pro subscription ($20/mo) OR credit balance >= 500
-```
+Agent Run #9842 — "Research EU AI startups"
+────────────────────────────────────────────
+Step 1 [PLAN]    ✓  "Search web for EU AI startups"
+Step 2 [ACTION]  ✓  f.rsrx.web_search → 47 results
+Step 3 [REFLECT] ✓  "We found 47 startups, need to filter"
+Step 4 [ACTION]  ✓  f.rsrx.synthesize_report
+Step 5 [FINAL]   ✓  Report generated
 
-### UI Surfaces
-| Surface | BYOK | Aitlas |
-|---------|------|--------|
-| Chat Panel | ✅ | ✅ |
-| Actions Sidebar | ❌ Locked | ✅ |
-| Agent Panel | ❌ | ✅ |
-<<<<<<< Updated upstream
-| Task Monitor | ❌ | ✅ Live Nexus runtime |
-=======
-| Task Monitor | ❌ | ✅ Live Nexus |
->>>>>>> Stashed changes
-| Workflow Builder | ❌ | ✅ DAG editor |
-
-### Instinct System (ECC Pattern)
-Tool call observations → background extracts patterns → `~/.aitlas/instincts/` → injected next session.
-
-### Memory
-pgvector in Neon. Auto-compaction at phase transitions (ECC strategic compact). Relevant chunks injected at session start via semantic similarity.
-
----
-
-## 5. aitlas-cli
-
-**Three jobs:**
-
-```bash
-# Scaffolding
-aitlas new ui my-product
-aitlas new action f-myaction
-aitlas new worker my-worker
-
-# Local brain
-aitlas init               # Create ~/.aitlas/
-aitlas sync               # Sync with Nexus
-aitlas instincts list
-aitlas run "rainmaker"    # Run agent locally
-
-# Agent publishing (future)
-aitlas create agent my-agent
-aitlas agent publish
-```
-
-### ~/.aitlas/
-```
-~/.aitlas/
-├── instincts/
-│   ├── personal/         ← Global learned patterns
-│   └── projects/{hash}/  ← Per-project patterns
-├── config.json
-├── credentials/          ← AES-256-GCM keys (NEVER synced to cloud)
-├── cache/
-└── workspaces/
+[ ▶ Replay ]  [ ⑂ Fork from step... ]  [ ↓ Export ]  [ ⇄ Share ]
 ```
 
 ---
 
-## 6. Agents Store + GTM Personas
+## 5. Nexus — The Agent OS
 
-### Architecture
-- Browse without auth, hire → `nexus.aitlas.xyz/activate?agentId=xxx`
-- 61+ seed agents from Agency Agents (adapted YAML format)
+### What It Is
+The agent operating system. Built in pure Elixir/OTP. Every agent task is an OTP GenServer process. Crashes are isolated and auto-recovered by supervisors. Oban handles durability and retries.
 
-### Launch Personas (Priority Order)
-| Persona | Vertical | Core Tools | Why First |
-|---------|----------|-----------|-----------|
-| **Rainmaker** | Marketing/Sales | f.twyt + f.rsrx | Easiest ROI, broadest market |
-| **Tax Ghost** | Finance | f.vault + f.pay | High WTP, niche |
-| **Bio-Hacker** | Health | f.health + f.sense | Passionate community |
-| **Concierge** | Travel | f.rsrx + f.brain | Good BYOK demo |
+### The Eight Internal Engines (updated from v5)
 
-Funnel: persona → Aitlas account → Nexus → Aitlas mode → credits.
+```
+NEXUS RUNTIME
+├── 1. Provider Router      — OpenAI / Anthropic / Gemini / local
+├── 2. Context Builder      — system + history + memory + files + tools
+├── 3. Agent Loop           — core execution brain (hardened safeguards)
+├── 4. Tool Executor        — MCP + internal + API + code + filesystem
+├── 5. Tool Registry        — register / resolve / validate / track  ← NEW
+├── 6. Memory Engine        — short-term (GenServer state) + vector + episodic
+├── 7. File Processor       — parse / chunk / embed / index
+└── 8. Observability        — events, metrics, traces, cost tracking
+    + Replay Engine         — deterministic trace + replay (§12)
+```
+
+### 1. Provider Router
+
+```elixir
+ProviderRouter.call(%{
+  model: "openai:gpt-4o",
+  input: context,
+  tools: tool_definitions,
+  seed: task.replay_seed         # deterministic mode
+})
+```
+
+Normalizes tool schemas, streaming, multimodal across:
+
+| Provider | Tool format | Stream |
+|----------|-------------|--------|
+| OpenAI | `tools` array | SSE |
+| Anthropic | `tool_use` blocks | SSE |
+| Gemini | `functions` | SSE |
+| Local (Ollama) | OpenAI-compat | SSE |
+
+**Model capability registry** (v1, in-memory map):
+
+```elixir
+@model_capabilities %{
+  "openai:gpt-4o"              => %{tools: true, vision: true, stream: true, max_context: 128_000},
+  "openai:gpt-4o-mini"         => %{tools: true, vision: true, stream: true, max_context: 128_000},
+  "anthropic:claude-3-5-sonnet"=> %{tools: true, vision: true, stream: true, max_context: 200_000},
+  "anthropic:claude-3-haiku"   => %{tools: true, vision: false, stream: true, max_context: 200_000},
+  "gemini:gemini-2.0-flash"    => %{tools: true, vision: true, stream: true, max_context: 1_000_000},
+}
+```
+
+Nexus checks this before assembling the context — avoids passing tool schemas to models that don't support them.
+
+### 2. Context Builder
+
+```
+system_prompt
++ conversation_history    (from Postgres)
++ vector_memories         (semantic search, pgvector, HNSW index)
++ relevant_files          (from file processor)
++ tool_definitions        (from Tool Registry)
+→ assembled_context
+```
+
+Context compaction (v1): sliding window (last N messages) + conversation summary.  
+Context compaction (v2): semantic extraction → vector memory.
+
+### 3. Agent Loop (Hardened)
+
+Each agent task = one OTP GenServer process. Hard limits are non-negotiable — they are set on task creation and enforced in the loop itself, not just checked at the end.
+
+```elixir
+defmodule Nexus.AgentLoop do
+  use GenServer
+
+  # Hard limits (all checked on every iteration)
+  @max_iterations_default 20
+  @max_tool_calls_default 50
+  @max_tokens_default 200_000
+  @max_runtime_ms_default 30 * 60 * 1000  # 30 min
+
+  def run(task) do
+    start_time = System.monotonic_time(:millisecond)
+
+    while within_limits?(task, start_time) do
+      context = ContextBuilder.build(task)
+      prompt_hash = hash(context)                    # for replay
+
+      response = ProviderRouter.call(task.provider, context, seed: task.seed)
+
+      case response do
+        %{tool_call: tool_call} ->
+          # Prompt injection check before executing
+          :ok = InjectionGuard.validate(tool_call, task.agent.tool_allowlist)
+
+          result = ToolExecutor.run(tool_call, task)
+          task = Task.append_step(task, :action, result, prompt_hash: prompt_hash)
+          continue
+
+        %{done: true, result: result} ->
+          Task.complete(task, result)
+          break
+
+        %{stuck: true} ->
+          Task.mark_stuck(task)
+          break
+      end
+    end
+  end
+
+  defp within_limits?(task, start_time) do
+    task.iteration < task.max_iterations and
+    task.tool_calls_made < task.max_tool_calls and
+    task.tokens_used < task.max_tokens and
+    task.credits_used < task.credit_budget and
+    System.monotonic_time(:millisecond) - start_time < task.max_runtime_ms
+  end
+end
+```
+
+**All five limit types enforced (v1):**
+
+| Limit | Default | Purpose |
+|-------|---------|---------|
+| `max_iterations` | 20 | Loop depth |
+| `max_tool_calls` | 50 | Tool spend cap |
+| `max_tokens` | 200k | Key burn prevention |
+| `credit_budget` | Set by user or agent spec | Cost cap |
+| `max_runtime_ms` | 30 min | Wall clock timeout |
+
+**Heuristic fallback** in the Agent Loop (catches pathological behavior before LLM reflection):
+
+```elixir
+defmodule Nexus.AgentLoop.Heuristics do
+  def check(task) do
+    cond do
+      duplicate_tool_calls?(task)   -> {:stuck, :tool_loop}
+      last_n_failed?(task, 3)       -> {:stuck, :repeated_failures}
+      no_progress?(task, 5)         -> {:stuck, :no_progress}
+      true                          -> :ok
+    end
+  end
+end
+```
+
+### 4. Tool Executor
+
+All tool calls route here. Never called directly.
+
+```
+tool_call received
+      │
+      ▼
+InjectionGuard.validate(tool_call, allowlist)      ← NEW
+      │
+      ▼
+ToolRegistry.resolve(tool_name)                    ← NEW
+      │
+      ▼
+credit pre-check
+      │
+      ▼
+execute tool (with timeout + retry)
+      │
+      ▼
+deduct credits (ONLY on success)
+      │
+      ▼
+hash output for replay trace                       ← NEW
+      │
+      ▼
+log tool_call record
+      │
+      ▼
+return result to Agent Loop
+```
+
+Tool execution is async — uses `Task.Supervisor.async_nolink` so a crashing tool doesn't kill the agent loop GenServer:
+
+```elixir
+Task.Supervisor.async_nolink(Nexus.ToolSupervisor, fn ->
+  MCPClient.call(tool, arguments, timeout: tool.timeout_ms)
+end)
+```
+
+### 5. Tool Registry (New — V1)
+
+Central source of truth for all tools available to Nexus.
+
+```elixir
+defmodule Nexus.ToolRegistry do
+  # Register tool when Action starts
+  def register(tool_definition)
+
+  # Resolve a tool name to its endpoint + schema
+  def resolve(tool_name) :: {:ok, tool} | {:error, :not_found}
+
+  # Validate tool call arguments against schema
+  def validate(tool_name, arguments) :: :ok | {:error, reason}
+
+  # List all tools available to a given agent spec
+  def list_for_agent(agent_spec) :: [tool]
+
+  # Track usage per tool
+  def record_usage(tool_name, user_id, credits_used)
+end
+```
+
+Tool definition shape:
+
+```elixir
+%Tool{
+  name: "web_search",
+  namespace: "f.rsrx",
+  full_name: "f.rsrx.web_search",
+  version: "1",                        # for future versioning
+  endpoint: "https://rsrx.f.xyz/api/mcp",
+  input_schema: %{...},               # JSON Schema
+  credit_cost: 2,
+  timeout_ms: 30_000,
+  requires_auth: true
+}
+```
+
+At startup, all registered Actions call `ToolRegistry.register/1`. Tool resolution is in-memory (ETS table) — zero DB round-trips during agent loop.
+
+### 6. Memory Engine
+
+Three memory types with updated storage split:
+
+| Type | Storage | Where lives | TTL | Used for |
+|------|---------|-------------|-----|---------|
+| **Active context** | GenServer state | In-process | Session | Current loop messages, tool results |
+| **Short-term persistent** | Redis (Upstash) | External | 24h | Survive GenServer restarts |
+| **Vector** | pgvector (Neon) | Postgres | Permanent | Preferences, facts, project context |
+| **Episodic** | Postgres | Postgres | 90 days → archive | Task history, outcomes, errors |
+
+Active context lives in process state — no Redis round-trips during the hot agent loop. Redis is only written when a GenServer is shutting down gracefully or on significant checkpoints (for crash recovery).
+
+**Embeddings:** v1 uses OpenAI `text-embedding-3-small` via user's BYOK OpenAI key. Embedding tokens count against the user's own key. If user has no OpenAI key, vector memory is disabled (still functional without it). This must be clearly communicated in Nova settings.
+
+### 7. File Processor
+
+```
+Upload → Parse → Chunk → Embed (OpenAI BYOK) → pgvector (HNSW index)
+```
+
+Parsers: PDF, DOCX, Markdown, CSV, code files, images (multimodal), audio.
+
+### 8. Observability
+
+Event bus events:
+
+```
+agent.started | agent.completed | agent.stuck | agent.failed | agent.replayed
+llm.called | llm.tokens_used | llm.latency | llm.cost
+tool.executed | tool.failed | tool.timeout | tool.injection_blocked
+memory.updated | memory.retrieved
+task.created | task.completed | task.failed
+credits.reserved | credits.deducted | credits.refunded
+```
+
+V1: structured Elixir Logger + `:telemetry` events.  
+V2: OpenTelemetry → Prometheus → Grafana (when volume warrants dedicated observability infra).
+
+---
+
+## 6. Agents Store
+
+### What It Is
+A marketplace of curated and user-created agents. Public browsing (no auth). Hiring redirects to Nova. Next.js (FE) + Elixir/Phoenix (BE).
+
+### Agent Definition Format
+
+```elixir
+%Agent{
+  name: "rainmaker",
+  display_name: "The Rainmaker",
+  version: "1.0.0",
+  provider: "openai:gpt-4o",
+
+  persona: %{
+    system_prompt: "You are a marketing research specialist...",
+    examples: []
+  },
+
+  skills: ["web_research", "summarization", "report_generation"],
+  actions: ["f.rsrx", "f.twyt"],
+  mcp_tools: [],
+  tool_allowlist: ["f.rsrx.web_search", "f.rsrx.synthesize_report", "f.twyt.search_twitter"],
+
+  memory: %{
+    short_term: true,
+    vector: true,
+    episodic: true,
+    retention: "30d"
+  },
+
+  execution: %{
+    max_iterations: 20,
+    max_tool_calls: 50,
+    max_tokens: 100_000,
+    timeout: "30m",
+    credit_budget: 100
+  },
+
+  replay: %{
+    enabled: true,
+    seed: nil,           # nil = non-deterministic, integer = deterministic
+    temperature: 0.7
+  },
+
+  pricing: %{
+    model: "freemium",
+    credit_cost: 10
+  }
+}
+```
+
+The `tool_allowlist` is used by `InjectionGuard` — agents can only call the tools explicitly listed.
+
+### GTM — Launch Personas
+
+| Persona | Tools | Why First |
+|---------|-------|-----------|
+| **Rainmaker** | f.rsrx + f.twyt | Broadest market, immediate ROI demo |
+| **Tax Ghost** | f.vault + f.pay | High willingness to pay |
+| **Bio-Hacker** | f.health + f.sense | Passionate community |
+| **Concierge** | f.rsrx | Good BYOK demo |
 
 ### Revenue Share
+
 | Event | Furma | Author |
 |-------|-------|--------|
 | Free agent | 100% credits | 0% |
 | Premium subscription | 30% | 70% |
-| Agent's f.xyz tool calls | 100% | 0% |
+| Agent's Action tool calls | 100% | 0% |
 
 ---
 
-## 7. Actions (f.xyz) — Complete Registry
+## 7. Actions
 
-### Two Types (LOCKED)
-**Mini-App Actions** (Next.js 16, full UI + `/api/mcp`): f.twyt, f.rsrx, f.library  
-**Utility Actions** (Hono, headless MCP only): f.guard, f.support, f.decloy, f.bridge
+### What Actions Are
+Standalone products exposing capabilities via MCP. Each Action: Next.js FE + Elixir BE + Neon Postgres. All expose three MCP entry points.
 
-### Tool Reference
-
-**f.twyt** — Twitter Intelligence
-| Tool | Credits |
-|------|---------|
-| `search_twitter` | 1 (+ filters: since/until/min_likes, engagement_score field) |
-| `get_user_timeline` | 1 |
-| `search_user_mentions` | 1 (brand monitoring) |
-| `ingest_tweets` | 1 + 0.1/tweet (bulk → f.library) |
-| `get_trending` | 0.5 (WOEID-based) |
-
-**f.library** — Vector Knowledge Base (pgvector, OpenAI embeddings)
-| Tool | Credits |
-|------|---------|
-| `ingest_document` | 2 (500-token chunks, 50 overlap) |
-| `search_knowledge_base` | 1 |
-| `retrieve_context` | 1 (LLM-ready assembled, max_tokens param) |
-| `delete_document` | 0 |
-| `update_document` | 2 |
-| `list_collections` | 0 |
-
-**f.rsrx** — Deep Research (spec to be written)
-| Tool | Credits |
-|------|---------|
-| `web_search` | 2 |
-| `academic_search` | 3 |
-| `deep_research` | 5 |
-| `synthesize_report` | 5 |
-| `monitor_topic` | 10/hr |
-
-**f.guard** — AI Code Review (Warden/Sentry engine)
-| Tool | Credits |
-|------|---------|
-| `scan_pull_request` | 3 |
-| `scan_repository` | 5 |
-| `scan_commit` | 1 |
-| `apply_fix` | 2 |
-| `configure_webhook` | 0 (GitHub auto-scan setup) |
-| `add_skill` | 1 |
-
-GitHub webhooks auto-trigger on push/PR. Findings posted as inline PR comments.
-
-**f.support** — Helpdesk Automation
-| Tool | Credits |
-|------|---------|
-| `ingest_support_message` | 1 (auto-triage: category + sentiment + priority) |
-| `suggest_reply` | 1 |
-| `resolve_ticket` | 3 (with f.library knowledge lookup) |
-| `create_ticket` | 1 |
-| `get_ticket` / `list_open_tickets` | 0 |
-| `update_ticket_status` | 0 |
-
-Channels: email, chat, Twitter, Discord, web widget. Uses f.library for knowledge base.
-
-**f.decloy** — Agent Deployment
-| Tool | Credits |
-|------|---------|
-| `deploy_agent` | 25 + 1/min runtime |
-| `invoke_agent` | 1 |
-| `get_logs` / `get_status` | 0 |
-
-Execution: `container` / `microvm` (Firecracker) / `edge`  
-Providers: `railway` / `fly` / `hetzner`  
-Long-term vision: `aitlas-runner` = Modal/Fly competitor.
-
-**f.bridge** — Universal MCP Connector
-```typescript
-f.bridge("mcp://plaid.com/api")  // → instantly has Plaid tools
 ```
-<<<<<<< Updated upstream
-Registers to external MCP registries: Smithery, Pulse, mcp.get. Monetized via Nexus runtime credits.
-=======
-Registers to external MCP registries: Smithery, Pulse, mcp.get. Monetized via Nexus credits.
->>>>>>> Stashed changes
+Action = Next.js (UI) + Elixir/Phoenix (MCP server + logic) + Neon Postgres
+```
+
+### Three Exposure Points (all Actions)
+
+```
+Nova          → internal: actions sidebar, result cards
+Nexus         → via Tool Registry + Tool Executor (MCP calls)
+External      → public MCP API: any agent or developer
+```
+
+### Actions Registry
+
+| Action | Type | Description | Status |
+|--------|------|-------------|--------|
+| **f.rsrx** | UI + Elixir | Deep research + synthesis | 🟡 Dev |
+| **f.library** | UI + Elixir | Vector knowledge base (pgvector) | ✅ Prod |
+| **f.twyt** | UI + Elixir | Twitter intelligence | ✅ Prod |
+| **f.vault** | UI + Elixir | Secure document storage | 🟡 Roadmap |
+| **f.memory** | Headless Elixir | Agent memory management | 🟡 Dev |
+| **f.guard** | Headless Elixir | AI code review (Warden engine) | 🟡 Roadmap |
+| **f.support** | UI + Elixir | Helpdesk automation | 🟡 Roadmap |
+| **f.decloy** | UI + Elixir | Agent deployment (Firecracker) | 🟡 Roadmap |
+| **f.bridge** | Headless Elixir | Universal MCP connector | 🟡 Roadmap |
+| **f.hack** | UI + Elixir | Security tools | 🟡 Roadmap |
+| **f.pay** | UI + Elixir | Payments | 🟡 Roadmap |
+| **f.mcp** | Headless Elixir | MCP registry/gateway | 🟡 Roadmap |
 
 ### MCP Result Card Protocol
-```typescript
-// All mini-app tool responses include:
-_aitlas: {
-  resultId: 'report_abc123',
-  deepLinkUrl: 'https://rsrx.f.xyz/reports/report_abc123',
-  creditsUsed: 5,
-  summary: '47 EU AI startups found.',
-}
-```
-Nexus renders inline result card with deep link.
-
----
-
-<<<<<<< Updated upstream
-## 8. Nexus runtime — Nexus Engine
-
-### Strategic Position
-> Current: Nexus runtime powers Nexus + Agents  
-> Future: Nexus runtime IS the product — REST API for external devs = real moat
-=======
-## 8. Nexus —  Engine
-
-### Strategic Position
-> Current: Nexus powers Nexus + Agents  
-> Future: Nexus IS the product — REST API for external devs = real moat
->>>>>>> Stashed changes
-
-### 5-Phase Execution Loop
-```
-① OBSERVE
-   Poll: SELECT FOR UPDATE SKIP LOCKED (PENDING tasks)
-   Load tool_registry, fetch memory context (if set)
-   Mark CLAIMED + write worker_id + heartbeat_at
-
-② PLAN
-   LLM prompt: "Given goal + steps so far, what's the best next action?"
-   Returns: { action: 'tool_call'|'DONE'|'STUCK', reasoning, toolName, toolInput }
-   Persist TaskStep(type: PLAN)
-   If DONE → skip to PERSIST. If STUCK → notify user, pause.
-
-③ ACT
-   Route through Tool Gateway (NEVER call MCP directly)
-   Gateway: auth + RTK compress + timeout + retry + credits + log
-   Persist ToolCall record + TaskStep(type: ACTION)
-
-④ REFLECT
-   LLM prompt: "Tool returned X. Was it useful? What did you learn?"
-   Returns: { quality: 'good'|'partial'|'poor', summary, nextDirection }
-   Persist TaskStep(type: REFLECTION)
-   3× consecutive 'poor' → mark STUCK
-
-⑤ PERSIST
-   Write insight to f.library (if memory_collection set + quality != 'poor')
-   Update task: current_step++, heartbeat_at
-   Emit SSE → Nexus Task Monitor
-   REPEAT from ① or TERMINATE
-```
-
-### State Machine
-```
-PENDING → CLAIMED → RUNNING → COMPLETED
-                         └──→ FAILED
-                         └──→ TIMEOUT (max_steps)
-                         └──→ STUCK (3× poor)
-                         └──→ CANCELLED
-```
-
-### Worker Process
-```typescript
-const worker = createWorker({
-  workerId: `worker-${WORKER_ID}`,
-  pollIntervalMs: 5_000,       // idle
-  activeIntervalMs: 100,       // active loop
-  heartbeatIntervalMs: 15_000, // keep-alive
-  maxConcurrentTasks: 1,       // one task per worker
-});
-```
-
-### Supporting Processes (same Hetzner box)
-- **Watchdog**: every 30s, find heartbeat_at < NOW()-60s → reset to PENDING
-- **Scheduler**: every 10s, find scheduled_tasks where next_run_at <= NOW() → insert task record
-
-### Cost Model (Revised)
-```
-Per task = 1 credit (orchestration) 
-         + 2 credits/hr (compute)
-         + N credits (tool calls, charged only on success)
-         + 0 credits (LLM tokens — user's BYOK)
-```
-
-### Scale (Hetzner)
-| Daily tasks | Config | Cost |
-|-------------|--------|------|
-| 0–100 | 1× CX21, 4 workers | ~€5/mo |
-| 100–500 | 1× CX31, 8 workers | ~€10/mo |
-| 2,000+ | 2× CX31, 16 workers | ~€20/mo |
-
-### MCP Tools
-- `dispatch_background_task` — 1cr orchestration
-- `get_task_status`, `cancel_task`, `retry_task`, `list_tasks`, `get_task_logs`
-
-### REST API (Phase 4 — Developer Platform)
-```
-Base: https://api.aitlas.xyz/v1/loop
-Auth: Bearer <aitlas-api-key>
-POST /tasks | GET /tasks/:id | GET /tasks/:id/stream (SSE) | POST /schedules
-```
-
-### Prompt Templates
-**PLAN:**
-```
-Goal: {goal}
-Steps so far: {steps_summary}
-Memory context: {memory_context}
-Available tools: {tool_registry}
-
-What is the single best next action? 
-JSON: { "action": "tool_call"|"DONE"|"STUCK", "reasoning", "toolName", "toolInput", "doneResult" }
-```
-
-**REFLECT:**
-```
-Called {toolName} with: {input}
-Result: {output}
-JSON: { "quality": "good"|"partial"|"poor", "summary", "nextDirection" }
-```
-
----
-
-## 9. Tool Gateway
-
-Central routing layer. Workers call this function — never MCP servers directly.
-
-```typescript
-export async function executeToolCall(req: ToolCallRequest): Promise<ToolCallResult> {
-  // 1. Credit pre-check (before network)
-  await checkCredits(req.userId, tool.creditCost);
-  // 2. Resolve endpoint
-  const endpoint = await getToolEndpoint(req.userId, req.toolName);
-  // 3. Create tool_call record (PENDING)
-  // 4. RTK compress input
-  const input = await rtk.compressInput(req.toolInput);
-  // 5. Execute with timeout + exponential backoff retry
-  const raw = await withTimeout(callMCPTool(endpoint, req.toolName, input), timeoutMs);
-  // 6. RTK compress output before returning to LLM
-  const output = await rtk.compressOutput(req.toolName, raw);
-  // 7. Deduct credits ONLY on success
-  await deductCredits(req.userId, tool.creditCost, reason);
-  // 8. Update tool_call record (SUCCESS)
-  return { success: true, output, creditsUsed, durationMs };
-}
-```
-
----
-
-## 10. RTK — Token Compression
-
-**RTK (Rust Token Killer)** — MIT, 4,700+ stars. Inside Tool Gateway. Free to users.
-
-| Command | Without RTK | With RTK | Savings |
-|---------|-------------|----------|---------|
-| `npm test` | ~25,000 tokens | ~2,500 | -90% |
-| `git diff` | ~10,000 tokens | ~2,500 | -75% |
-| `git status` | ~2,000 tokens | ~400 | -80% |
-
-Integration point: Tool Gateway compresses tool output before returning to PLAN/REFLECT LLM call.
-
-Open question: Rust FFI vs TypeScript reimplementation.
-
----
-
-## 11. Workflow System
-
-Multi-agent DAG pipelines. "Zapier for AI Agents."
 
 ```json
 {
-  "name": "Research & Publish",
-  "trigger": "manual",
-  "nodes": [
-    { "id": "1", "type": "agent", "config": { "agent": "researcher" } },
-    { "id": "2", "type": "action", "config": { "action": "f.rsrx" } },
-    { "id": "3", "type": "agent", "config": { "agent": "writer" } },
-    { "id": "4", "type": "action", "config": { "action": "f.twyt" } }
-  ],
-  "edges": [{ "from": "1", "to": "2" }, { "from": "2", "to": "3" }, { "from": "3", "to": "4" }]
+  "content": [{ "type": "text", "text": "..." }],
+  "_aitlas": {
+    "resultId": "report_abc123",
+    "deepLinkUrl": "https://rsrx.f.xyz/reports/report_abc123",
+    "creditsUsed": 5,
+    "summary": "47 EU AI startups found. Top: Paris (9), Berlin (7)."
+  }
 }
 ```
 
-Node types: `agent` | `action` | `condition` | `wait`  
-Triggers: `manual` | `webhook` | `schedule`
-
 ---
 
-## 12. OpenSandbox
+## 8. How They Connect
 
-[github.com/alibaba/OpenSandbox] — Apache 2.0.
-
-```typescript
-const sandbox = await Sandbox.create({ image: 'opensandbox/code-interpreter:v1.0.1', timeout: 300 });
-const result = await sandbox.commands.run('python3 -c "print(1+1)"');
-await sandbox.kill();
-```
-
-<<<<<<< Updated upstream
-Security: gVisor (default) / Kata / Firecracker. Used by Nexus runtime workers + f.decloy.
-=======
-Security: gVisor (default) / Kata / Firecracker. Used by Nexus workers + f.decloy.
->>>>>>> Stashed changes
-
-Sandbox MCP tools: `execute_code` (2cr), `run_command` (1cr), `browse_web` (3cr).
-
----
-
-## 13. Open Source Map
-
-| Project | License | Used For |
-|---------|---------|---------|
-| T3 Code | MIT | Nova + Electron |
-| OpenSandbox (Alibaba) | Apache 2.0 | Code/sandbox execution |
-| RTK | MIT | Token compression |
-| Warden (Sentry) | FSL-1.1 | f.guard engine |
-| Agency Agents | MIT | 61 agent templates |
-| ECC | MIT | Hooks + instinct format |
-| Crush | FSL-1.1 | AGENTS.md format |
-<<<<<<< Updated upstream
-| Trigger.dev | Apache 2.0 | Nexus runtime patterns |
-=======
-| Trigger.dev | Apache 2.0 | Nexus patterns |
->>>>>>> Stashed changes
-| CrewAI | MIT | Orchestration patterns |
-| OpenCode | MIT | BYOK arch reference |
-
----
-
-## 14. Shared Infrastructure
-
-- **Neon Postgres**: single instance, eu-west-2, pgvector enabled, DB branching per PR
-- **Upstash Redis**: rate limiting + short-term memory cache (NOT task queue — that's Postgres)
-- **Shared secrets** (identical across ALL services):
-  - `ENCRYPTION_KEY` — 64 hex chars, AES-256 BYOK
-  - `BETTER_AUTH_SECRET` — cross-service sessions
-  - `FURMA_INTERNAL_SECRET` — service-to-service auth
-- All in 1Password: `Aitlas/Production`
-
----
-
-## 15. Database Schema
-
-Key models (see full schema in aitlas-nexus prisma/schema.prisma):
-
-**Core:** User, Session, ApiKey (encrypted BYOK)
-
-**Credits:** CreditLedgerEntry (append-only, balance snapshot), CreditReservation
-
-<<<<<<< Updated upstream
-**Nexus runtime:** Task, TaskStep, ToolCall, ScheduledTask  
-=======
-**Nexus:** Task, TaskStep, ToolCall, ScheduledTask  
->>>>>>> Stashed changes
-- Task status: `PENDING | CLAIMED | RUNNING | COMPLETED | FAILED | TIMEOUT | STUCK | CANCELLED`
-- TaskStep type: `PLAN | ACTION | REFLECTION | FINAL`
-- ToolCall status: `PENDING | SUCCESS | FAILED | TIMEOUT`
-
-**Agents:** Agent, UserAgent
-
-**Tools:** ToolRegistry (per-user, with trust level: native/verified/external)
-
-**Memory:** Memory (pgvector, types: EPISODIC/SEMANTIC/STATE)
-
-**Workflows:** Workflow (nodes+edges JSON), WorkflowExecution
-
-**Observability:** Event (everything emits events — task.*, agent.*, credits.*, tool.*)
-
----
-
-## 16. Auth
-
-Better Auth (self-hosted, Neon). Cross-subdomain cookies for `*.aitlas.xyz` and `*.f.xyz`:
-
-```typescript
-advanced: {
-  crossSubdomainCookies: { enabled: true, domain: '.aitlas.xyz' }
-}
-```
-
-Service-to-service: `Authorization: Bearer <session_token>` + `X-Furma-Internal: <secret>`
-
----
-
-## 17. Credit System
-
-### Pricing
-| Item | Credits |
-|------|---------|
-| Pro/mo | +500 granted |
-| Pack 100 | $1 |
-| Pack 1,000 | $8 (20% off) |
-| f.twyt search | 1 |
-| f.library ingest | 2 |
-| f.rsrx research | 5 |
-| f.guard PR scan | 3 |
-| f.support auto-resolve | 3 |
-| execute_code | 2 |
-<<<<<<< Updated upstream
-| Nexus runtime orchestration | 1 (flat) |
-| Nexus runtime compute | 2/hr |
-=======
-| Nexus orchestration | 1 (flat) |
-| Nexus compute | 2/hr |
->>>>>>> Stashed changes
-| f.decloy deploy | 25 |
-| f.decloy runtime | 1/min |
-
-### Rules
-- Append-only ledger (never UPDATE credits directly)
-- Atomic: credit check + task create in one transaction
-- Reserve on dispatch → settle on completion → refund unused
-- NEVER charge for failed tool calls
-
----
-
-## 18. BYOK Model
-
-Both modes BYOK. Furma never pays for LLM tokens.
+### Full Request Flow (Paid User, Agentic Task)
 
 ```
-Free (BYOK mode):    user pays API provider. Furma: $0.
-Paid (Aitlas mode):  user STILL pays API provider.
-                     Furma charges credits for compute/tools only.
+Nova (chat) → user sends message
+      │
+      ▼
+Nova API: classify intent
+      │
+      ├── simple LLM call? → Provider Router (BYOK) → SSE stream back
+      │
+      └── agent task needed?
+          → POST nexus.aitlas.xyz/api/v1/tasks
+          → { taskId, status: "PENDING" }
+          → Nova subscribes to Phoenix Channel (taskId)
+                    │
+                    ▼
+          NEXUS picks up task (Oban queue)
+          Agent Loop (GenServer) starts
+          ToolRegistry.list_for_agent(agent_spec)
+          Context Builder assembles prompt
+                    │
+                    ▼
+          ② PLAN: LLM decides next action
+          ③ InjectionGuard.validate(tool_call)
+          ④ ACT: ToolExecutor → MCP call → Action
+          ⑤ REFLECT: LLM evaluates result
+          ⑥ PERSIST: write step + hash to trace
+                    │
+                    ▼
+          Phoenix Channel broadcasts each step
+                    │
+                    ▼
+          Nova Task Monitor + Replay Viewer updates live
 ```
 
-Key lifecycle: encrypted → stored in ApiKey table → fetched by worker at runtime → decrypted inline per LLM call → never logged, never in task record.
+### Service Communication
+
+| From | To | Method |
+|------|-----|--------|
+| Nova | Nexus | REST + Phoenix Channels (WebSocket) |
+| Nexus | Actions (BE) | MCP over HTTP (Tool Registry resolved endpoint) |
+| Nexus | External MCPs | MCP over HTTP |
+| External agents | Actions | MCP over HTTP (public API, MCP_API_KEY required) |
+| External devs | Nexus | REST API (API key auth) |
 
 ---
 
-## 19. Security
+## 9. Templates
 
-- `decryptApiKey()` result: NEVER assigned to named variable
-- NEVER log near API key data
-- ALL DB mutations: `$transaction`
-- ALL inputs: Zod validation before logic
-- Rate limiting: ALL public routes (Upstash)
-- `userId`: ALL Prisma queries
-- Credits: deducted ONLY after successful execution
-- ENCRYPTION_KEY: rotate every 90 days
-
----
-
-## 20. MCP Protocol
-
-`POST /api/mcp`, JSON-RPC 2.0, all f.xyz services.
-
-Methods: `initialize` | `tools/list` | `tools/call` | `ping`
-
-Aitlas error codes: -32001 (tool error) | -32002 (auth) | -32003 (credits) | -32004 (rate limit)
-
-Tool naming: `snake_case`. Each declares `inputSchema` (JSON Schema) + `creditCost`.
-
----
-
-## 21. Deployment Map
-
-| Service | Host | Template |
-|---------|------|----------|
-| Nexus web | Vercel | T3 Code fork |
-| Nexus desktop | Self-dist | Electron |
-| Agents Store | Vercel | ui-template |
-| f.twyt/rsrx/library | Vercel | ui-template |
-| f.guard/support/decloy/bridge | Vercel | action-template |
-<<<<<<< Updated upstream
-| Nexus runtime + watchdog + scheduler | Hetzner CX21 | worker-template |
-=======
-| Nexus + watchdog + scheduler | Hetzner CX21 | worker-template |
->>>>>>> Stashed changes
-| OpenSandbox | Hetzner (Docker) | internal |
-| PostgreSQL | Neon eu-west-2 | — |
-| Redis | Upstash | — |
-| DNS | Cloudflare | — |
-
-**Launch cost: ~€5/mo**
-
----
-
-## 22. Templates
+### `aitlas-ui-template` (Next.js)
+Base for all frontends.
 
 ```
-aitlas-ui-template     → Next.js 16 + Bun + shadcn/ui + Better Auth
-aitlas-action-template → Hono + Bun + Zod + MCP server
-aitlas-worker-template → Bun + Postgres queue + Tool Gateway + RTK
-aitlas-cli             → Bun CLI (scaffold + local brain + publish)
+aitlas-ui-template/
+├── app/
+│   ├── api/auth/           ← Better Auth handler
+│   ├── api/health/
+│   └── (pages)/
+├── lib/
+│   ├── auth.ts
+│   ├── api-client.ts
+│   └── env.ts
+├── components/ui/          ← shadcn/ui
+├── AGENTS.md
+└── package.json            ← Next.js 16 + Bun + Tailwind v4
+```
+
+### `aitlas-elixir-template` (Elixir)
+Base for all backends.
+
+```
+aitlas-elixir-template/
+├── lib/
+│   ├── app/
+│   ├── app_web/
+│   │   ├── channels/       ← Phoenix Channels
+│   │   └── controllers/
+│   ├── mcp/                ← MCP server (JSON-RPC 2.0)
+│   ├── tool_registry/      ← ToolRegistry module  ← NEW
+│   ├── injection_guard/    ← Prompt injection defense  ← NEW
+│   ├── auth/
+│   ├── credits/
+│   └── workers/            ← Oban workers
+├── priv/repo/migrations/
+├── config/
+└── mix.exs
+```
+
+### `aitlas-cli` (Bun)
+
+```bash
+aitlas new ui my-action
+aitlas new elixir f-myaction
+aitlas new full f-myaction
+aitlas new nexus-worker
 ```
 
 ---
 
-## 23. API Conventions
+## 10. Agent Definition & Deployment
+
+### How Nexus Runs an Agent
 
 ```
-URL:     /api/v1/[resource]/[id]/[action]
-MCP:     POST /api/mcp
-
-Success: { success: true, data: {...}, meta: { requestId, timestamp } }
-Error:   { success: false, error: { code, message, details } }
+Nova: "Run rainmaker for this user"
+        │
+        ▼
+Nexus: load AgentDefinition from DB (via Agents Store API)
+Nexus: ToolRegistry.list_for_agent(agent_spec)
+Nexus: spawn GenServer(AgentLoop, task)
+Nexus: Context Builder assembles first prompt (hashed)
+Nexus: Agent Loop begins → PLAN → InjectionGuard → ACT → REFLECT → PERSIST
+Nexus: each step hashed and stored in trace
+Nexus: streams progress to Nova via Phoenix Channel
+Nexus: writes result to DB, emits agent.completed
+Nova: shows result + Replay Viewer + deep links
 ```
 
----
-
-## 24. Decision Log
-
-| Decision | Chosen | Rejected | Reason |
-|----------|--------|----------|--------|
-| Next.js version | **16** | 15 | v16 is current |
-| Nova | T3 Code fork | Custom | Free Electron + proven UX |
-| Task queue | Postgres `FOR UPDATE SKIP LOCKED` | Redis Streams | Zero new infra |
-| Execution sandbox | OpenSandbox | Build custom | Apache 2.0, TS SDK, Firecracker |
-| Code review | Warden (Sentry) | Build custom | Production-ready, auto-fix |
-| Token compression | RTK | Custom regex | MIT, -80% tokens, <10ms |
-| Repo structure | Polyrepo | Monorepo | AI context collapse prevention |
-| Auth | Better Auth | Clerk, NextAuth | Self-hosted, BYOK-safe |
-| DB | Neon Postgres | PlanetScale, Supabase | pgvector, branching |
-| @aitlas/sdk | **NOT in v1** | Ship in v1 | Premature — wait for 10+ repos |
-| f.guard type | Hono headless v1 | Full mini-app | Ship faster |
-| Queue transport | Postgres polling | Redis Streams | Simpler, zero new infra (confirmed in nexus.md) |
-
----
-
-## Stale Documents
-
-| Doc | Issue |
-|-----|-------|
-<<<<<<< Updated upstream
-| MASTER_ARCHITECTURE v1-v3 | Missing RTK, Tool Gateway, Workflow, Event system, full Nexus runtime spec |
-=======
-| MASTER_ARCHITECTURE v1-v3 | Missing RTK, Tool Gateway, Workflow, Event system, full Nexus spec |
->>>>>>> Stashed changes
-| TECHNICAL_ARCHITECTURE.md | Older patterns, pre-Tool Gateway |
-| ARCHITECTURE_SPEC.md (queue section) | Says Redis Streams — superseded by Postgres polling decision |
-| Any doc: "10 credits/hr" | Revised: 1cr flat + 2/hr + tool credits |
-
----
-
----
-
-## 30. Extensible Loop (Developer Platform)
-
-### The Core Question
-<<<<<<< Updated upstream
-> **Is Nexus runtime an internal runtime... or a programmable economic layer?**
-
-**Answer: Nexus runtime is a Public Runtime Protocol.**
-=======
-> **Is Nexus an internal runtime... or a programmable economic layer?**
-
-**Answer: Nexus is a Public Runtime Protocol.**
->>>>>>> Stashed changes
-
-### Hook System
-Developers can plug into the execution loop:
-
-```typescript
-before_reasoning()    // Pre-planning logic
-after_reasoning()     // Post-planning analysis
-before_action()       // Pre-tool validation
-after_action()        // Post-tool logging
-memory_hook()         // Custom memory systems
-policy_hook()         // Security/compliance
-billing_hook()        // Custom billing
-safety_hook()         // Safety guardrails
-```
-
-### Three-Layer Economy
-
-| Layer | What | Monetization |
-|-------|------|--------------|
-| **Agent Economy** | Agents = apps | Revenue share |
-| **Action Economy** | Actions = APIs | Per-call credits |
-| **Runtime Economy** | Hooks = infrastructure | Per-loop credits |
-
-**Design Principle:**
-> Anything the core system can do inside the loop, developers should be able to extend.
-
-### Developer Platform API
-
-```
-POST /tasks          # Dispatch agent workflow
-GET /tasks/:id       # Check status
-STREAM /tasks/:id    # Real-time updates
-POST /hooks          # Register loop hooks
-GET /hooks/:id       # List hooks
-```
-
----
-
-## 31. Agent Distribution (Viral Mechanism)
-
-### The Problem with Marketplaces
-Most marketplaces fail because they rely on **discovery** (browse store) instead of **distribution** (spread through use).
-
-| Failed Model | Success Model |
-|--------------|---------------|
-| GPT Store, Hugging Face | WhatsApp, Slack, Notion |
-| Users browse store | Users receive from others |
-| Discovery-based | Distribution-based |
-
-### The Solution: Agents as Shareable Artifacts
-
-```
-User → receives agent link → uses it → keeps/forks it
-```
-
-**NOT:**
-```
-User → browses store → installs
-```
-
-### `.aitlas-agent` Format
-
-Single-file share format containing:
-- Agent config (persona, prompts)
-- Skills (capabilities)
-- Dependencies (required actions)
-- Action requirements (MCP tools needed)
-
-### Viral Loop
-
-1. Creator builds: "Startup Research Agent"
-2. Shares link: `aitlas.com/a/startup-research-agent`
-3. Recipient opens in Nexus → Options: Run, Duplicate, Install, Edit
-4. Recipient forks → "PRD Generator for SaaS"
-5. Ecosystem evolves organically
-
-### GitHub Model for Agents
-
-```
-fork agent → add actions → improve prompts → share version
-```
-
-### Hidden Advantage: BYOK Portability
-
-Agents don't depend on Aitlas API billing → They can move freely across:
-- Nexus instances
-- Teams
-- Git repos
-- External platforms
-
----
-
----
-
-## 32. "Docker for Agents" Architecture
-
-### The Analogy
-
-| Docker | Aitlas |
-|--------|--------|
-| Dockerfile | **AgentSpec** |
-| Image | **AgentImage** |
-| Container | **AgentInstance** |
-| Docker Hub | **Agent Store** |
-| Kubernetes | **f.deploy infrastructure** |
-
-### AgentSpec Format
+### AgentSpec YAML (shareable format)
 
 ```yaml
 agent:
-  name: startup-research
-  version: 1.2
-
-runtime:
-<<<<<<< Updated upstream
-  loop: Nexus runtime
-=======
-  loop: Nexus
->>>>>>> Stashed changes
+  name: rainmaker
+  version: 1.0.0
+  provider: openai:gpt-4o
 
 skills:
   - web_research
   - summarization
+  - report_generation
 
 actions:
-  - twyt.post
-  - library.search
+  - f.rsrx
+  - f.twyt
 
-permissions:
-  - internet
-  - files
+tool_allowlist:
+  - f.rsrx.web_search
+  - f.rsrx.synthesize_report
+  - f.twyt.search_twitter
 
 memory:
-  type: vector
+  short_term: true
+  vector: true
+  retention: 30d
+
+execution:
+  max_iterations: 20
+  max_tool_calls: 50
+  max_tokens: 100000
+  timeout: 30m
+  credit_budget: 100
+
+replay:
+  enabled: true
+  seed: null          # null = non-deterministic
 ```
-
-### Three-Layer Ecosystem
-
-| Layer | What | Analogy |
-|-------|------|---------|
-| **Agent Images** | Portable agents | Docker images |
-| **Actions** | MCP tools | APIs/plugins |
-| **Deployment Targets** | f.deploy targets | Kubernetes clusters |
-
-### Deployment Targets
-
-- Local machine
-- Cloud workers (Hetzner)
-- Enterprise server
-- Edge device
-- CI/CD pipeline
-
-### The Wild Scenario
-
-If Aitlas becomes the standard runtime:
-- OpenAI → Model provider
-- Anthropic → Model provider
-- **Aitlas → Execution layer above models**
-
-### The Real Pain to Solve
-
-> "I built an agent and want it to run anywhere."
-
-**Nail this → Architecture becomes extremely powerful.**
 
 ---
 
-## 33. Cold Start Strategy
+## 11. Nexus Runtime — Deep Spec
 
-### The Problem
+### Oban Job Types
 
-```
-No agents → No users → No agents → (vicious cycle)
-```
-
-### 3-Step Bootstrap Strategy
-
-#### Step 1: Seed the Agent Layer (10-20 Must-Have Agents)
-
-| Consumer | Developer |
-|----------|-----------|
-| Personal Research Assistant | Code Assistant |
-| Social Media Scheduler | Documentation Helper |
-| Health Tracker | API Analyzer |
-| Travel Concierge | Test Generator |
-
-**Goal:** Make the ecosystem look alive from day one.
-
-#### Step 2: Make Agents Viral
-
-| Mechanism | Example |
-|-----------|---------|
-| Collaborative features | Agents invite others (Notion-style) |
-| Shareable outputs | Recipients need Aitlas to view |
-| Copyable templates | Import like GitHub repos/Figma files |
-
-**Goal:** One user brings another, without paid ads.
-
-#### Step 3: Low-Friction Developer Path
-
-```
-Agent Spec → f.deploy → Agent Store
+```elixir
+Nexus.Workers.AgentRunner       # main agent loop
+Nexus.Workers.MemoryExtractor   # extract facts to vector store
+Nexus.Workers.FileIndexer       # parse + chunk + embed files
+Nexus.Workers.ScheduledTask     # recurring agent tasks
+Nexus.Workers.ReplayRunner      # re-executes a task from trace  ← NEW
+Nexus.Workers.Watchdog          # stale task cleanup (backup to OTP supervisors)
 ```
 
-**Early dev incentives:**
-- Revenue share from store commissions
-- Prominent placement
-- Analytics on usage/virality
+### Database Tables (Ecto)
+
+**tasks**
+```
+id, user_id, agent_id, goal, status, provider,
+max_iterations, max_tool_calls, max_tokens, credit_budget,
+current_iteration, tool_calls_made, tokens_used,
+tool_registry, memory_collection,
+scheduled_for, cron_expression,
+credits_reserved, credits_used, llm_tokens_used,
+worker_id, heartbeat_at,
+
+# Replay fields (NEW)
+execution_hash,           -- sha256 of full trace
+agent_spec_version,       -- version of agent at time of run
+provider_version,         -- model snapshot (e.g. gpt-4o-2024-11-20)
+seed,                     -- integer for deterministic, null for normal
+replay_of_task_id,        -- if this is a replay, points to original
+fork_from_step,           -- if this is a fork, which step it starts from
+
+result, error_message,
+created_at, completed_at
+```
+
+**task_steps**
+```
+id, task_id, step_number,
+type,               -- PLAN | ACTION | REFLECTION | FINAL
+
+# Replay fields (NEW)
+prompt_hash,        -- sha256 of the exact prompt sent to LLM
+model,              -- exact model used for this step
+input_tokens,
+output_tokens,
+seed,               -- step-level seed (if deterministic mode)
+
+content, metadata, duration_ms, created_at
+```
+
+**tool_calls**
+```
+id, task_id, step_id, tool_name, tool_input,
+
+# Replay fields (NEW)
+tool_version,       -- version of the tool at time of call
+output_hash,        -- sha256 of the raw tool output
+
+tool_output, status, credits_used,
+duration_ms, error, retry_count, created_at
+```
+
+### Indexes (V1 — required)
+
+```sql
+-- tasks
+CREATE INDEX idx_tasks_user_id_created ON tasks(user_id, created_at DESC);
+CREATE INDEX idx_tasks_status ON tasks(status) WHERE status IN ('PENDING', 'RUNNING');
+
+-- task_steps
+CREATE INDEX idx_task_steps_task_id ON task_steps(task_id, step_number);
+
+-- tool_calls
+CREATE INDEX idx_tool_calls_task_id ON tool_calls(task_id);
+CREATE INDEX idx_tool_calls_tool_name ON tool_calls(tool_name);
+
+-- vector memory
+CREATE INDEX idx_memory_vectors_hnsw ON memory_vectors
+  USING hnsw (embedding vector_cosine_ops)
+  WITH (m = 16, ef_construction = 64);
+
+-- credits
+CREATE INDEX idx_credit_ledger_user_id ON credit_ledger(user_id, created_at DESC);
+```
+
+### Cost Model
+
+```
+Per task:
+  + 1 credit       orchestration fee (flat, on dispatch)
+  + 2 credits/hr   actual compute time
+  + N credits      tool calls (only on success)
+  + 0 credits      LLM tokens (user's BYOK key)
+  + 0 credits      replays (replay mode is free — it's using cached results)
+```
+
+Replays in `exact` mode re-use stored tool outputs and LLM responses — no new tokens burned, no new credits charged.
+
+### Task State Machine
+
+```
+PENDING → CLAIMED → RUNNING → COMPLETED
+                        └──→ FAILED
+                        └──→ TIMEOUT
+                        └──→ STUCK
+                        └──→ CANCELLED
+                        └──→ REPLAYED → (new task continues)
+```
 
 ---
 
-## 34. Rollout Plan: Day 1 → Week 12
+## 12. Agent State Replay + Deterministic Execution
 
-### Phase 0 — Prep (Before Launch)
+> This is the core architectural moat. Almost no other agent platform implements this.
 
-- [ ] Seed 10-20 high-value agents (consumer + dev mix)
-- [ ] Create copyable/remixable agent templates
-- [ ] Preload sample data for each agent
-- [ ] Build dev onboarding: Agent Spec → f.deploy → Agent Store
-- [ ] Include analytics dashboard
+### What It Is
 
-### Phase 1 — Launch (Day 1 → Week 2)
+Every agent execution in Nexus is a fully recorded, cryptographically hashable event trace. This trace can be replayed exactly, inspected step by step, or forked at any point to continue from a different state.
 
-**Users:**
-- Invite 50-200 engaged users (consumers + devs)
-- Give access to must-have agents pre-configured
-- Enable sharing/collaboration features
+Nexus stops being just a runtime and becomes a **deterministic AI execution engine** — closer to Git + Temporal + an agent OS than a simple task runner.
 
-**Developers:**
-- Early access for 10-15 trusted devs
-- Early visibility + revenue share promises
-- Real user feedback
+### Why It Matters
 
-**Mechanics:**
-- Functional virality: Agents create reasons to invite others
-- Social proof: "This agent is used by X people"
-- Leaderboard: Highlight top-performing agents
+| Use Case | What Replay Enables |
+|----------|---------------------|
+| Debugging | Reproduce any agent failure exactly |
+| Enterprise compliance | Full audit trail: prompt → reasoning → decision → output |
+| Prompt improvement | Fork from step 2, try better system prompt |
+| Model comparison | Fork from step 1, swap model |
+| Agent training data | Millions of labeled traces → fine-tune |
+| Marketplace trust | Users can inspect what a hired agent actually did |
+| Sharing | "Clone this run" — others replay your exact execution |
 
-### Phase 2 — Network Effects Ignite (Week 3 → Week 6)
+### The Trace
 
-- [ ] Enable agent remixing (fork → modify → credit original)
-- [ ] Launch multi-agent workflows (DAGs)
-- [ ] Show collaboration features ("X people using this agent")
-- [ ] Deploy social proof widgets ("Cloned 17 times last week")
+Every task execution stores an immutable trace:
 
-### Phase 3 — Marketplace Expansion (Week 6 → Week 9)
+```
+TASK RUN 9842 — "Research EU AI startups"
+execution_hash: sha256(all steps)
+provider_version: gpt-4o-2024-11-20
+agent_spec_version: rainmaker@1.0.0
+seed: 42 (deterministic mode)
 
-- [ ] Open Agent Store to public developers
-- [ ] Built-in viral hooks for every agent
-- [ ] Reward program: credits for clones, shares, invites
-- [ ] Curate high-quality agents for trust
+Step 1 — PLAN
+  model: openai:gpt-4o
+  prompt_hash: ab92c1...
+  input_tokens: 512
+  output_tokens: 128
+  output: "Search web for EU AI startups in Paris and Berlin"
 
-### Phase 4 — Consumer Growth & Stickiness (Week 9 → Week 12)
+Step 2 — ACTION
+  tool: f.rsrx.web_search
+  tool_version: 1
+  input: { query: "EU AI startups 2026" }
+  output_hash: 29afc2...
+  credits_used: 2
+  duration_ms: 1840
 
-**Goal:** Make Aitlas sticky for non-dev users.
+Step 3 — REFLECTION
+  model: openai:gpt-4o
+  prompt_hash: 98cd33...
+  output: "47 results found, filter by funding stage"
 
-- [ ] Highlight high-utility agents (personalized "top agents for you")
-- [ ] Suggest multi-agent workflows to showcase value
-- [ ] Gamify discovery (unlock new agents after interactions)
-- [ ] Leaderboards for top workflows/most-used agents
-- [ ] Cross-device continuity (desktop + mobile + browser)
-- [ ] Social signals (opt-in sharing of results to friends)
+Step 4 — ACTION
+  tool: f.rsrx.synthesize_report
+  ...
 
-### Phase 5 — Self-Sustaining Ecosystem (Post Week 12)
+Step 5 — FINAL
+  output: [full report]
+  execution_hash: ab82ff...
+```
 
-**Network effect loops:**
-- Users attract other users via shared agents
-- Developers motivated to build (used, shared, rewarded)
-- Multi-agent workflows create sticky patterns (daily usage)
+### Replay Modes
 
-**By now:**
-- Agent Store full of useful agents
-- Workflows show ecosystem depth
-- Functional virality drives organic growth
+**Exact Replay** — re-run using cached tool outputs and LLM responses. Zero new tokens. Used for debugging and audit.
 
-**Focus shifts to:**
-- Refining monetization
-- Expanding marketplace
-- Adding new verticals
+**Live Replay** — re-run all steps for real. New LLM calls, new tool calls. Used for "try again" with different context.
+
+**Fork** — continue from step N with modifications:
+- Different model
+- Different system prompt
+- Different tool
+
+### Replay API
+
+```
+POST   /api/v1/tasks/:id/replay
+Body:
+{
+  "mode": "exact" | "live" | "fork",
+  "fork_from_step": 3,              # fork mode only
+  "replace_model": "anthropic:claude-3-5-sonnet",  # optional override
+  "replace_system_prompt": "...",   # optional override
+  "replace_tool_at_step": {         # optional override
+    "step": 2,
+    "tool": "f.rsrx.deep_research"
+  }
+}
+
+Response:
+{
+  "new_task_id": "task_9843",
+  "replay_of": "task_9842",
+  "fork_from_step": 3,
+  "status": "PENDING"
+}
+```
+
+### Deterministic Mode
+
+For a fully deterministic run:
+
+```elixir
+%Task{
+  seed: 42,           # fixed seed passed to LLM call
+  provider: "openai:gpt-4o-2024-11-20",   # pinned model version, not alias
+  tool_registry: snapshot_of_tool_definitions_at_dispatch_time
+}
+```
+
+With `seed` + pinned model version + stored tool outputs: replay is byte-identical.
+
+### Replay Engine (Elixir)
+
+```elixir
+defmodule Nexus.ReplayEngine do
+
+  def replay(task_id, opts \\ []) do
+    mode = Keyword.get(opts, :mode, :exact)
+    fork_from = Keyword.get(opts, :fork_from_step, nil)
+    overrides = Keyword.get(opts, :overrides, %{})
+
+    original = Tasks.get_with_trace!(task_id)
+
+    new_task = build_replay_task(original, mode, fork_from, overrides)
+    {:ok, dispatched} = Tasks.create_and_enqueue(new_task)
+
+    dispatched
+  end
+
+  defp run_exact(task, step) do
+    # Re-emit stored steps without calling LLM or tools
+    # Used for inspection and audit — no API calls made
+    Enum.each(task.steps, &broadcast_step/1)
+  end
+
+  defp run_fork(task, from_step, overrides) do
+    # Replay steps 1..from_step-1 from cache
+    # Then continue live from from_step with overrides applied
+    steps_before = Enum.take(task.steps, from_step - 1)
+    Enum.each(steps_before, &replay_cached_step/1)
+    AgentLoop.continue_from(task, from_step, overrides)
+  end
+end
+```
+
+### Nova Replay Viewer
+
+Task Monitor panel, replay controls:
+
+```
+Run #9842 — "Research EU AI startups"
+agent: rainmaker@1.0.0 | model: gpt-4o-2024-11-20 | 5 steps | 47 credits
+──────────────────────────────────────────────────────────────
+● Step 1  PLAN       ✓  "Search web for EU AI startups"       [0.8s]
+● Step 2  ACTION     ✓  f.rsrx.web_search → 47 results        [1.8s]
+● Step 3  REFLECT    ✓  "Filter by funding stage"              [0.6s]
+● Step 4  ACTION     ✓  f.rsrx.synthesize_report               [4.2s]
+● Step 5  FINAL      ✓  Report: 47 EU AI startups              [0.3s]
+
+[ ▶ Replay Exact ]  [ ⑂ Fork from step 3 ]  [ ↓ Export Trace ]  [ ⇄ Share Run ]
+```
+
+**Fork from step 3** opens a panel:
+```
+Fork Run #9842 from Step 3
+─────────────────────────
+Model:         [ gpt-4o ▼ ] or try [ claude-3-5-sonnet ]
+System prompt: [ original ▼ ] or [ edit... ]
+Tool override: [ none ▼ ]
+
+[ Run Fork → ]
+```
+
+### Share Run (Agent GitHub)
+
+A shared run link: `aitlas.xyz/runs/9842/share`
+
+Visitors can:
+- Inspect the full trace (if owner made it public)
+- Clone the agent that produced it
+- Fork the run and replay with their own key
+- Export the trace as JSON
+
+This is a distribution mechanic. A viral agent run shared on Twitter pulls people into Nova.
+
+### Long-Term: Agent Training Data
+
+Every completed task is a labeled trace:
+- Goal → actions → result
+- Tool calls with success/failure
+- Reflection quality
+
+At scale: millions of structured traces. Can be used to fine-tune models, optimize prompts, and train routing models to pick the right tools faster.
 
 ---
 
-## Key Principles Summary
+## 13. MCP Protocol
 
-| Principle | Description |
-|-----------|-------------|
-| **Seed vs Organic** | Seed agents first → organic network effect follows |
-| **Functional Virality** | Users spread platform because agents *require sharing* |
-| **Developer Incentives** | Low friction + clear feedback + rewards |
-| **Consumer Stickiness** | Multi-agent workflows + personalized suggestions |
-| **Cold Start Solved** | Small cohort → functional virality → supply + demand loop |
+All Actions expose: `POST /api/mcp`, JSON-RPC 2.0.
+
+**Authentication (V1):** All external MCP calls require `MCP_API_KEY` header.
+
+```
+Internal (Nexus → Action): Authorization: Bearer <session_token> + X-Furma-Internal
+External (developer → Action): Authorization: Bearer <MCP_API_KEY>
+```
+
+Methods: `initialize` | `tools/list` | `tools/call` | `ping`
+
+V2: `tools/stream` — for long-running tools (f.rsrx deep_research, code execution).
+
+### Error Codes
+
+| Code | Meaning |
+|------|---------|
+| -32001 | Tool execution error |
+| -32002 | Authentication failed |
+| -32003 | Credits exceeded |
+| -32004 | Rate limit reached |
+| -32005 | Tool argument validation failed |
+| -32006 | Tool not in agent allowlist (injection blocked) |
+
+---
+
+## 14. Credit System
+
+### Pricing
+
+| Item | Credits | USD |
+|------|---------|-----|
+| Pro subscription/mo | +500 granted | $20/mo plan |
+| Pack 100 | $1 | |
+| Pack 1,000 | $8 (20% off) | |
+| f.twyt search | 1 | $0.01 |
+| f.library ingest | 2 | $0.02 |
+| f.rsrx deep research | 5 | $0.05 |
+| f.guard PR scan | 3 | $0.03 |
+| execute_code (sandbox) | 2 | $0.02 |
+| Nexus orchestration | 1 flat | $0.01 |
+| Nexus compute | 2/hr | $0.02/hr |
+| f.decloy deploy | 25 | $0.25 |
+| f.decloy runtime | 1/min | $0.01/min |
+| Replay (exact mode) | 0 | Free |
+| Replay (live mode) | same as original | Re-runs cost |
+
+### Rules
+- Append-only ledger — never UPDATE credits directly
+- Atomic: credit check + task create in one DB transaction
+- Reserve on dispatch → settle on completion → refund unused
+- NEVER charge for failed tool calls
+- Exact replays are free — cached results, no new compute
+
+---
+
+## 15. BYOK Model
+
+Both tiers are BYOK. Furma never pays for LLM tokens.
+
+```
+Free tier:   user pays API provider directly. Furma: $0.
+Paid tier:   user STILL pays API provider.
+             Furma charges credits for compute + tool calls only.
+```
+
+**Embeddings:** OpenAI `text-embedding-3-small` via user's BYOK OpenAI key. If no OpenAI key: vector memory + file indexing disabled (clearly communicated in Nova settings).
+
+Key lifecycle:
+1. User enters API key in Nova Settings
+2. Encrypted AES-256-GCM → stored in `api_keys` table
+3. At agent execution: Nexus fetches encrypted key by `user_id + provider`
+4. Decrypted inline per LLM call, inside the GenServer process
+5. Never stored in task record, never logged, GC'd after use
+
+---
+
+## 16. Auth Architecture
+
+Better Auth (self-hosted, Neon Postgres). Sessions valid across all `*.aitlas.xyz` subdomains.
+
+Cross-subdomain: `domain: '.aitlas.xyz'`
+
+Service-to-service:
+```
+Authorization: Bearer <session_token>
+X-Furma-Internal: <FURMA_INTERNAL_SECRET>
+```
+
+MCP external access:
+```
+Authorization: Bearer <MCP_API_KEY>
+```
+
+---
+
+## 17. Database Architecture
+
+**Single Neon Postgres instance** (eu-west-2). All services share it. Tables are namespaced by service convention.
+
+**V1 schema namespaces (logical, same DB):**
+
+```
+aitlas_core:     users, sessions, api_keys, credit_ledger
+nexus_runtime:   tasks, task_steps, tool_calls, scheduled_tasks
+agents_store:    agents, agent_versions, agent_runs_summary
+actions_*:       per-action tables (f_library_collections, f_twyt_feeds, etc.)
+memory:          memory_vectors, episodic_memory
+```
+
+Neon pooled URL (`?pgbouncer=true`) for all runtime services.  
+Neon unpooled URL for migrations only.
+
+**V2:** Migrate to separate logical databases within the Neon cluster when query volumes warrant connection isolation.
+
+**Shared secrets:**
+- `ENCRYPTION_KEY` — 64 hex chars, AES-256 BYOK, rotate every 90 days
+- `BETTER_AUTH_SECRET` — cross-service sessions
+- `FURMA_INTERNAL_SECRET` — service-to-service auth
+
+Stored in 1Password: `Aitlas/Production`
+
+---
+
+## 18. Security
+
+### Non-Negotiables (V1)
+
+- `decrypt_api_key/1` result: NEVER assigned to a named variable, NEVER logged
+- ALL DB mutations: Ecto transactions
+- ALL inputs: Ecto changesets + Zod (JS side)
+- Rate limiting: ALL public routes (Upstash Redis)
+- `user_id`: ALL DB queries — no cross-tenant leaks
+- Credits deducted ONLY after successful tool execution
+- MCP external routes: require `MCP_API_KEY` header
+
+### Prompt Injection Guard (V1 — New)
+
+Every tool call goes through `InjectionGuard.validate/2` before execution:
+
+```elixir
+defmodule Nexus.InjectionGuard do
+  @suspicious_patterns [
+    ~r/ignore (previous|all) instructions/i,
+    ~r/exfiltrate/i,
+    ~r/reveal (api|secret|key)/i,
+    ~r/execute (system|shell|bash)/i,
+    ~r/call (tool|function) .+ instead/i
+  ]
+
+  def validate(tool_call, allowlist) do
+    cond do
+      tool_call.name not in allowlist ->
+        {:error, :tool_not_in_allowlist}
+
+      contains_suspicious_patterns?(tool_call.arguments) ->
+        {:error, :injection_detected}
+
+      not ToolRegistry.validate(tool_call.name, tool_call.arguments) ->
+        {:error, :invalid_arguments}
+
+      true ->
+        :ok
+    end
+  end
+end
+```
+
+### Secrets Redaction (V1 — New)
+
+Logger middleware auto-redacts in all Elixir services:
+
+```elixir
+defmodule Aitlas.Logger.Redactor do
+  @redact_keys ~w(api_key authorization password secret token bearer)
+
+  def filter(message) do
+    Regex.replace(~r/(api_key|authorization|password|secret|token|bearer)[=:\s"']+\S+/i,
+      message, "[REDACTED]")
+  end
+end
+```
+
+---
+
+## 19. Infrastructure & Deployment
+
+| Service | Host | Notes |
+|---------|------|-------|
+| Nova (web) | Vercel | Next.js, edge CDN |
+| Agents Store (FE) | Vercel | Next.js |
+| Actions (FE) | Vercel | Next.js |
+| Nexus | Hetzner CPX31 | Pure Elixir, Oban workers |
+| Agents Store (BE) | Hetzner | Elixir/Phoenix |
+| Actions (BE) | Hetzner | Elixir/Phoenix |
+| PostgreSQL | Neon eu-west-2 | Serverless, pgvector, HNSW |
+| Redis | Upstash | Rate limiting, short-term memory persistence |
+| DNS + proxy | Cloudflare | All domains |
+
+**Starter:** CPX31 (2 vCPU, 8GB RAM) for all Elixir services — Elixir needs CPU more than RAM.  
+**Scale path:** Additional CPX31 nodes + libcluster (V2) for Phoenix clustering.
+
+**Launch cost: ~€15-20/mo**
+
+---
+
+## 20. Open Source Leverage
+
+| Project | License | Used For |
+|---------|---------|---------|
+| T3 Code (pingdotgg) | MIT | Nova chat UI |
+| Symphony (OpenAI) | MIT | Nova task monitor + Replay Viewer base |
+| Mission Control (builderz-labs) | MIT | Nova dashboard |
+| OpenSandbox (Alibaba) | Apache 2.0 | Code execution sandbox |
+| RTK | MIT | Token compression in Tool Executor |
+| Warden (Sentry) | FSL-1.1 | f.guard code review engine |
+| Agency Agents | MIT | 61 seed agent templates |
+| ECC | MIT | Instinct format + compaction |
+| Crush (Charmbracelet) | FSL-1.1 | AGENTS.md format |
+| Oban | MIT | Durable job queue |
+| pgvector | PostgreSQL | Vector memory with HNSW |
+
+---
+
+## 21. Future Roadmap (V2+)
+
+These are architecturally correct but explicitly **not in V1**. Listed here so they are not forgotten and not prematurely built.
+
+| Feature | Trigger to implement | Notes |
+|---------|---------------------|-------|
+| **Split Neon databases** | When query isolation is needed or connection pooling breaks | One cluster, separate logical DBs: `nexus_runtime`, `agents_store`, etc. |
+| **libcluster + Phoenix clustering** | When running more than one Nexus node | Erlang distribution, task sharding per node |
+| **Tool versioning** (`search_twitter@v2`) | First time a tool has a breaking change | Tool Registry already has `version` field |
+| **Task step retention policy** | When DB size becomes a concern | Archive after 90 days, soft-delete, cold storage |
+| **OpenTelemetry + Prometheus + Grafana** | When volume warrants dedicated observability | V1 uses `:telemetry` + structured Logger |
+| **Streaming tool results** (`tools/stream`) | When f.rsrx deep_research or code execution UX requires it | JSON-RPC extension: `tools/stream` method |
+| **Agent dataset + fine-tuning pipeline** | When millions of traces exist | Use replay traces as training data |
+| **Distributed Nexus cluster** | When single-node Hetzner is maxed | Erlang distribution + BEAM really shines here |
+| **Semantic context compression** | When context windows are regularly hitting limits | Summarize old steps into vector memories |
+
+---
+
+## 22. Decision Log
+
+| Decision | Chosen | Rejected | Reason |
+|----------|--------|----------|--------|
+| Nova stack | Next.js (clone T3/Symphony/MC) | Build from scratch | Weeks saved |
+| Nexus stack | Pure Elixir/OTP | Node/Bun | BEAM perfect for agent loops |
+| Actions stack | Next.js FE + Elixir BE | Pure Next.js | Best UI + best agentic backend |
+| Task queue | Oban (Postgres) | Redis Streams, BullMQ | Elixir-native, zero new infra |
+| Agent recovery | OTP Supervisors | Custom watchdog | Built into runtime |
+| Auth | Better Auth (self-hosted) | Clerk, NextAuth | Sovereign, BYOK-safe |
+| DB | Neon Postgres | PlanetScale, Supabase | pgvector, HNSW, Ecto |
+| Repo structure | Polyrepo | Monorepo | AI context collapse prevention |
+| Agent format | Declarative spec (YAML/Elixir map) | Imperative code | Portable, forkable |
+| Encryption | AES-256-GCM | Vault, KMS | Zero new infra |
+| Short-term memory | GenServer state (hot) + Redis (persistence) | Redis-only | Eliminate round-trips in hot loop |
+| Phoenix Channels | Keep for task streaming | SSE | Bidirectional: supports cancel, pause, inject |
+| Hetzner instance | CPX31 | CX21 | Elixir benefits from CPU headroom |
+| Replay traces | V1 feature | V2 | Foundational moat, fits existing schema |
+| Tool versioning | V2 feature | V1 | Premature without breaking changes |
+| Observability stack | V2 (OTel + Prometheus) | V1 | Structured logs sufficient at launch |
+
+---
+
+## Appendix: Repo Registry
+
+| Repo | Stack | Domain | Status |
+|------|-------|--------|--------|
+| `aitlas-ui-template` | Next.js 16 + Bun | — | ✅ Base template |
+| `aitlas-elixir-template` | Elixir + Phoenix + Oban | — | ✅ Base template |
+| `aitlas-cli` | Bun | npm | 🟡 Dev |
+| `aitlas-nova` | Next.js (T3+Symphony+MC) | nova.aitlas.xyz | 🟡 Dev |
+| `aitlas-nexus` | Pure Elixir | nexus.aitlas.xyz | 🟡 Dev |
+| `aitlas-agents` | Next.js + Elixir | agents.aitlas.xyz | 🟡 Dev |
+| `f-rsrx` | Next.js + Elixir | rsrx.f.xyz | 🟡 Dev |
+| `f-library` | Next.js + Elixir | library.f.xyz | ✅ Prod |
+| `f-twyt` | Next.js + Elixir | twyt.f.xyz | ✅ Prod |
+| `f-vault` | Next.js + Elixir | vault.f.xyz | 🟡 Roadmap |
+| `f-memory` | Elixir only | memory.f.xyz | 🟡 Dev |
+| `f-guard` | Elixir only | guard.f.xyz | 🟡 Roadmap |
+| `f-support` | Next.js + Elixir | support.f.xyz | 🟡 Roadmap |
+| `f-decloy` | Next.js + Elixir | decloy.f.xyz | 🟡 Roadmap |
+| `f-bridge` | Elixir only | bridge.f.xyz | 🟡 Roadmap |
+| `f-hack` | Next.js + Elixir | hack.f.xyz | 🟡 Roadmap |
 
 ---
 
 **Last Updated:** March 2026  
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
 
-<<<<<<< Updated upstream
-> *Build fast. Stay sovereign. Zero token liability. Nexus runtime is the product.*
-=======
-> *Build fast. Stay sovereign. Zero token liability. Nexus is the product.*
->>>>>>> Stashed changes
-
-| Capability | Why | Priority |
-|------------|-----|----------|
-| Persistent Memory | LLMs forget between sessions | P0 |
-| Auto-Compaction | LLMs don't auto-summarize | P0 |
-| Agent Orchestration | Multi-agent coordination | P1 |
-| Codebase Search | Semantic file search | P1 |
-| Tool Ecosystem | 68+ pre-built tools | P1 |
-
----
-
-## 26. Dependency Graph
-
-```
-Nova ──────────────────────────────┐
-Agents Store ──────────────────────┐ │
-f.twyt / f.rsrx / f.library ────┐ │ │
-                                ▼ ▼ ▼
-<<<<<<< Updated upstream
-                              Nexus runtime (Nexus)
-=======
-                              Nexus ()
->>>>>>> Stashed changes
-                                  │
-                    ┌─────────────┴─────────────┐
-                    ▼                           ▼
-              Tool Gateway              Postgres queue
-                    │
-          ┌─────────┼─────────┐
-          ▼         ▼         ▼
-      f.xyz    OpenSandbox  3rd-party
-    actions                MCPs
-```
-
-<<<<<<< Updated upstream
-**Key insight:** Without Nexus runtime, Aitlas is just a chat UI. With it, Aitlas is an agent that works while you sleep.
-=======
-**Key insight:** Without Nexus, Aitlas is just a chat UI. With it, Aitlas is an agent that works while you sleep.
->>>>>>> Stashed changes
-
----
-
-## 27. Tool Access Matrix
-
-| Agent | f.finance | f.crypto | f.vault | f.scrape | f.news |
-|-------|-----------|----------|---------|----------|--------|
-| f.investor | ✅ | ✅ | ❌ | ✅ | ✅ |
-| f.coder | ❌ | ❌ | ✅ | ✅ | ❌ |
-| f.researcher | ❌ | ❌ | ❌ | ✅ | ✅ |
-| f.hacker | ❌ | ✅ | ✅ | ✅ | ❌ |
-
----
-
-## 28. How They Work Together
-
-### Example: User asks "Build me a landing page"
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│ NEXUS (UI)                                                   │
-│   User: "Build me a landing page for my SaaS"               │
-└──────────────────────┬───────────────────────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────────────────────┐
-│ Nexus (Orchestrator)                                        │
-│                                                              │
-│   1. CLASSIFY → Frontend Specialist agent                   │
-│   2. CREATE CREW:                                            │
-│      ├── Designer Agent (layout)                             │
-│      ├── Coder Agent (implementation)                        │
-│      └── Reviewer Agent (quality check)                      │
-│   3. EXECUTE FLOW:                                           │
-│      @start → Designer creates mockup                        │
-│      @listen → Coder implements in React                     │
-│      @listen → Reviewer checks accessibility                 │
-│   4. USE ACTIONS:                                            │
-│      ├── file_write (create components)                      │
-│      ├── bash (run dev server)                               │
-│      └── git_check (commit changes)                          │
-└──────────────────────┬───────────────────────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────────────────────┐
-│ NEXUS (UI)                                                   │
-│   Show: Live preview, files created, git status              │
-│   Agent: "Landing page created! 5 components, deployed."     │
-└──────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 29. Open Source Leverage
-
-| Component | Source | What We Use |
-|-----------|--------|-------------|
-| **Nova** | T3 Code | Desktop + web app, provider router |
-| **Orchestration** | CrewAI | Flows (control) + Crews (teams) |
-| **Handoffs** | OpenAI Agents SDK | Agent-to-agent delegation |
-| **Classification** | Agent Squad | Intent routing |
-| **Reactions** | Agent Orchestrator | Auto-handling |
-| **State** | LangGraph | Checkpointing, persistence |
-| **Context** | Crush | AGENTS.md format |
-
----
-
-**Last Updated:** March 2026  
-**Maintained by:** Herb (AI CTO) + Furma (CEO)
-
----
-
-## 35. Agent Store Monetization
-
-### Revenue Models
-
-| Model | Description | Revenue |
-|-------|-------------|---------|
-| **Commission** | 10-30% per agent sale/subscription | Per-transaction |
-| **Premium Features** | Higher limits, multi-agent, MCP access | Freemium → paid |
-| **Subscription Pass** | Unlimited access to curated agents | Monthly recurring |
-| **Featured Placement** | Brands pay for spotlight | Marketing revenue |
-| **Custom Services** | Enterprise custom agent creation | Consulting + hosting |
-
-### Key Principle
-> The store should incentivize sharing and usage, not just purchases. Each paid agent should still trigger functional virality, so revenue and ecosystem growth happen together.
-
----
-
-## 36. Actions Ecosystem Classification
-
-### 1. Core Engine Actions (Infrastructure)
-
-| Action | Purpose | Monetization |
-|--------|---------|--------------|
-<<<<<<< Updated upstream
-| Nexus runtime | Execution layer | API usage, premium capacity |
-=======
-| Nexus | Execution layer | API usage, premium capacity |
->>>>>>> Stashed changes
-| f.deploy | Deployment | Developer subscription |
-| f.flow | Workflow orchestration | Premium workflows |
-| f.mcp | MCP gateway | API access |
-
-### 2. Productivity / Knowledge Actions
-
-| Action | Purpose | Monetization |
-|--------|---------|--------------|
-| f.library | Vector knowledge base | Premium content subscriptions |
-| f.research | Deep research | Tiered access |
-| f.memory | Agent memory | Storage tiers |
-| f.assistant | General assistant | Freemium |
-| f.vault | Secure storage | Storage tiers |
-
-### 3. Business / Finance Actions
-
-| Action | Purpose | Monetization |
-|--------|---------|--------------|
-| f.pay | Payments | Transaction fees |
-| f.crm | Customer management | Multi-user access |
-| f.crypto | Crypto data/trading | API access |
-| f.finance | Financial data | Business intelligence |
-
-### 4. Data / Intelligence Actions
-
-| Action | Purpose | Monetization |
-|--------|---------|--------------|
-| f.news | News feeds | Premium feeds |
-| f.scrape | Web scraping | Compute-based |
-| f.google | Google integration | API access |
-
-### 5. Niche / Engagement Actions
-
-| Action | Purpose | Monetization |
-|--------|---------|--------------|
-| f.sports | Sports data | Affiliate/partnerships |
-| f.bets | Betting integration | Affiliate |
-| f.psychology | Mental wellness | Premium experiences |
-| f.language | Language learning | Subscription |
-| f.hack | Security tools | Premium access |
-
-
-<<<<<<< Updated upstream
-### 6. Support / Safety Actions
-
-| Action | Purpose | Monetization |
-|--------|---------|--------------|
-| f.guard | Trust, safety, moderation | Premium monitoring (enterprise) |
-| f.support | Helpdesk automation | Enhanced features (business) |
-
----
-
-## 37. Integrations & Ecosystem Growth
-
-### Integration Architecture
-
-- All actions exposed via MCP → agents dynamically call them
-- Nexus = central UI for all integrations
-
-### Ecosystem Growth Tie-In
-
-Actions act as **functional virality triggers:**
-
-| Action | Viral Mechanism |
-|--------|-----------------|
-| f.pay | Workflow → notification → invite friends → credits to creator |
-| f.research | Results shared → invite others → ecosystem grows |
-
-**Key:** Tie monetization to actual usage and adoption, not just upfront purchase.
-
----
-
-## 38. Agent Store: Forking Strategy
-
-### Forking Trade-offs
-
-| Pros | Cons |
-|------|------|
-| Encourages experimentation | May dilute revenue |
-| Helps ecosystem growth | Complicates curated quality |
-| Network effects (more forks = more users) | Users may find low-quality forks |
-
-### Strategic Compromise
-
-**Allow forks under conditions:**
-
-1. Forks pay royalty/commission to original creator
-2. Forks inherit base credit cost via Nexus runtime usage
-3. Original agents remain "premium"
-4. Forks can only be free/limited versions
-
-**Result:** Virality without cannibalizing revenue
-
-### Core Aitlas Agents
-
-**Must have:** Default, high-quality agents shipped with platform.
-
-**Purpose:**
-- Showcase best practices → inspire developers
-- Provide immediate value for consumers
-- Anchor ecosystem growth
-
-**Monetization:**
-- Free for adoption to drive ecosystem usage
-- OR partially gated: advanced features require subscription/credits
-
----
-
-## 39. Actions Monetization: Nexus runtime Credits + Mini SaaS
-
-### The Model
-
-```
-All actions → Nexus runtime → credits
-```
-
-### Monetization Layers
-
-| Layer | Description |
-|-------|-------------|
-| **Base** | Every action call costs credits via Nexus runtime |
-| **Subscription** | Higher limits / premium features |
-| **Transaction** | Fees for business actions (f.pay, f.crypto) |
-| **Tiered** | f.library premium research, f.language advanced lessons |
-
-### Implications
-
-- Single monetization backbone
-- Every agent/user interaction passes through Nexus runtime → generates revenue
-- Actions become essential hooks for network usage
-
-
----
-
-## 40. Product Rename (2026-03-09)
-
-### Changes
-
-| Old Name | New Name | Description |
-|----------|----------|-------------|
-| Nova | **Nova** | Dashboard, chat, tasks |
-| Nexus runtime | **Nexus** | Core product - agent runtime |
-
-### New Product Structure (4 Products)
-
-| Product | Domain | Description |
-|---------|--------|-------------|
-| **Nova** | nova.aitlas.xyz | UI - dashboard, chat, tasks |
-| **Nexus** | nexus.aitlas.xyz | Agent runtime (formerly Nexus runtime) |
-| **Agents Store** | agents.aitlas.xyz | Marketplace of agents |
-| **Actions** | f.xyz | MCP tools |
-
-### Key Insight
-
-> Nexus runtime was never "just an action" - it's the core product. The rename reflects reality: Nexus IS the product.
-
-### Updated Architecture
-
-```
-Aitlas
-├── Nova (UI) ───────────────────── Calls Nexus via MCP
-├── Agents Store ────────────────── Agents reference Nexus capabilities
-├── Actions (f.xyz tools) ───────── Executed by Nexus via Tool Gateway
-└── Nexus (Agent Runtime) ───────── POWERS EVERYTHING
-    ├── Tool Gateway ────────────── Centralized auth, RTK, retry, credits
-    ├── Postgres Queue ──────────── FOR UPDATE SKIP LOCKED
-    └── Workers (Bun) ───────────── Durable agent execution
-```
-
-=======
->>>>>>> Stashed changes
-
----
-
-## 41. Inter-Service Communication
-
-### The Two Patterns
-
-**Pattern 1: Synchronous MCP call (short tasks)**
-`
-Nexus → HTTP POST f.xyz/api/mcp → Result → Stream to user
-Max duration: 25 seconds (Vercel limit)
-Use for: Single tool calls, quick lookups
-`
-
-**Pattern 2: Async task dispatch (long tasks)**
-`
-Nexus → Write task to Postgres → Return taskId to UI
-                    ↓
-               Nexus picks up
-               Nexus executes (minutes)
-               Nexus writes steps + result
-                    ↓
-UI polls GET /api/tasks/:id every 3s → Shows live progress
-`
-
----
-
-## 42. Repo Registry
-
-| Repo | Domain | Stack | Status |
-|------|--------|-------|--------|
-| itlas-core-template | — | Next.js 15 + Bun | ✅ Maintained |
-| itlas-nexus | nexus.aitlas.xyz | Nova web app | 🟡 Development |
-| itlas-agents | agents.aitlas.xyz | Agents Store | 🟡 Development |
-| itlas-nexus | loop.internal | Nexus (Bun, Hetzner) | 🟡 Development |
-| -twyt | f.xyz/twyt | Twitter action | ✅ Production |
-| -library | f.xyz/library | Vector KB action | ✅ Production |
-| -rsrx | f.xyz/rsrx | Research action | 🟡 Development |
-| -guard | f.xyz/guard | Code review action | 🟡 Roadmap |
-| -support | f.xyz/support | Helpdesk action | 🟡 Roadmap |
-| -decloy | f.xyz/decloy | Agent deployment | 🟡 Roadmap |
----
-
-## 43. Monitoring & Observability
-
-### Logging Strategy
-`	ypescript
-// Structured logging (Pino)
-logger.info('Task created', { taskId: '123', userId: '456' });
-logger.error('Task failed', error, { taskId: '123' });
-`
-**Production:** JSON format (log aggregation ready)  
-**Development:** Pretty-print with colors
-
-### Metrics to Track
-| Metric | Target |
-|--------|--------|
-| Latency p95 | <500ms |
-| Error Rate | <1% |
-
----
-
-## 44. Disaster Recovery
-
-### Backup Strategy
-| Component | Frequency | Retention |
-|-----------|-----------|-----------|
-| Database | Daily | 30 days |
-| Code | Every commit | Forever (GitHub) |
-| Environment | Manual | 90 days |
-
-### Incident Response
-1. **Detect** (monitoring alerts)
-2. **Triage** (severity assessment)
-3. **Contain** (rollback if needed)
-4. **Fix** (hotfix deployment)
-5. **Review** (post-mortem)
+> *Build fast. Stay sovereign. Zero token liability.*  
+> *Every agent run is a commit. Nexus is the git.*
