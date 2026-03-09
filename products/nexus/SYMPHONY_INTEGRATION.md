@@ -257,7 +257,7 @@ notify: {channels}
 - [Symphony GitHub](https://github.com/openai/symphony)
 - [Symphony SPEC.md](https://github.com/openai/symphony/blob/main/SPEC.md)
 - [Nexus runtime Spec](./f-loop.md)
-- [Nexus Spec](../products/nexus/README.md)
+- [Nexus Spec](./README.md)
 
 ---
 

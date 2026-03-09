@@ -363,7 +363,7 @@ Extract structured data from research.
 - [Perplexica GitHub](https://github.com/ItzCrazyKns/Perplexica)
 - [Perplexica Docs](https://github.com/ItzCrazyKns/Perplexica/tree/master/docs)
 - [SearxNG](https://searxng.github.io/searxng/)
-- [Aitlas MCP Spec](../architecture/AITLAS_MCP_SPEC.md)
+- [Aitlas MCP Spec](../../architecture/AITLAS_MCP_SPEC.md)
 
 ---
 

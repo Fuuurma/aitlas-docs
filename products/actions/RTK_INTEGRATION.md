@@ -217,7 +217,7 @@ Allow users to define regex patterns for their specific output formats.
 
 - [RTK GitHub](https://github.com/rtk-ai/rtk)
 - [Nexus runtime Spec](./f-loop.md)
-- [Aitlas MCP Spec](../architecture/AITLAS_MCP_SPEC.md)
+- [Aitlas MCP Spec](../../architecture/AITLAS_MCP_SPEC.md)
 
 ---
 
