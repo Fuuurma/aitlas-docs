@@ -11,7 +11,7 @@
 3. [Nova — The Hub](#3-nexus--the-hub)
 4. [Agents — The Store](#4-agents--the-store)
 5. [Actions — The Engine (f.xyz)](#5-actions--the-engine-fxyz)
-6. [The Ralph Engine (Nexus runtime)](#6-the-ralph-engine-floop)
+6. [The Nexus Engine (Nexus runtime)](#6-the-Nexus-engine-floop)
 7. [MCP Strategy & Protocol](#7-mcp-strategy--protocol)
 8. [aitlas-core-template — The DNA](#8-aitlas-core-template--the-dna)
 9. [Shared Data Models (Prisma)](#9-shared-data-models-prisma)
@@ -38,7 +38,7 @@ The Internet         →   Browser
 The OS               →   Nova
 The App Store        →   Agents
 The System Utilities →   Actions (f.xyz)
-The Background Daemons → Nexus runtime (Ralph)
+The Background Daemons → Nexus runtime (Nexus)
 The File System      →   f.library
 The Network Layer    →   MCP
 ```
@@ -67,7 +67,7 @@ aitlas.xyz (Root Domain)
 │     ├── /rsrx          → f.rsrx service
 │     ├── /loop          → Nexus runtime orchestrator
 │     └── /guard         → f.guard service
-└── loop.internal        → Ralph workers (Hetzner, Bun, private)
+└── loop.internal        → Nexus workers (Hetzner, Bun, private)
 ```
 
 ### The Dependency Graph
@@ -85,7 +85,7 @@ Agents Store
   └── reads → Agent manifests (DB)
   └── triggers → Nexus agent activation
 
-Nexus runtime (Ralph)
+Nexus runtime (Nexus)
   └── polls → Task Queue (Postgres, Neon)
   └── calls → f.xyz Actions (via HTTP MCP)
   └── calls → Third-party MCPs (via user config)
@@ -107,7 +107,7 @@ A web-based AI workspace. Think Claude.ai but where the user owns the LLM key, t
 | **Chat Panel** | Primary chat interface. BYOK-powered. Two modes (see below). |
 | **Actions Sidebar** | Displays available f.xyz actions + third-party MCPs. Greyed in Basic mode. |
 | **Agent Panel** | Active agents, their status, and their current task queue. |
-| **Task Monitor** | Real-time view of all background jobs (Ralph tasks) with step-by-step progress. |
+| **Task Monitor** | Real-time view of all background jobs (Nexus tasks) with step-by-step progress. |
 | **Settings** | BYOK key management, credit balance, MCP connections, preferences. |
 
 ### The Dual-Mode System
@@ -280,7 +280,7 @@ Actions are **Furma-native MCP servers** — each is a standalone microservice t
 
 | Action | MCP Tool Name | Description | Credit Cost | Status |
 |--------|--------------|-------------|-------------|--------|
-| **Nexus runtime** | `dispatch_background_task` | Dispatch long async jobs to Ralph | 10/hr of compute | 🟡 Dev |
+| **Nexus runtime** | `dispatch_background_task` | Dispatch long async jobs to Nexus | 10/hr of compute | 🟡 Dev |
 | **f.twyt** | `search_twitter`, `get_user_timeline` | Twitter semantic search & ingestion | 1/query | ✅ Prod |
 | **f.library** | `ingest_document`, `search_knowledge_base` | Vector knowledge base (pgvector) | 2/ingest, 1/search | ✅ Prod |
 | **f.rsrx** | `deep_research`, `synthesize_report` | Multi-source research synthesis | 5/report | 🟡 Dev |
@@ -314,19 +314,19 @@ f.twyt/
 
 ---
 
-## 6. The Ralph Engine (Nexus runtime)
+## 6. The Nexus Engine (Nexus runtime)
 
 ### What It Is
-Ralph is Aitlas's **durable background execution layer** — a fleet of Bun workers running on Hetzner that pick up long-running agentic tasks from the PostgreSQL task queue and execute them step-by-step, surviving server reboots, LLM errors, and network failures.
+Nexus is Aitlas's **durable background execution layer** — a fleet of Bun workers running on Hetzner that pick up long-running agentic tasks from the PostgreSQL task queue and execute them step-by-step, surviving server reboots, LLM errors, and network failures.
 
 ### Why Not Serverless?
-Vercel functions timeout at 60 seconds. Agentic tasks (deep research, autonomous support, code review of large repos) can take 5–30 minutes. Ralph runs on long-lived Bun processes that are cheap ($5–20/mo Hetzner VPS), persistent, and horizontally scalable.
+Vercel functions timeout at 60 seconds. Agentic tasks (deep research, autonomous support, code review of large repos) can take 5–30 minutes. Nexus runs on long-lived Bun processes that are cheap ($5–20/mo Hetzner VPS), persistent, and horizontally scalable.
 
-### Ralph Architecture
+### Nexus Architecture
 
 ```
 ┌──────────────────────────────────────────────────┐
-│                  Nexus runtime (Ralph)                   │
+│                  Nexus runtime (Nexus)                   │
 │             Bun Worker Process                    │
 │             Hetzner VPS (loop.internal)           │
 ├──────────────────────────────────────────────────┤
@@ -523,7 +523,7 @@ model CreditLedgerEntry {
   @@index([userId, createdAt])
 }
 
-// ─── TASK QUEUE (Ralph's job board) ───────────────────────────────────────
+// ─── TASK QUEUE (Nexus's job board) ───────────────────────────────────────
 
 model Task {
   id               String       @id @default(cuid())
@@ -714,8 +714,8 @@ export function decryptApiKey(keyData: string, iv: string, tag: string): string 
 ### Security Rules (Enforced in AGENTS.md)
 - `decryptApiKey()` result must NEVER be assigned to a variable named in a way that could be logged
 - Never `console.log` or `logger.info` anything containing an API key
-- Keys are decrypted **in the Ralph worker**, never in the Next.js API route
-- The Next.js route writes the encrypted key to the task queue — Ralph decrypts at execution time
+- Keys are decrypted **in the Nexus worker**, never in the Next.js API route
+- The Next.js route writes the encrypted key to the task queue — Nexus decrypts at execution time
 - `ENCRYPTION_KEY` rotates every 90 days (re-encrypt all keys on rotation)
 
 ---
@@ -729,7 +729,7 @@ export function decryptApiKey(keyData: string, iv: string, tag: string): string 
 | nexus.aitlas.xyz | Vercel | Auto (edge) |
 | agents.aitlas.xyz | Vercel | Auto (edge) |
 | f.xyz (all actions) | Vercel | Auto (edge) |
-| Nexus runtime (Ralph) | Hetzner CX21 | Manual horizontal |
+| Nexus runtime (Nexus) | Hetzner CX21 | Manual horizontal |
 | PostgreSQL | Neon (serverless) | Auto |
 | Redis | Upstash | Auto |
 | Static assets | Vercel / Cloudflare CDN | Auto |
@@ -794,9 +794,9 @@ Use for: Single tool calls, quick lookups
 ```
 Nexus → Write task to Postgres → Return taskId to UI
                     ↓
-               Ralph picks up
-               Ralph executes (minutes)
-               Ralph writes steps + result
+               Nexus picks up
+               Nexus executes (minutes)
+               Nexus writes steps + result
                     ↓
 UI polls GET /api/tasks/:id every 3s → Shows live progress
 ```
@@ -827,7 +827,7 @@ Key rules:
 | `aitlas-core-template` | — | Next.js 15 + Bun | ✅ Maintained |
 | `aitlas-nexus` | nexus.aitlas.xyz | Nova web app | 🟡 Development |
 | `aitlas-agents` | agents.aitlas.xyz | Agents Store | 🟡 Development |
-| `aitlas-loop` | loop.internal | Ralph (Bun, Hetzner) | 🟡 Development |
+| `aitlas-loop` | loop.internal | Nexus (Bun, Hetzner) | 🟡 Development |
 | `f-twyt` | f.xyz/twyt | Twitter action | ✅ Production |
 | `f-library` | f.xyz/library | Vector KB action | ✅ Production |
 | `f-rsrx` | f.xyz/rsrx | Research action | 🟡 Development |

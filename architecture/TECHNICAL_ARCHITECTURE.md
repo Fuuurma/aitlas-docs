@@ -49,7 +49,7 @@
 | **Cache** | `lib/cache.ts` | LRU with TTL |
 | **Database** | `lib/prisma.ts` | Prisma singleton |
 | **Constants** | `lib/constants.ts` | Centralized config |
-| **Worker** | `worker.ts` | Nexus runtime Ralph engine |
+| **Worker** | `worker.ts` | Nexus runtime Nexus engine |
 
 ### 3. Zero Token Liability (BYOK Model)
 
@@ -196,9 +196,9 @@ model TaskQueue {
   type        String   // Task type
   status      String   @default("PENDING")
   currentStep Int      @default(0)
-  maxSteps    Int      @default(15)  // Ralph loop safety
+  maxSteps    Int      @default(15)  // Nexus loop safety
   inputData   Json
-  stateData   Json?    // Ralph state history
+  stateData   Json?    // Nexus state history
   resultData  Json?
   creditsUsed Int      @default(0)
   @@index([userId])
@@ -281,7 +281,7 @@ User logs in → Pastes BYOK key → Chats with agents → FREE
 | f.library ingest | 2 | ~$0.02 |
 | f.rsrx search | 2 | ~$0.02 |
 | f.rsrx synthesize | 5 | ~$0.05 |
-| Ralph loop | 10/hour | ~$0.10/hr |
+| Nexus loop | 10/hour | ~$0.10/hr |
 
 ### Credit Flow
 
@@ -313,7 +313,7 @@ CreditTransaction logged (audit trail)
 │  Hetzner/Railway (Worker Layer - Nexus runtime)               │
 │  - Bun runtime                                          │
 │  - 24/7 execution (no timeout)                          │
-│  - Ralph loop engine                                    │
+│  - Nexus loop engine                                    │
 └─────────────────────────────────────────────────────────┘
                           │
                           │ Database queries

@@ -1,7 +1,7 @@
 # RTK Integration — Token Compression for Nexus runtime
 
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Draft  
-**Parent:** f-loop.md | **Type:** Internal Library Integration
+**Parent:** nexus.md | **Type:** Internal Library Integration
 
 ---
 
@@ -216,7 +216,7 @@ Allow users to define regex patterns for their specific output formats.
 ## References
 
 - [RTK GitHub](https://github.com/rtk-ai/rtk)
-- [Nexus runtime Spec](./f-loop.md)
+- [Nexus runtime Spec](../nexus/nexus.md)
 - [Aitlas MCP Spec](../../architecture/AITLAS_MCP_SPEC.md)
 
 ---

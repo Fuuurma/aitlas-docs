@@ -45,15 +45,15 @@ f.decloy = hosting       f.decloy = agent lifecycle manager
 
 ### Comparable Systems
 
-| System | What it does | Ralph's advantage |
+| System | What it does | Nexus's advantage |
 |--------|-------------|-------------------|
-| **Temporal** | Durable workflows | Ralph is AI-native, MCP-first |
-| **LangGraph** | Agent state graphs | Ralph is provider-agnostic (BYOK) |
-| **Trigger.dev** | Background jobs | Ralph has PLAN→REFLECT loop built in |
-| **Modal** | Compute runtime | Ralph is cheap (Hetzner, not Lambda) |
-| **Airflow** | Task orchestration | Ralph is agent-first, not DAG-first |
+| **Temporal** | Durable workflows | Nexus is AI-native, MCP-first |
+| **LangGraph** | Agent state graphs | Nexus is provider-agnostic (BYOK) |
+| **Trigger.dev** | Background jobs | Nexus has PLAN→REFLECT loop built in |
+| **Modal** | Compute runtime | Nexus is cheap (Hetzner, not Lambda) |
+| **Airflow** | Task orchestration | Nexus is agent-first, not DAG-first |
 
-**Ralph combines all of them.**
+**Nexus combines all of them.**
 
 ### The Strategic Opportunity
 
@@ -97,7 +97,7 @@ The original OBSERVE → REASON → ACT → EVALUATE loop is good but missing th
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Nexus runtime — Ralph Engine                         │
+│                    Nexus runtime — Nexus Engine                         │
 │                    Bun Worker Process                            │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                   │
@@ -587,7 +587,7 @@ POST /api/tasks/schedule
 
 ## 7. Memory Integration (f.library)
 
-When a task has a `memory_collection` set, Ralph reads from and writes to f.library automatically at each step. This gives agents persistent, cross-session knowledge.
+When a task has a `memory_collection` set, Nexus reads from and writes to f.library automatically at each step. This gives agents persistent, cross-session knowledge.
 
 ### Memory Lifecycle in a Task
 
@@ -865,7 +865,7 @@ Nexus runtime exposes these tools via MCP at `https://f.xyz/loop/api/mcp`.
 ```typescript
 {
   name: 'dispatch_background_task',
-  description: 'Dispatch a long-running agentic task to the Ralph engine. Returns taskId immediately.',
+  description: 'Dispatch a long-running agentic task to the Nexus engine. Returns taskId immediately.',
   creditCost: 1,  // orchestration fee
   isAsync: true,
   input: z.object({
@@ -1187,7 +1187,7 @@ model ScheduledTask {
 - [ ] SSE stream endpoint (`/tasks/:id/stream`)
 - [ ] systemd service config (Hetzner)
 
-**Milestone:** Ralph can run a basic f.rsrx research task end-to-end.
+**Milestone:** Nexus can run a basic f.rsrx research task end-to-end.
 
 ### Phase 2 — Production Hardening
 - [ ] REFLECT phase (quality assessment + direction)
@@ -1197,7 +1197,7 @@ model ScheduledTask {
 - [ ] Credit reserve/refund on task completion
 - [ ] Alerting (Slack webhook on worker death / high error rate)
 
-**Milestone:** Ralph handles 50+ tasks/day reliably.
+**Milestone:** Nexus handles 50+ tasks/day reliably.
 
 ### Phase 3 — Scheduling + Memory
 - [ ] Scheduler process (cron + delayed task support)
@@ -1220,7 +1220,7 @@ model ScheduledTask {
 
 ---
 
-## Appendix: Ralph Loop Prompt Templates
+## Appendix: Nexus Loop Prompt Templates
 
 ### PLAN Prompt
 

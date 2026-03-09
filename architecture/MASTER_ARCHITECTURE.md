@@ -18,7 +18,7 @@ The OS                   →  Nexus (T3 Code fork)
 The App Store            →  Agents Store
 The System Utilities     →  Actions (f.xyz)
 <<<<<<< Updated upstream
-The Background Daemons   →  Nexus runtime (Ralph)
+The Background Daemons   →  Nexus runtime (Nexus)
 =======
 The Background Daemons   →  Nexus ()
 >>>>>>> Stashed changes
@@ -313,7 +313,7 @@ Nexus renders inline result card with deep link.
 ---
 
 <<<<<<< Updated upstream
-## 8. Nexus runtime — Ralph Engine
+## 8. Nexus runtime — Nexus Engine
 
 ### Strategic Position
 > Current: Nexus runtime powers Nexus + Agents  
@@ -721,7 +721,7 @@ Error:   { success: false, error: { code, message, details } }
 | DB | Neon Postgres | PlanetScale, Supabase | pgvector, branching |
 | @aitlas/sdk | **NOT in v1** | Ship in v1 | Premature — wait for 10+ repos |
 | f.guard type | Hono headless v1 | Full mini-app | Ship faster |
-| Queue transport | Postgres polling | Redis Streams | Simpler, zero new infra (confirmed in f-loop.md) |
+| Queue transport | Postgres polling | Redis Streams | Simpler, zero new infra (confirmed in nexus.md) |
 
 ---
 
@@ -1075,7 +1075,7 @@ Agents Store ──────────────────────�
 f.twyt / f.rsrx / f.library ────┐ │ │
                                 ▼ ▼ ▼
 <<<<<<< Updated upstream
-                              Nexus runtime (Ralph)
+                              Nexus runtime (Nexus)
 =======
                               Nexus ()
 >>>>>>> Stashed changes

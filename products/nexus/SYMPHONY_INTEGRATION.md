@@ -3,7 +3,7 @@
 **Status:** 🟡 Integration Candidate  
 **Reference:** [openai/symphony](https://github.com/openai/symphony) (9K stars, Apache 2.0)  
 **For:** Nova → Tasks UI (in web UI)  
-**Integrates with:** [Nexus](./f-loop.md) (orchestration runtime)
+**Integrates with:** [Nexus](./nexus.md) (orchestration runtime)
 
 ---
 
@@ -256,7 +256,7 @@ notify: {channels}
 
 - [Symphony GitHub](https://github.com/openai/symphony)
 - [Symphony SPEC.md](https://github.com/openai/symphony/blob/main/SPEC.md)
-- [Nexus runtime Spec](./f-loop.md)
+- [Nexus runtime Spec](./nexus.md)
 - [Nexus Spec](./README.md)
 
 ---

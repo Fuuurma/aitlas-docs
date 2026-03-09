@@ -114,7 +114,7 @@ Think: **npm for AI Agents**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `maxSteps` | number | Safety limit for Ralph Loop |
+| `maxSteps` | number | Safety limit for Nexus Loop |
 | `timeout` | string | Max execution time |
 | `retryPolicy` | object | How to handle failures |
 | `safetyLimits` | object | Credit/call limits |
@@ -151,7 +151,7 @@ Think: **npm for AI Agents**
 1. User invokes agent from Nexus
 2. System creates Task
 3. Loop Engine picks up task
-4. Ralph Loop begins:
+4. Nexus Loop begins:
    ┌─────────────────────────────────────┐
    │ OBSERVE                             │
    │  - Load agent persona               │

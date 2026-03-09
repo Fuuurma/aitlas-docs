@@ -37,7 +37,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 #### Integration Location
 - `apps/nexus/lib/orchestrator/` - Task orchestration
 - `apps/nexus/lib/workspace/` - Workspace management
-- `apps/loop/lib/` - Ralph engine (Nexus runtime)
+- `apps/loop/lib/` - Nexus engine (Nexus runtime)
 
 ---
 
@@ -45,7 +45,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 
 **Repo:** https://github.com/triggerdotdev/trigger.dev  
 **License:** Apache 2.0  
-**Used For:** Nexus runtime (Ralph) durable execution engine  
+**Used For:** Nexus runtime (Nexus) durable execution engine  
 
 #### What We Use
 | Component | How We Use It |
@@ -62,7 +62,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 - Some notification features
 
 #### Integration Location
-- `apps/loop/` - Nexus runtime (Ralph engine)
+- `apps/loop/` - Nexus runtime (Nexus engine)
 - Built on Trigger.dev core
 
 ---

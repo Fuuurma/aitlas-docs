@@ -27,7 +27,7 @@
 
 **Type:** Orchestration  
 **Host:** Hetzner (Bun workers) + Vercel (API gateway)  
-**Spec:** See `products/actions/f-loop.md` (41KB complete spec)
+**Spec:** See `products/actions/nexus.md` (41KB complete spec)
 
 **What it does:**
 - Executes tasks autonomously

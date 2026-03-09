@@ -59,9 +59,9 @@
 │  ├── f.support                 ← Support                        │
 │  ├── f.rsrx                    ← Research                       │
 │  ├── f.decloy                  ← Deployment                     │
-│  └── Nexus runtime                    ← Ralph engine                   │
+│  └── Nexus runtime                    ← Nexus engine                   │
 │                                                                 │
-│  Nexus runtime (Ralph Engine)         ← Durable execution               │
+│  Nexus runtime (Nexus Engine)         ← Durable execution               │
 │  ├── Observes                  ← Monitors tasks                 │
 │  ├── Reasons                   ← Decides next action            │
 │  ├── Acts                      ← Executes via agents            │

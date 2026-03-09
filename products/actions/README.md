@@ -113,7 +113,7 @@ Keep Actions simple. Let Agents be the intelligence.
 | **f.guard** | f.xyz/guard | AI code review + security audit | 2/review | 🟡 Roadmap |
 | **f.support** | f.xyz/support | AI helpdesk automation | 1-3/ticket | 🟡 Roadmap |
 | **f.decloy** | f.xyz/decloy | MicroVM agent deployment | 25/deploy + 1/min | 🟡 Roadmap |
-| **Nexus runtime** | f.xyz/loop | Durable agent runtime (Ralph) | 1/task + 2/hr | 🟡 Dev |
+| **Nexus runtime** | f.xyz/loop | Durable agent runtime (Nexus) | 1/task + 2/hr | 🟡 Dev |
 | **f.browser** | f.xyz/browser | Web browsing automation | 3/session | 🔴 Planned |
 | **f.exec** | f.xyz/exec | Sandboxed code execution | 2/execution | 🔴 Planned |
 | **f.search** | f.xyz/search | Web search (Brave/Google) | 1/query | 🔴 Planned |
@@ -562,7 +562,7 @@ Very clean separation.
 | [f.guard](./f-guard.md) | Code review + security | 🟡 Roadmap |
 | [f.support](./f-support.md) | AI helpdesk | 🟡 Roadmap |
 | [f.decloy](./f-decloy.md) | MicroVM deployment | 🟡 Roadmap |
-| [Nexus runtime](./f-loop.md) | Ralph engine (durable execution) | 🟡 Development |
+| [Nexus runtime](./nexus.md) | Nexus engine (durable execution) | 🟡 Development |
 
 ---
 

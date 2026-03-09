@@ -15,7 +15,7 @@
 | **f.library** | Vercel | Hono serverless, <25s calls | ~$0 |
 | **f.guard** | Vercel | Hono serverless, <25s calls | ~$0 |
 | **f.support** | Vercel | Hono serverless, <25s calls | ~$0 |
-| **Nexus runtime (Ralph workers)** | Hetzner | Long-running Bun process (>60s) | ~€5–20 |
+| **Nexus runtime (Nexus workers)** | Hetzner | Long-running Bun process (>60s) | ~€5–20 |
 | **PostgreSQL** | Neon | Serverless, pgvector, DB branching | ~$0–19 |
 | **Redis** | Upstash | Serverless, per-request pricing | ~$0 |
 | **Domains** | Cloudflare | DNS + proxy + DDoS protection | ~$0 |
@@ -42,20 +42,20 @@
 
 **The 25-second limit:**
 All f.xyz actions use Hono and are designed to respond in <25s.
-If a tool call is longer, it's dispatched to Ralph (Nexus runtime), not executed inline.
+If a tool call is longer, it's dispatched to Nexus (Nexus runtime), not executed inline.
 This is the architectural split that makes Vercel viable for actions.
 
-### Hetzner — Nexus runtime (Ralph workers only)
+### Hetzner — Nexus runtime (Nexus workers only)
 
-**Why Hetzner over Vercel/Railway for Ralph:**
-- Ralph runs an infinite `while(true)` loop — not a serverless function
-- Vercel kills functions after 25s (Pro) or 60s (Enterprise) — Ralph needs hours
+**Why Hetzner over Vercel/Railway for Nexus:**
+- Nexus runs an infinite `while(true)` loop — not a serverless function
+- Vercel kills functions after 25s (Pro) or 60s (Enterprise) — Nexus needs hours
 - Railway persistent services: valid, but €15–25/mo per worker vs Hetzner's €4.5/mo
 - Hetzner CX21 (2 vCPU, 4GB RAM) = €4.51/mo. Run 4 Bun workers on it. Unbeatable.
 - Full SSH access = install systemd, `journalctl`, configure exactly as needed
 
 **What runs on Hetzner:**
-- `worker.ts` — Ralph worker processes (4 per CX21 box)
+- `worker.ts` — Nexus worker processes (4 per CX21 box)
 - `watchdog.ts` — Dead worker recovery
 - `scheduler.ts` — Cron/delayed task spawner
 
@@ -156,7 +156,7 @@ Function timeout:
   vercel.json: { "functions": { "src/index.ts": { "maxDuration": 25 } } }
 ```
 
-### Nexus runtime (Ralph) — Hetzner
+### Nexus runtime (Nexus) — Hetzner
 ```
 Repo:     github.com/Fuuurma/aitlas-loop
 Platform: Hetzner CX21 (€4.51/mo)
@@ -165,15 +165,15 @@ Platform: Hetzner CX21 (€4.51/mo)
 NOT on Vercel. NOT serverless. A real server.
 
 Processes (all managed by systemd):
-  ralph-worker@1.service   ← Worker process 1
-  ralph-worker@2.service   ← Worker process 2
-  ralph-worker@3.service   ← Worker process 3
-  ralph-worker@4.service   ← Worker process 4
-  ralph-watchdog.service   ← Dead task recovery
-  ralph-scheduler.service  ← Cron/delayed task spawner
+  Nexus-worker@1.service   ← Worker process 1
+  Nexus-worker@2.service   ← Worker process 2
+  Nexus-worker@3.service   ← Worker process 3
+  Nexus-worker@4.service   ← Worker process 4
+  Nexus-watchdog.service   ← Dead task recovery
+  Nexus-scheduler.service  ← Cron/delayed task spawner
 
 Deploy process:
-  git pull → bun install → systemctl restart ralph-worker@*
+  git pull → bun install → systemctl restart Nexus-worker@*
   (No CI/CD needed at this scale — manual deploy is fine)
 ```
 
@@ -281,7 +281,7 @@ Vercel Dashboard → nexus project → Integrations → Neon → Connect
 
 ---
 
-## 5. Hetzner Setup (Ralph)
+## 5. Hetzner Setup (Nexus)
 
 ### Server Sizing
 
@@ -296,7 +296,7 @@ Vercel Dashboard → nexus project → Integrations → Neon → Connect
 
 ### Server Location
 
-Choose **Falkenstein (FSN1)** or **Nuremberg (NBG1)** — EU datacenter, low latency to Neon's EU region (`eu-central-1.aws`). Never use US datacenter for Ralph — adds 100ms+ to every DB query in the loop.
+Choose **Falkenstein (FSN1)** or **Nuremberg (NBG1)** — EU datacenter, low latency to Neon's EU region (`eu-central-1.aws`). Never use US datacenter for Nexus — adds 100ms+ to every DB query in the loop.
 
 ### One-Time Server Setup
 
@@ -304,8 +304,8 @@ Choose **Falkenstein (FSN1)** or **Nuremberg (NBG1)** — EU datacenter, low lat
 # Run as root after first login via SSH
 
 # 1. Create non-root user
-adduser ralph
-usermod -aG sudo ralph
+adduser Nexus
+usermod -aG sudo Nexus
 
 # 2. Install Bun
 curl -fsSL https://bun.sh/install | bash
@@ -323,36 +323,36 @@ nano .env   # Fill in DATABASE_URL, ENCRYPTION_KEY, etc.
 chmod 600 .env   # Only root can read it
 
 # 5. Install systemd services
-cp scripts/ralph-worker@.service /etc/systemd/system/
-cp scripts/ralph-watchdog.service /etc/systemd/system/
-cp scripts/ralph-scheduler.service /etc/systemd/system/
+cp scripts/Nexus-worker@.service /etc/systemd/system/
+cp scripts/Nexus-watchdog.service /etc/systemd/system/
+cp scripts/Nexus-scheduler.service /etc/systemd/system/
 systemctl daemon-reload
 
 # 6. Enable + start
-systemctl enable ralph-worker@{1,2,3,4}
-systemctl enable ralph-watchdog
-systemctl enable ralph-scheduler
-systemctl start ralph-worker@{1,2,3,4}
-systemctl start ralph-watchdog
-systemctl start ralph-scheduler
+systemctl enable Nexus-worker@{1,2,3,4}
+systemctl enable Nexus-watchdog
+systemctl enable Nexus-scheduler
+systemctl start Nexus-worker@{1,2,3,4}
+systemctl start Nexus-watchdog
+systemctl start Nexus-scheduler
 
 # 7. Verify
-systemctl status ralph-worker@1
-journalctl -u ralph-worker@1 -f
+systemctl status Nexus-worker@1
+journalctl -u Nexus-worker@1 -f
 ```
 
 ### systemd Service Files
 
 ```ini
-# scripts/ralph-worker@.service
-# The @ makes it a template — ralph-worker@1, ralph-worker@2, etc.
+# scripts/Nexus-worker@.service
+# The @ makes it a template — Nexus-worker@1, Nexus-worker@2, etc.
 [Unit]
-Description=Aitlas Ralph Worker %i
+Description=Aitlas Nexus Worker %i
 After=network.target
 
 [Service]
 Type=simple
-User=ralph
+User=Nexus
 WorkingDirectory=/opt/aitlas-loop
 EnvironmentFile=/opt/aitlas-loop/.env
 Environment=WORKER_ID=%i
@@ -367,14 +367,14 @@ WantedBy=multi-user.target
 ```
 
 ```ini
-# scripts/ralph-watchdog.service
+# scripts/Nexus-watchdog.service
 [Unit]
-Description=Aitlas Ralph Watchdog
+Description=Aitlas Nexus Watchdog
 After=network.target
 
 [Service]
 Type=simple
-User=ralph
+User=Nexus
 WorkingDirectory=/opt/aitlas-loop
 EnvironmentFile=/opt/aitlas-loop/.env
 ExecStart=/root/.bun/bin/bun run src/watchdog.ts
@@ -391,14 +391,14 @@ WantedBy=multi-user.target
 
 ```bash
 # SSH into server
-ssh ralph@your-hetzner-ip
+ssh Nexus@your-hetzner-ip
 
 # Pull + restart (zero-downtime: workers finish current task before stopping)
 cd /opt/aitlas-loop
 git pull origin main
 bun install
-systemctl restart ralph-worker@{1,2,3,4}
-systemctl restart ralph-watchdog
+systemctl restart Nexus-worker@{1,2,3,4}
+systemctl restart Nexus-watchdog
 ```
 
 ### Hetzner Firewall Rules
@@ -408,7 +408,7 @@ Inbound:  22 (SSH, your IP only) — ONLY this. No web ports.
 Outbound: ALL (workers need to reach Neon, Vercel, external APIs)
 ```
 
-Ralph workers have **no inbound HTTP**. They only make outbound calls (to Neon, to f.xyz MCP endpoints, to LLM providers). This is both secure and correct — Nexus pushes tasks into Postgres; Ralph pulls them.
+Nexus workers have **no inbound HTTP**. They only make outbound calls (to Neon, to f.xyz MCP endpoints, to LLM providers). This is both secure and correct — Nexus pushes tasks into Postgres; Nexus pulls them.
 
 ---
 
@@ -438,9 +438,9 @@ CNAME   support           cname.vercel-dns.com     DNS only
 
 *Use DNS-only (grey cloud) for Vercel domains — Vercel manages SSL. Proxied (orange cloud) breaks Vercel's SSL certificate provisioning.
 
-### Hetzner (Ralph) — No Public Domain Needed
+### Hetzner (Nexus) — No Public Domain Needed
 
-Ralph has no HTTP server and no public domain. It connects outbound only.
+Nexus has no HTTP server and no public domain. It connects outbound only.
 Its only "address" is the Postgres connection string — it pulls work from the DB.
 
 ---
@@ -456,7 +456,7 @@ Its only "address" is the Postgres connection string — it pulls work from the 
 | `BETTER_AUTH_SECRET` | Vercel project env | Nova, Agents Store, Actions |
 | `FURMA_INTERNAL_SECRET` | Vercel team env | All Vercel services |
 | `UPSTASH_*` | Vercel team env | All Vercel services |
-| Hetzner `.env` | `/opt/aitlas-loop/.env` (chmod 600) | Ralph workers only |
+| Hetzner `.env` | `/opt/aitlas-loop/.env` (chmod 600) | Nexus workers only |
 
 **Source of truth for secret values:** 1Password vault `Aitlas/Production`.  
 Never store secrets in git. Never store secrets in Notion/Slack/email.
@@ -464,7 +464,7 @@ Never store secrets in git. Never store secrets in Notion/Slack/email.
 ### Critical: ENCRYPTION_KEY must be identical everywhere
 
 The `ENCRYPTION_KEY` is used to encrypt/decrypt BYOK API keys stored in Postgres.
-If it differs between Nexus (which encrypts) and Ralph (which decrypts), all decryption fails.
+If it differs between Nexus (which encrypts) and Nexus (which decrypts), all decryption fails.
 
 ```bash
 # Generate once, use everywhere
@@ -507,7 +507,7 @@ PR merged       → Vercel deploys main to production + Neon branch deleted
 
 ### Hetzner (manual deploy — intentional)
 
-Ralph deploys are manual via SSH. This is intentional:
+Nexus deploys are manual via SSH. This is intentional:
 - Workers are stateful (they're in the middle of tasks)
 - Auto-deploy on push could interrupt running tasks
 - Manual deploy means you choose when to restart workers
@@ -515,7 +515,7 @@ Ralph deploys are manual via SSH. This is intentional:
 When automatic deploys become needed (multiple engineers, multiple boxes), add a simple deploy script triggered by GitHub Actions:
 
 ```yaml
-# .github/workflows/deploy-ralph.yml
+# .github/workflows/deploy-Nexus.yml
 # Only when manual — triggered via GitHub Actions UI
 on:
   workflow_dispatch:
@@ -527,13 +527,13 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HETZNER_IP }}
-          username: ralph
+          username: Nexus
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
             cd /opt/aitlas-loop
             git pull origin main
             bun install
-            sudo systemctl restart ralph-worker@{1,2,3,4}
+            sudo systemctl restart Nexus-worker@{1,2,3,4}
 ```
 
 ---
@@ -545,14 +545,14 @@ jobs:
 | Signal | Tool | Alert threshold |
 |--------|------|-----------------|
 | Vercel function errors | Vercel Analytics | >1% error rate |
-| Ralph worker down | systemd + Healthchecks.io | Worker not seen in 5min |
+| Nexus worker down | systemd + Healthchecks.io | Worker not seen in 5min |
 | DB connection pool | Neon dashboard | >80% pool usage |
 | Task queue depth | Postgres query | >50 PENDING tasks |
 | Credit anomaly | Pino log + query | Single task >200 credits |
 
 ### Healthchecks.io (Free tier)
 
-Heartbeat check for Ralph — each worker pings a URL every minute:
+Heartbeat check for Nexus — each worker pings a URL every minute:
 
 ```typescript
 // In worker.ts — ping after each successful task
@@ -611,7 +611,7 @@ Do this in order. Do not skip steps.
    └─ Run setup script
    └─ Configure .env
    └─ Start workers + watchdog
-   └─ Verify: systemctl status ralph-worker@1 → active (running)
+   └─ Verify: systemctl status Nexus-worker@1 → active (running)
    └─ Verify: tail -f task in Nexus runs end-to-end
 
 9. Configure Cloudflare DNS
@@ -625,7 +625,7 @@ Do this in order. Do not skip steps.
     └─ Send a message that triggers f.twyt
     └─ Verify credits deducted
     └─ Dispatch a background task
-    └─ Verify Ralph picks it up and runs it
+    └─ Verify Nexus picks it up and runs it
     └─ Verify Task Monitor shows live progress
 ```
 

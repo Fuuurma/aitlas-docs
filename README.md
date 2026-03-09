@@ -86,7 +86,7 @@ developers → build agents → agents use tools → tools use credits
 
 | Doc | Description |
 |-----|-------------|
-| [products/actions/f-loop.md](./products/actions/f-loop.md) | **Nexus runtime spec (41KB)** - Durable agent runtime |
+| [products/nexus/nexus.md](./products/nexus/nexus.md) | **Nexus runtime spec (41KB)** - Durable agent runtime |
 | [products/actions/CATALOG.md](./products/actions/CATALOG.md) | Actions catalog (68 actions) |
 | [products/agents-store/ROADMAP.md](./products/agents-store/ROADMAP.md) | Agents roadmap (56 agents) |
 | [products/agents-store/specs/f.investor.md](./products/agents-store/specs/f.investor.md) | f.investor complete spec |
@@ -266,7 +266,7 @@ aitlas-docs/
 │
 └── products/
     ├── actions/
-    │   ├── f-loop.md             # 41KB spec
+    │   ├── nexus.md             # 41KB spec
     │   └── CATALOG.md
     └── agents-store/
         ├── ROADMAP.md

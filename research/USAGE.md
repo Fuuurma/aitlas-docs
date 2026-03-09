@@ -93,7 +93,7 @@ Every Aitlas product includes these core utilities:
 | `lib/cache.ts` | LRU cache with TTL for frequently accessed data |
 | `lib/prisma.ts` | Prisma client singleton with graceful shutdown |
 | `lib/constants.ts` | Centralized constants (credit costs, limits) |
-| `worker.ts` | Nexus runtime Ralph engine for background tasks |
+| `worker.ts` | Nexus runtime Nexus engine for background tasks |
 
 ## Customization
 

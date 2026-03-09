@@ -41,7 +41,7 @@ model ApiKey {
   @@unique([userId, provider])
 }
 
-// 3. Nexus runtime Task Queue (Ralph Engine)
+// 3. Nexus runtime Task Queue (Nexus Engine)
 model TaskQueue {
   id String @id @default(cuid())
   userId String
@@ -187,14 +187,14 @@ export async function POST(req: Request) {
 ---
 
 ### Phase 2: f.rsrx (Priority: MEDIUM)
-**Why:** More complex research logic, needs Ralph loop integration
+**Why:** More complex research logic, needs Nexus loop integration
 
 **Steps:**
 1. ✅ Backup current code
 2. ⏳ Add BYOK + credits + TaskQueue models
 3. ⏳ Copy Furma DNA utilities
 4. ⏳ Replace AGENTS.md
-5. ⏳ Implement Ralph loops (Observe → Reason → Act)
+5. ⏳ Implement Nexus loops (Observe → Reason → Act)
 6. ⏳ Add MCP credit checks
 7. ⏳ Test locally
 8. ⏳ Push to GitHub
@@ -216,7 +216,7 @@ export async function POST(req: Request) {
 | Web search | 2 | Search + scrape |
 | Academic search | 3 | PubMed/arXiv |
 | Synthesize report | 5 | Full research report |
-| Monitor topic | 10/hour | Continuous Ralph loop |
+| Monitor topic | 10/hour | Continuous Nexus loop |
 
 **Credit Purchase:**
 - $10 = 1,000 credits

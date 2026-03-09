@@ -334,7 +334,7 @@ aitlas-action-template (Hono, headless)
 └── f-decloy              → decloy.f.xyz         ← Utility action
 
 aitlas-worker-template (Bun, no HTTP)
-└── aitlas-loop           → Hetzner              ← Ralph workers
+└── aitlas-loop           → Hetzner              ← Nexus workers
 ```
 
 ---

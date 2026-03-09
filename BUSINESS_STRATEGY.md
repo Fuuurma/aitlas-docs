@@ -294,7 +294,7 @@ Furma.tech is a **digital holding company and venture studio** operating across 
 **Benefits:**
 - Academic + web search in one
 - AI synthesis (reports in minutes)
-- Continuous monitoring (Ralph loops)
+- Continuous monitoring (Nexus loops)
 
 **CTA:** "Start Research"
 
@@ -446,7 +446,7 @@ Furma.tech is a **digital holding company and venture studio** operating across 
 |---------|----------------|--------|
 | **AI-Native** | ✅ Yes | ❌ Bolted on |
 | **Pricing** | Credits (pay-per-use) | $20-100/mo |
-| **Ralph Loops** | ✅ Continuous | ❌ Linear only |
+| **Nexus Loops** | ✅ Continuous | ❌ Linear only |
 | **Self-Host** | ✅ Option | ❌ Cloud only |
 
 **Message:** "AI agents aren't linear. Neither should your automation be."
