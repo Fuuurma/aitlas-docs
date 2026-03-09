@@ -164,4 +164,63 @@ The moat is NOT the runtime - it's the **ecosystem**:
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | ✅ **Direct** | This is the blueprint! |
+| **Nova** | 🔵 Reference | UI for task status |
+| **Actions** | ✅ Direct | Tool integration |
+| **Agents Store** | ❌ | Agent marketplace |
+
+### This IS the Nexus Strategy
+
+This analysis **IS** the Nexus strategy document. It tells us:
+
+1. **What to Build** — Combine best of all 6
+2. **How to Differentiate** — BYOK + Credits model
+3. **What's the Moat** — Ecosystem, not just runtime
+
+### What to Extract
+
+| From | What to Extract |
+|-------|----------------|
+| **Trigger.dev** | DX, MCP integration, background jobs |
+| **Temporal** | Durable execution, event sourcing |
+| **LangGraph** | Graph-based state management |
+| **crewAI** | Easy agent patterns |
+| **AutoGen** | Multi-agent collaboration |
+| **MetaGPT** | Full simulation (too heavy?) |
+
+### The Combined Nexus Approach
+
+```
+┌─────────────────────────────────────────────┐
+│              Nexus Runtime                     │
+├─────────────────────────────────────────────┤
+│  ✅ Trigger.dev DX (easy to use)            │
+│  ✅ Temporal durability (checkpointing)      │
+│  ✅ LangGraph state (graph-based)            │
+│  ✅ crewAI simplicity (easy agents)          │
+│  ✅ AutoGen multi-agent (collaboration)     │
+│  + BYOK + Credits + MCP-first               │
+└─────────────────────────────────────────────┘
+```
+
+### Ecosystem is the Moat
+
+| Component | Aitlas Product |
+|-----------|---------------|
+| Engine | **Nexus** |
+| Tools | **Actions** |
+| Workers | **Agents Store** |
+| UI | **Nova** |
+| Business | **Credits** |
+
+**This is what competitors can't copy!**
+
+---
+
 *Summary: Build Nexus runtime combining best of all 6 + our unique BYOK + Credits*
