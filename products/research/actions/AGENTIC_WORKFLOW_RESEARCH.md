@@ -52,7 +52,7 @@ We've researched 20+ open source projects across 5 tiers:
   - WebSocket server
   - Provider routing
   - Codex wrapper architecture
-  - **Cloned to:** `/Users/sergi/Projects/t3code-reference/`
+  - **Cloned to:** `./t3code-reference/`
 
 ---
 
@@ -280,7 +280,7 @@ Issue #123
 
 ```bash
 # Already cloned
-/Users/sergi/Projects/t3code-reference/
+./t3code-reference/
 
 # Recommended for reference
 git clone https://github.com/crewAIInc/crewAI.git crewai-reference

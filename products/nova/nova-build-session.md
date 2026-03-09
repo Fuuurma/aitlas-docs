@@ -6,7 +6,7 @@
 ## Status: ✅ Foundation Complete
 
 **Repo:** https://github.com/Fuuurma/Nova  
-**Location:** `/Users/sergi/Projects/Nova/`
+**Location:** `./Nova/`
 
 ---
 
