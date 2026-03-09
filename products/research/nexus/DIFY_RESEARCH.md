@@ -68,4 +68,49 @@
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | 🔵 Competitor/Ref | Workflow patterns |
+| **Nova** | 🔵 Reference | UI patterns |
+| **Actions** | 🔵 Competitor | Alternative |
+| **Agents Store** | 🔵 Competitor | Alternative marketplace |
+
+### Dify is a MAJOR COMPETITOR
+
+At 131K stars, Dify is one of the biggest AI agent platforms.
+
+### How We Differentiate
+
+| Dify Does | We Do |
+|-----------|-------|
+| No-code UI | Code-first (T3 Code) |
+| Enterprise focus | Developer focus |
+| Complex | Simple |
+| Monolithic | Modular |
+
+### What to Learn from Dify
+
+| Dify Feature | How to Apply |
+|--------------|-------------|
+| Visual workflow | Symphony UI patterns |
+| RAG pipeline | f.library improvements |
+| LLM gateway | Multi-provider in Nexus |
+| Enterprise features | Future roadmap |
+
+### Our Advantage Over Dify
+
+| Our Advantage | Why It Matters |
+|---------------|----------------|
+| **BYOK** | Users control their keys |
+| **TypeScript** | Better for developers |
+| **MCP-first** | Standard integrations |
+| **Modular** | Pick what you need |
+| **Credits** | Business model |
+
+---
+
 *Status: 🔵 Platform - Major competitor!*

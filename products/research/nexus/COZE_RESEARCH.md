@@ -54,4 +54,38 @@
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | 🔵 Competitor | Study for features |
+| **Nova** | 🔵 Reference | No-code UI inspiration |
+| **Actions** | 🔵 Competitor | Alternative |
+| **Agents Store** | 🔵 Competitor | Alternative marketplace |
+
+### Coze is a COMPETITOR
+
+Coze offers similar functionality to Aitlas. Use for:
+
+1. **Feature Inspiration** — What features work well
+2. **Pricing Reference** — How they monetize
+3. **UI Patterns** — No-code bot builder for Nova
+
+### What to Learn from Coze
+
+| Coze Feature | How to Apply |
+|--------------|-------------|
+| No-code bot builder | Nova no-code agent builder |
+| Knowledge base | f.library improvements |
+| Multi-channel | Future integrations |
+
+### What NOT to Do
+
+- Don't build like Coze (we're code-first, not no-code)
+- Don't compete on no-code — compete on customization
+
+---
+
 *Status: 🔵 Platform - Major competitor!*

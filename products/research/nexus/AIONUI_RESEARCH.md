@@ -58,4 +58,42 @@ Desktop UI for AI agents - similar to what Nexus aims to do.
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | 🔵 Reference | Desktop UI patterns |
+| **Nova** | 🔵 Reference | Multi-provider UI |
+| **Actions** | ❌ | Not relevant |
+| **Agents Store** | ❌ | Not relevant |
+
+### What to Learn from AionUi
+
+| AionUi Feature | How to Apply |
+|----------------|-------------|
+| **Multi-provider UI** | Nova provider selector |
+| **24/7 Cowork mode** | Nexus background tasks |
+| **Desktop integration** | Future desktop app |
+| **Provider support** | Add more providers to Nexus |
+
+### How We Compare
+
+| Feature | AionUi | Aitlas |
+|---------|--------|--------|
+| Providers | 7 | 4+ |
+| Cloud | ❌ | ✅ |
+| Desktop | ✅ | Future |
+| Actions/MCP | ❌ | ✅ |
+
+### Potential Integration
+
+AionUi uses OpenClaw. Could integrate:
+- Nexus as backend for AionUi
+- Share tools via MCP
+- Future collaboration?
+
+---
+
 *Status: 🔵 Research - Nexus alternative/competitor*
