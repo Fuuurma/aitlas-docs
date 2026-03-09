@@ -1246,3 +1246,41 @@ All actions → f.loop → credits
 - Every agent/user interaction passes through f.loop → generates revenue
 - Actions become essential hooks for network usage
 
+
+---
+
+## 40. Product Rename (2026-03-09)
+
+### Changes
+
+| Old Name | New Name | Description |
+|----------|----------|-------------|
+| Nexus (UI) | **Nova** | Dashboard, chat, tasks |
+| f.loop | **Nexus** | Core product - agent runtime |
+
+### New Product Structure (4 Products)
+
+| Product | Domain | Description |
+|---------|--------|-------------|
+| **Nova** | nova.aitlas.xyz | UI - dashboard, chat, tasks |
+| **Nexus** | nexus.aitlas.xyz | Agent runtime (formerly f.loop) |
+| **Agents Store** | agents.aitlas.xyz | Marketplace of agents |
+| **Actions** | f.xyz | MCP tools |
+
+### Key Insight
+
+> f.loop was never "just an action" - it's the core product. The rename reflects reality: Nexus IS the product.
+
+### Updated Architecture
+
+```
+Aitlas
+├── Nova (UI) ───────────────────── Calls Nexus via MCP
+├── Agents Store ────────────────── Agents reference Nexus capabilities
+├── Actions (f.xyz tools) ───────── Executed by Nexus via Tool Gateway
+└── Nexus (Agent Runtime) ───────── POWERS EVERYTHING
+    ├── Tool Gateway ────────────── Centralized auth, RTK, retry, credits
+    ├── Postgres Queue ──────────── FOR UPDATE SKIP LOCKED
+    └── Workers (Bun) ───────────── Durable agent execution
+```
+
