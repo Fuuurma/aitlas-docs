@@ -687,14 +687,308 @@ Error:   { success: false, error: { code, message, details } }
 
 ---
 
+---
+
+## 30. Extensible Loop (Developer Platform)
+
+### The Core Question
+> **Is f.loop an internal runtime... or a programmable economic layer?**
+
+**Answer: f.loop is a Public Runtime Protocol.**
+
+### Hook System
+Developers can plug into the execution loop:
+
+```typescript
+before_reasoning()    // Pre-planning logic
+after_reasoning()     // Post-planning analysis
+before_action()       // Pre-tool validation
+after_action()        // Post-tool logging
+memory_hook()         // Custom memory systems
+policy_hook()         // Security/compliance
+billing_hook()        // Custom billing
+safety_hook()         // Safety guardrails
+```
+
+### Three-Layer Economy
+
+| Layer | What | Monetization |
+|-------|------|--------------|
+| **Agent Economy** | Agents = apps | Revenue share |
+| **Action Economy** | Actions = APIs | Per-call credits |
+| **Runtime Economy** | Hooks = infrastructure | Per-loop credits |
+
+**Design Principle:**
+> Anything the core system can do inside the loop, developers should be able to extend.
+
+### Developer Platform API
+
+```
+POST /tasks          # Dispatch agent workflow
+GET /tasks/:id       # Check status
+STREAM /tasks/:id    # Real-time updates
+POST /hooks          # Register loop hooks
+GET /hooks/:id       # List hooks
+```
+
+---
+
+## 31. Agent Distribution (Viral Mechanism)
+
+### The Problem with Marketplaces
+Most marketplaces fail because they rely on **discovery** (browse store) instead of **distribution** (spread through use).
+
+| Failed Model | Success Model |
+|--------------|---------------|
+| GPT Store, Hugging Face | WhatsApp, Slack, Notion |
+| Users browse store | Users receive from others |
+| Discovery-based | Distribution-based |
+
+### The Solution: Agents as Shareable Artifacts
+
+```
+User → receives agent link → uses it → keeps/forks it
+```
+
+**NOT:**
+```
+User → browses store → installs
+```
+
+### `.aitlas-agent` Format
+
+Single-file share format containing:
+- Agent config (persona, prompts)
+- Skills (capabilities)
+- Dependencies (required actions)
+- Action requirements (MCP tools needed)
+
+### Viral Loop
+
+1. Creator builds: "Startup Research Agent"
+2. Shares link: `aitlas.com/a/startup-research-agent`
+3. Recipient opens in Nexus → Options: Run, Duplicate, Install, Edit
+4. Recipient forks → "PRD Generator for SaaS"
+5. Ecosystem evolves organically
+
+### GitHub Model for Agents
+
+```
+fork agent → add actions → improve prompts → share version
+```
+
+### Hidden Advantage: BYOK Portability
+
+Agents don't depend on Aitlas API billing → They can move freely across:
+- Nexus instances
+- Teams
+- Git repos
+- External platforms
+
+---
+
+---
+
+## 32. "Docker for Agents" Architecture
+
+### The Analogy
+
+| Docker | Aitlas |
+|--------|--------|
+| Dockerfile | **AgentSpec** |
+| Image | **AgentImage** |
+| Container | **AgentInstance** |
+| Docker Hub | **Agent Store** |
+| Kubernetes | **f.deploy infrastructure** |
+
+### AgentSpec Format
+
+```yaml
+agent:
+  name: startup-research
+  version: 1.2
+
+runtime:
+  loop: f.loop
+
+skills:
+  - web_research
+  - summarization
+
+actions:
+  - twyt.post
+  - library.search
+
+permissions:
+  - internet
+  - files
+
+memory:
+  type: vector
+```
+
+### Three-Layer Ecosystem
+
+| Layer | What | Analogy |
+|-------|------|---------|
+| **Agent Images** | Portable agents | Docker images |
+| **Actions** | MCP tools | APIs/plugins |
+| **Deployment Targets** | f.deploy targets | Kubernetes clusters |
+
+### Deployment Targets
+
+- Local machine
+- Cloud workers (Hetzner)
+- Enterprise server
+- Edge device
+- CI/CD pipeline
+
+### The Wild Scenario
+
+If Aitlas becomes the standard runtime:
+- OpenAI → Model provider
+- Anthropic → Model provider
+- **Aitlas → Execution layer above models**
+
+### The Real Pain to Solve
+
+> "I built an agent and want it to run anywhere."
+
+**Nail this → Architecture becomes extremely powerful.**
+
+---
+
+## 33. Cold Start Strategy
+
+### The Problem
+
+```
+No agents → No users → No agents → (vicious cycle)
+```
+
+### 3-Step Bootstrap Strategy
+
+#### Step 1: Seed the Agent Layer (10-20 Must-Have Agents)
+
+| Consumer | Developer |
+|----------|-----------|
+| Personal Research Assistant | Code Assistant |
+| Social Media Scheduler | Documentation Helper |
+| Health Tracker | API Analyzer |
+| Travel Concierge | Test Generator |
+
+**Goal:** Make the ecosystem look alive from day one.
+
+#### Step 2: Make Agents Viral
+
+| Mechanism | Example |
+|-----------|---------|
+| Collaborative features | Agents invite others (Notion-style) |
+| Shareable outputs | Recipients need Aitlas to view |
+| Copyable templates | Import like GitHub repos/Figma files |
+
+**Goal:** One user brings another, without paid ads.
+
+#### Step 3: Low-Friction Developer Path
+
+```
+Agent Spec → f.deploy → Agent Store
+```
+
+**Early dev incentives:**
+- Revenue share from store commissions
+- Prominent placement
+- Analytics on usage/virality
+
+---
+
+## 34. Rollout Plan: Day 1 → Week 12
+
+### Phase 0 — Prep (Before Launch)
+
+- [ ] Seed 10-20 high-value agents (consumer + dev mix)
+- [ ] Create copyable/remixable agent templates
+- [ ] Preload sample data for each agent
+- [ ] Build dev onboarding: Agent Spec → f.deploy → Agent Store
+- [ ] Include analytics dashboard
+
+### Phase 1 — Launch (Day 1 → Week 2)
+
+**Users:**
+- Invite 50-200 engaged users (consumers + devs)
+- Give access to must-have agents pre-configured
+- Enable sharing/collaboration features
+
+**Developers:**
+- Early access for 10-15 trusted devs
+- Early visibility + revenue share promises
+- Real user feedback
+
+**Mechanics:**
+- Functional virality: Agents create reasons to invite others
+- Social proof: "This agent is used by X people"
+- Leaderboard: Highlight top-performing agents
+
+### Phase 2 — Network Effects Ignite (Week 3 → Week 6)
+
+- [ ] Enable agent remixing (fork → modify → credit original)
+- [ ] Launch multi-agent workflows (DAGs)
+- [ ] Show collaboration features ("X people using this agent")
+- [ ] Deploy social proof widgets ("Cloned 17 times last week")
+
+### Phase 3 — Marketplace Expansion (Week 6 → Week 9)
+
+- [ ] Open Agent Store to public developers
+- [ ] Built-in viral hooks for every agent
+- [ ] Reward program: credits for clones, shares, invites
+- [ ] Curate high-quality agents for trust
+
+### Phase 4 — Consumer Growth & Stickiness (Week 9 → Week 12)
+
+**Goal:** Make Aitlas sticky for non-dev users.
+
+- [ ] Highlight high-utility agents (personalized "top agents for you")
+- [ ] Suggest multi-agent workflows to showcase value
+- [ ] Gamify discovery (unlock new agents after interactions)
+- [ ] Leaderboards for top workflows/most-used agents
+- [ ] Cross-device continuity (desktop + mobile + browser)
+- [ ] Social signals (opt-in sharing of results to friends)
+
+### Phase 5 — Self-Sustaining Ecosystem (Post Week 12)
+
+**Network effect loops:**
+- Users attract other users via shared agents
+- Developers motivated to build (used, shared, rewarded)
+- Multi-agent workflows create sticky patterns (daily usage)
+
+**By now:**
+- Agent Store full of useful agents
+- Workflows show ecosystem depth
+- Functional virality drives organic growth
+
+**Focus shifts to:**
+- Refining monetization
+- Expanding marketplace
+- Adding new verticals
+
+---
+
+## Key Principles Summary
+
+| Principle | Description |
+|-----------|-------------|
+| **Seed vs Organic** | Seed agents first → organic network effect follows |
+| **Functional Virality** | Users spread platform because agents *require sharing* |
+| **Developer Incentives** | Low friction + clear feedback + rewards |
+| **Consumer Stickiness** | Multi-agent workflows + personalized suggestions |
+| **Cold Start Solved** | Small cohort → functional virality → supply + demand loop |
+
+---
+
 **Last Updated:** March 2026  
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
 
 > *Build fast. Stay sovereign. Zero token liability. f.loop is the product.*
-
----
-
-## 25. What Aitlas Builds (LLMs Don't Have)
 
 | Capability | Why | Priority |
 |------------|-----|----------|
