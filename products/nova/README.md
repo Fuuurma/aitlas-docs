@@ -1,6 +1,6 @@
-# Nexus - The Agent Operating System
+# Nova — The Web UI
 
-**Domain:** nexus.aitlas.xyz  
+**Domain:** nova.aitlas.xyz  
 **Status:** 🟡 Development  
 **Stack:** Next.js 15, Bun, Neon Postgres, Prisma 6, Better Auth, T3 Code
 
@@ -8,13 +8,13 @@
 
 ## Overview
 
-**Nexus = Agent Operating System UI**
+**Nova** = The Aitlas Web UI (formerly Nexus).
 
-It's based on **T3 Code** (clone) and connects to multiple AI providers:
+It's based on **T3 Code** and connects to multiple AI providers:
 - **Codex** (OpenAI)
 - **Claude Code** (Anthropic)
 - **OpenCode** (independent)
-- **Aitlas** (our thing)
+- **Aitlas** (via Nexus orchestration)
 
 ---
 

@@ -6,15 +6,16 @@
 
 ## 🎯 What is Aitlas?
 
-**Aitlas = Nexus + Agents Store + Actions**
+**Aitlas = Nova + Nexus + Agents Store + Actions**
 
 | Component | Description |
 |-----------|-------------|
-| **Nexus** | AI Command Center UI |
-| **Agents Store** | Marketplace of 56 pre-configured agents |
-| **Actions** | 68 pre-built MCP tools |
+| **Nova** | The Web UI - chat, dashboard, tasks |
+| **Nexus** | Orchestration runtime - executes agents |
+| **Agents Store** | Marketplace of pre-configured agents |
+| **Actions** | Pre-built MCP tools (f.xyz) |
 
-**Key insight:** f.loop is the backbone - everything else is UI or tools on top of it.
+**Key insight:** Nexus is the backbone - everything else is UI or tools on top of it.
 
 ---
 

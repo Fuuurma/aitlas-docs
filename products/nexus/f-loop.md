@@ -1,7 +1,8 @@
-# f.loop — Durable Agent Runtime (Ralph)
+# Nexus — Durable Agent Runtime (Orchestration)
 
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
-**Repo:** `aitlas-loop` | **Host:** Hetzner (Bun workers) + Vercel (API gateway)  
+**Repo:** `aitlas-nexus` | **Host:** Hetzner (Bun workers) + Vercel (API gateway)  
+**Formerly:** f.loop  
 **Maintained by:** Herb (AI CTO)
 
 ---

@@ -1,9 +1,9 @@
-# Symphony — Nexus Tasks Integration
+# Symphony — Nova Tasks Integration
 
 **Status:** 🟡 Integration Candidate  
 **Reference:** [openai/symphony](https://github.com/openai/symphony) (9K stars, Apache 2.0)  
-**For:** Nexus → Tasks UI  
-**Integrates with:** [f.loop](./f-loop.md)
+**For:** Nova → Tasks UI (in web UI)  
+**Integrates with:** [Nexus](./f-loop.md) (orchestration runtime)
 
 ---
 
