@@ -33,7 +33,7 @@ Workflow orchestration platforms:
 - Runtime: Temporal, LangGraph, AutoGen (research)
 - Competitors: Coze, Dify (no-code platforms)
 - Desktop: AionUi (desktop UI)
-- Internal: aitlas-loop (original implementation)
+- Internal: aitlas-nexus (original implementation)
 - Integration: Open source map
 
 ### Nova (7 files)
