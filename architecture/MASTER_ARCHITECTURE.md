@@ -1089,3 +1089,71 @@ f.twyt / f.rsrx / f.library ────┐ │ │
 
 **Last Updated:** March 2026  
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
+
+---
+
+## 35. Agent Store Monetization
+
+### Revenue Models
+
+| Model | Description | Revenue |
+|-------|-------------|---------|
+| **Commission** | 10-30% per agent sale/subscription | Per-transaction |
+| **Premium Features** | Higher limits, multi-agent, MCP access | Freemium → paid |
+| **Subscription Pass** | Unlimited access to curated agents | Monthly recurring |
+| **Featured Placement** | Brands pay for spotlight | Marketing revenue |
+| **Custom Services** | Enterprise custom agent creation | Consulting + hosting |
+
+### Key Principle
+> The store should incentivize sharing and usage, not just purchases. Each paid agent should still trigger functional virality, so revenue and ecosystem growth happen together.
+
+---
+
+## 36. Actions Ecosystem Classification
+
+### 1. Core Engine Actions (Infrastructure)
+
+| Action | Purpose | Monetization |
+|--------|---------|--------------|
+| f.loop | Execution layer | API usage, premium capacity |
+| f.deploy | Deployment | Developer subscription |
+| f.flow | Workflow orchestration | Premium workflows |
+| f.mcp | MCP gateway | API access |
+
+### 2. Productivity / Knowledge Actions
+
+| Action | Purpose | Monetization |
+|--------|---------|--------------|
+| f.library | Vector knowledge base | Premium content subscriptions |
+| f.research | Deep research | Tiered access |
+| f.memory | Agent memory | Storage tiers |
+| f.assistant | General assistant | Freemium |
+| f.vault | Secure storage | Storage tiers |
+
+### 3. Business / Finance Actions
+
+| Action | Purpose | Monetization |
+|--------|---------|--------------|
+| f.pay | Payments | Transaction fees |
+| f.crm | Customer management | Multi-user access |
+| f.crypto | Crypto data/trading | API access |
+| f.finance | Financial data | Business intelligence |
+
+### 4. Data / Intelligence Actions
+
+| Action | Purpose | Monetization |
+|--------|---------|--------------|
+| f.news | News feeds | Premium feeds |
+| f.scrape | Web scraping | Compute-based |
+| f.google | Google integration | API access |
+
+### 5. Niche / Engagement Actions
+
+| Action | Purpose | Monetization |
+|--------|---------|--------------|
+| f.sports | Sports data | Affiliate/partnerships |
+| f.bets | Betting integration | Affiliate |
+| f.psychology | Mental wellness | Premium experiences |
+| f.language | Language learning | Subscription |
+| f.hack | Security tools | Premium access |
+
