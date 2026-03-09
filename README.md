@@ -6,7 +6,7 @@
 
 ## 🎯 What is Aitlas?
 
-**Aitlas = Nova + Nova + Agents Store + Actions**
+**Aitlas = Nova + Nexus + Agents Store + Actions**
 
 | Component | Description |
 |-----------|-------------|
