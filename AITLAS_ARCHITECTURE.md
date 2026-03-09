@@ -8,7 +8,7 @@
 
 1. [Vision & Mental Model](#1-vision--mental-model)
 2. [Product Map](#2-product-map)
-3. [Nexus — The Hub](#3-nexus--the-hub)
+3. [Nova — The Hub](#3-nexus--the-hub)
 4. [Agents — The Store](#4-agents--the-store)
 5. [Actions — The Engine (f.xyz)](#5-actions--the-engine-fxyz)
 6. [The Ralph Engine (Nexus runtime)](#6-the-ralph-engine-floop)
@@ -825,7 +825,7 @@ Key rules:
 | Repo | Domain | Stack | Status |
 |------|--------|-------|--------|
 | `aitlas-core-template` | — | Next.js 15 + Bun | ✅ Maintained |
-| `aitlas-nexus` | nexus.aitlas.xyz | Nexus web app | 🟡 Development |
+| `aitlas-nexus` | nexus.aitlas.xyz | Nova web app | 🟡 Development |
 | `aitlas-agents` | agents.aitlas.xyz | Agents Store | 🟡 Development |
 | `aitlas-loop` | loop.internal | Ralph (Bun, Hetzner) | 🟡 Development |
 | `f-twyt` | f.xyz/twyt | Twitter action | ✅ Production |

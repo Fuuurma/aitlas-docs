@@ -382,7 +382,7 @@ The funnel: **standalone product → Aitlas account → discover Nexus → upgra
 |-----|-----|
 | All actions = Hono (headless) | Split: Mini-Apps = Next.js, Utilities = Hono |
 | Actions have no UI | f.twyt, f.rsrx, f.library have full product UIs |
-| Results only appear in Nexus chat | Rich cards in Nexus + deep link to full action UI |
+| Results only appear in Nova chat | Rich cards in Nova + deep link to full action UI |
 | Actions not sellable standalone | f.twyt, f.rsrx, f.library are standalone products |
 | Single action-template | Two templates: ui-template for mini-apps, action-template for utilities |
 | Results not persisted in action | Results stored in action's DB, referenced by ID in Nexus |

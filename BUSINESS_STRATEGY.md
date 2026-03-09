@@ -261,7 +261,7 @@ Furma.tech is a **digital holding company and venture studio** operating across 
 
 ### Product Messaging
 
-#### Nexus (The Hub)
+#### Nova (The Hub)
 
 **Headline:** "Your AI Agent Workspace"
 
@@ -392,7 +392,7 @@ Furma.tech is a **digital holding company and venture studio** operating across 
 **Purpose:** User acquisition, product hook
 
 **Includes:**
-- Unlimited Nexus chat
+- Unlimited Nova chat
 - Agent Store access
 - Basic MCP tools
 
