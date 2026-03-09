@@ -647,6 +647,408 @@ Memory, compaction, multimodal, scheduling can evolve.
 
 ---
 
+# 14. Nexus High-Level Architecture
+
+Think of Nexus as **three layers**:
+
+```
+Providers (LLMs)
+ ↑
+Nexus Runtime
+ ↑
+Agents / Skills / MCP Tools
+```
+
+Everything above the runtime becomes **portable**.
+
+```
+ AGENTS
+ │
+ Agent Definition
+ │
+ Agent Task
+ │
+ NEXUS RUNTIME
+ ┌─────────────────────────────────┐
+ │                                 │
+ │ Context Builder                 │
+ │ Memory Engine                   │
+ │ Tool Executor                   │
+ │ File Processor                  │
+ │ Provider Router                 │
+ │ Agent Loop                      │
+ │ Observability                   │
+ │                                 │
+ └─────────────────────────────────┘
+ │
+ Providers (OpenAI, Anthropic, Google)
+```
+
+---
+
+# 15. Agent Definition Layer
+
+Agents should be **declarative**.
+
+```typescript
+agent({
+  name: "research-agent",
+  provider: "openai:gpt-5.4",
+  skills: ["web-search", "file-reader", "summarizer"],
+  memory: {
+    shortTerm: true,
+    longTerm: true
+  },
+  maxIterations: 8
+})
+```
+
+This layer **does not execute anything**. Nexus interprets it.
+
+---
+
+# 16. Agent Runtime Loop (Core Brain)
+
+The most important component. Full loop:
+
+```
+User input
+ ↓
+Context Builder
+ ↓
+LLM Call
+ ↓
+Tool?
+ ↓
+Execute Tool
+ ↓
+Add result
+ ↓
+Repeat
+ ↓
+Finish
+```
+
+```typescript
+while(iteration < maxIterations) {
+  const context = await buildContext(task)
+  const response = await provider.generate(context)
+  
+  if(response.toolCall) {
+    const result = await toolExecutor.run(response.toolCall)
+    task.messages.push(result)
+    continue
+  }
+  
+  break
+}
+```
+
+**Safeguards:**
+```
+maxIterations, maxTokens, timeout
+```
+
+Otherwise agents can **loop forever**.
+
+---
+
+# 17. Provider Router
+
+Abstraction layer for providers.
+
+```typescript
+providerRouter.call({
+  model: "openai:gpt-5.4",
+  input: context
+})
+```
+
+Under the hood:
+```
+openai/
+anthropic/
+gemini/
+local/
+```
+
+Each adapter translates:
+- tools
+- messages
+- streaming
+- multimodal
+
+Example difference:
+- OpenAI: `tools`, `tool_choice`
+- Anthropic: `tool_use`, `tool_result`
+
+**Nexus normalizes them.**
+
+---
+
+# 18. Context Builder (Most Complex)
+
+Decides **what goes into the prompt**.
+
+Pipeline:
+```
+system prompt + conversation history + vector memories + relevant files + tool definitions
+```
+
+```
+ContextBuilder
+ ├ history loader
+ ├ memory retriever
+ ├ file retriever
+ ├ tool schema builder
+ └ prompt assembler
+```
+
+Result:
+```
+[
+  system_message,
+  memory_snippets,
+  conversation_messages,
+  tool_definitions
+]
+```
+
+---
+
+# 19. Memory Engine — Three Types
+
+### 1️⃣ Conversation Memory
+- Stored in: Postgres or Redis
+```typescript
+{
+  conversation_id,
+  role,
+  content,
+  metadata
+}
+```
+
+### 2️⃣ Vector Memory
+- Stored in: Qdrant, Weaviate, Supabase
+- Use for: preferences, facts, project context, knowledge
+
+### 3️⃣ Episodic Memory
+- Agent task history
+- Stored as structured data
+- Useful for: debugging, agent learning, analytics
+
+---
+
+# 20. Context Compaction Engine
+
+Critical for cost and performance.
+
+### Strategies:
+
+**Sliding Window**
+```
+last 10 messages
+```
+
+**Conversation Summary**
+```
+summary: "User is building a SaaS platform"
+```
+
+**Semantic Extraction**
+```
+User prefers TypeScript
+Project uses Next.js
+```
+
+---
+
+# 21. Tool Executor
+
+Handles **all tool execution**.
+
+Tool types:
+```
+MCP tools, internal tools, API connectors, code tools, filesystem tools
+```
+
+Execution pipeline:
+```
+tool_call → validate schema → execute tool → capture logs → return result
+```
+
+```typescript
+{
+  name: "search_web",
+  input: { query: "string" }
+}
+```
+
+---
+
+# 22. MCP Integration
+
+Fits perfectly with **Model Context Protocol**.
+
+MCP lets Nexus connect to:
+```
+GitHub, Slack, Notion, Databases, APIs
+```
+
+Nexus becomes an **MCP host**. Agents can dynamically load tools.
+
+---
+
+# 23. File Processing Engine
+
+Pipeline:
+```
+Upload → Parse → Chunk → Embed → Vector Store
+```
+
+Parsers:
+```
+PDF, DOCX, Markdown, CSV, Code, Images, Audio
+```
+
+For multimodal models (OpenAI, Anthropic), send files **directly as input**. Indexing helps for retrieval.
+
+---
+
+# 24. Observability System
+
+Log **everything**. Inspired by LangSmith, Helicone.
+
+### Metrics:
+
+**LLM**
+```
+tokens, latency, cost, model
+```
+
+**Tool**
+```
+tool name, arguments, execution time, errors
+```
+
+**Agent**
+```
+iterations, completion rate, failure rate
+```
+
+---
+
+# 25. Event Bus
+
+Agents and tools emit events:
+
+```
+agent.started
+llm.called
+tool.executed
+memory.updated
+agent.completed
+```
+
+Enables:
+```
+dashboards, analytics, debugging, webhooks
+```
+
+---
+
+# 26. Task System (Trigger.dev Foundation)
+
+Tasks drive everything:
+
+```
+run-agent
+process-file
+vector-index
+memory-extract
+tool-execution
+```
+
+Benefits:
+```
+retries, queues, parallel execution, scheduling
+```
+
+---
+
+# 27. Full Execution Flow
+
+```
+User request
+ ↓
+Create Agent Task
+ ↓
+Context Builder
+ ↓
+Provider Call
+ ↓
+Tool Execution
+ ↓
+Memory Update
+ ↓
+Loop
+ ↓
+Result
+```
+
+---
+
+# 28. Scalability Design
+
+To support **thousands of agents**:
+
+```
+nexus-api
+nexus-runtime
+nexus-workers
+nexus-vector
+nexus-observability
+```
+
+Workers handle:
+```
+agent loops, file processing, embedding, tool execution
+```
+
+---
+
+# 29. Why This Architecture Is Powerful
+
+### 1️⃣ Provider Independence
+Swap GPT ↔ Claude ↔ Gemini ↔ Local models
+
+### 2️⃣ Agent Portability
+Agents are just **configs + skills**
+
+### 3️⃣ Monetization
+Sell agents, skills, tools, memory plugins inside Aitlas
+
+---
+
+# 30. The Final Vision
+
+```
+Agents Marketplace
+ │
+Skills Marketplace
+ │
+MCP Tool Network
+ │
+NEXUS RUNTIME
+ │
+Providers
+```
+
+Nexus becomes the **operating system of the ecosystem**.
+
+---
+
 ## Key Insights
 
 1. **Don't build everything from scratch** — use Trigger.dev for workflows
