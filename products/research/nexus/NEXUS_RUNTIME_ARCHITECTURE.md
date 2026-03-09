@@ -1059,6 +1059,46 @@ Nexus becomes the **operating system of the ecosystem**.
 
 ---
 
+## 🔌 Implementation Roadmap
+
+### Product Alignment
+
+| Aitlas Product | Nexus Role |
+|---------------|------------|
+| **Nexus** | ✅ This is us! |
+| **Nova** | UI frontend for Nexus |
+| **Actions** | Tools executed by Nexus |
+| **Agents Store** | Agents run on Nexus |
+
+### How to Build
+
+| Phase | Component | Based On |
+|-------|-----------|----------|
+| **v1** | Task queue, Agent loop, Tool executor | aitlas-loop |
+| **v2** | Background jobs, Retries | Trigger.dev |
+| **v3** | Checkpointing | LangGraph |
+| **v4** | Multi-agent | AutoGen |
+| **v5** | Durable execution | Temporal |
+
+### What to Build First
+
+1. **Core Loop** — Agent → Tools → Memory
+2. **Provider Router** — Swap OpenAI/Anthropic/Google
+3. **Memory System** — Short + Long term
+4. **Observability** — Logs, traces, metrics
+5. **Task Queue** — Postgres-based like aitlas-loop
+
+### Integration Points
+
+| External | Integration |
+|----------|-------------|
+| **Trigger.dev** | Background job patterns |
+| **MCP** | Tool definitions |
+| **Nova** | Task status UI |
+| **Actions** | Tool execution |
+
+---
+
 ## Related Research
 
 - [Floop Analysis](./FLOOP_ANALYSIS.md) — Nexus runtime analysis
