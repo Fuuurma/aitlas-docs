@@ -1,5 +1,8 @@
 # Everything Claude Code — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) (67K stars, MIT)  
 **Use:** Nova optimization, Skills, Memory, Security

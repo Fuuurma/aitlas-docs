@@ -1,5 +1,8 @@
 # OpenSandbox Integration Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Source:** https://github.com/alibaba/OpenSandbox
 **Date:** 2026-03-08
 **Verdict:** ✅ **PERFECT FIT** - Use as Aitlas Execution Layer

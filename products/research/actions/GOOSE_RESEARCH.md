@@ -1,5 +1,8 @@
 # Goose — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Agent  
 **Reference:** [block/goose](https://github.com/block/goose) (32.7K stars, Apache 2.0)  
 **Use:** Extensible AI agent

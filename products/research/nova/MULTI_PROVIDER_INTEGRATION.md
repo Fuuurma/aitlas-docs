@@ -1,5 +1,8 @@
 # Nova Multi-Provider Integration
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Based on:** cc-switch architecture  
 **For:** Nova (T3Code clone)  
 **Goal:** Connect Codex, Claude Code, OpenCode, Gemini CLI + Aitlas Nexus

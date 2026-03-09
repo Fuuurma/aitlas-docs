@@ -1,5 +1,8 @@
 # AutoGen — Multi-Agent Framework
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Reference  
 **Reference:** [microsoft/autogen](https://github.com/microsoft/autogen)  
 **Stars:** 55.3K ⭐ | **Language:** Python | **License:** MIT  

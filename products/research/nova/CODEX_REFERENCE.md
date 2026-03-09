@@ -1,5 +1,8 @@
 # Codex — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Reference (Not for integration)  
 **Reference:** [openai/codex](https://github.com/openai/codex) (64K stars, Apache 2.0)  
 **Category:** Competitor / Reference

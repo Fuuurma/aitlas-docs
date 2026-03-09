@@ -1,5 +1,8 @@
 # f.rsrx & f.library - Aitlas Alignment Plan
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Date:** March 6, 2026  
 **Status:** 🟡 Needs Adaptation  
 **Goal:** Align with furma-core-template + Aitlas ecosystem

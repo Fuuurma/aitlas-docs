@@ -1,5 +1,8 @@
 # Aitlas Core Template - Usage Guide
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 ## Quick Start
 
 ```bash

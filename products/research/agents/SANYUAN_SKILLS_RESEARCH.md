@@ -1,5 +1,8 @@
 # sanyuan-skills — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [sanyuan0704/sanyuan-skills](https://github.com/sanyuan0704/sanyuan-skills) (2.5K stars, MIT)  
 **Use:** Agents Store / Skills

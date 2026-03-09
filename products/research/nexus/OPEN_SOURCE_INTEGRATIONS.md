@@ -1,5 +1,8 @@
 # Open Source Integrations
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Last Updated:** 2026-03-08  
 **Purpose:** Track open source projects we integrate with Aitlas ecosystem
 

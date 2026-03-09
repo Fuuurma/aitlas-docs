@@ -1,5 +1,8 @@
 # LangGraph — Graph-Based Agent Orchestration
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Reference  
 **Reference:** [langchain-ai/langgraph](https://github.com/langchain-ai/langgraph)  
 **Stars:** 26K ⭐ | **Language:** Python | **License:** MIT  

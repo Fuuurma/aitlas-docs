@@ -1,5 +1,8 @@
 # Pi — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [pi-mono](https://github.com/badlogic/pi-mono) (21K stars, MIT)  
 **Category:** Agent Framework  

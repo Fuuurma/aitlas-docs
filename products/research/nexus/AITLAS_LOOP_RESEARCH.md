@@ -1,5 +1,8 @@
 # aitlas-loop — Original Nexus Runtime
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Historical / Replaced  
 **Reference:** [Fuuurma/aitlas-loop](https://github.com/Fuuurma/aitlas-loop) (private)  
 **Type:** Internal repository  

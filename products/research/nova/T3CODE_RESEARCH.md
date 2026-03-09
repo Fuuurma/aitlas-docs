@@ -1,5 +1,8 @@
 # T3 Code — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 CORE  
 **Reference:** [pingdotgg/t3code](https://github.com/pingdotgg/t3code) (4.2K stars, MIT)  
 **Use:** Nova Chat UI - core of agent interaction

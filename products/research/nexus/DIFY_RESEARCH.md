@@ -1,5 +1,8 @@
 # Dify — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Platform (HUGE!)  
 **Reference:** [langgenius/dify](https://github.com/langgenius/dify) (131.6K stars, Apache 2.0)  
 **Use:** AI agent platform - competitor/inspiration

@@ -1,5 +1,8 @@
 # AgentOps — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Observability  
 **Reference:** [AgentOps-AI/agentops](https://github.com/AgentOps-AI/agentops) (5.3K stars, MIT)  
 **Use:** Agent monitoring & analytics

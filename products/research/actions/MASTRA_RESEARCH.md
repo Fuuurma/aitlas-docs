@@ -1,5 +1,8 @@
 # Mastra — Research (DEEP)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 CORE Framework (TypeScript!)  
 **Reference:** [mastra-ai/mastra](https://github.com/mastra-ai/mastra) (21.8K stars, MIT)  
 **Use:** TypeScript-first agent framework - OUR STACK!

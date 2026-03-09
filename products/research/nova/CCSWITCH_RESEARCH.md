@@ -1,5 +1,8 @@
 # cc-switch — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [farion1231/cc-switch](https://github.com/farion1231/cc-switch) (25.3K stars, MIT)  
 **Use:** Nexus Alternative - Multi-provider desktop UI

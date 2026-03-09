@@ -1,5 +1,8 @@
 # Multi-Provider Integration for Nova
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Full Implementation:** OpenCode + Claude Code + Codex  
 **For:** Nova (T3Code clone)
 

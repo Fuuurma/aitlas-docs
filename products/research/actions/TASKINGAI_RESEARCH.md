@@ -1,5 +1,8 @@
 # TaskingAI — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Platform  
 **Reference:** [TaskingAI/TaskingAI](https://github.com/TaskingAI/TaskingAI) (5.4K stars, Apache 2.0)  
 **Use:** AI agent platform

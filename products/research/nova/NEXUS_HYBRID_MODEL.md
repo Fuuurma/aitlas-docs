@@ -1,5 +1,8 @@
 # Nova Hybrid Model
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Last Updated:** 2026-03-08  
 **Purpose:** Explain how Nova (Aitlas UI) combines free BYOK mode with paid Aitlas ecosystem
 

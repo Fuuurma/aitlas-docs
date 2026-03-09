@@ -1,5 +1,8 @@
 # Temporal — Enterprise Durable Execution
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Reference  
 **Reference:** [temporalio/temporal](https://github.com/temporalio/temporal)  
 **Stars:** 18.7K ⭐ | **Language:** Go | **License:** MIT  

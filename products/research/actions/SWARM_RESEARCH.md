@@ -1,5 +1,8 @@
 # OpenAI Swarm — Research (DEEP)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Framework  
 **Reference:** [openai/swarm](https://github.com/openai/swarm) (21.1K stars, MIT)  
 **Use:** Simple orchestration - Educational

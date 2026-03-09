@@ -1,5 +1,8 @@
 # Dexter Integration Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Source:** https://github.com/virattt/dexter  
 **Research Date:** 2026-03-08  
 **Status:** Analysis Complete

@@ -1,5 +1,8 @@
 # Scira — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [zaidmukaddam/scira](https://github.com/zaidmukaddam/scira) (11.5K stars, AGPL-3.0)  
 **Use:** f.research - combined with Perplexica

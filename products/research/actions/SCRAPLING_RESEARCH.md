@@ -1,5 +1,8 @@
 # Scrapling — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [D4Vinci/Scrapling](https://github.com/D4Vinci/Scrapling) (26K stars, BSD-3-Clause)  
 **Use:** Web scraping for f.scrape or f.research

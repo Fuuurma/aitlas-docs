@@ -1,5 +1,8 @@
 # ADR-001: Use RESTful API with Standard Handler
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 ## Status
 Accepted
 

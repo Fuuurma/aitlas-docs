@@ -1,5 +1,8 @@
 # MetaGPT — Research (DEEP)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 CORE Framework  
 **Reference:** [FoundationAgents/MetaGPT](https://github.com/FoundationAgents/MetaGPT) (64.9K stars, MIT)  
 **Use:** Multi-agent collaboration - Software company simulation

@@ -1,5 +1,8 @@
 # Antigravity Awesome Skills — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) (21.8K stars, MIT)  
 **Use:** Agents Store - Massive skills collection!

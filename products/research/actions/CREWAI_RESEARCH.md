@@ -1,5 +1,8 @@
 # crewAI — Research (DEEP)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 CORE Framework  
 **Reference:** [crewAIInc/crewAI](https://github.com/crewAIInc/crewAI) (45.5K stars, MIT)  
 **Use:** Multi-agent orchestration - Structure & clarity

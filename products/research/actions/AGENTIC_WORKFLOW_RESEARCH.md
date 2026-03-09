@@ -1,5 +1,8 @@
 # Agentic Workflow Research - Open Source Landscape
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Last Updated:** 2026-03-08  
 **Purpose:** Map open source projects we can leverage for Aitlas
 

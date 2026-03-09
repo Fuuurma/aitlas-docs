@@ -1,5 +1,8 @@
 # AutoGen — Research (DEEP)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 CORE Framework  
 **Reference:** [microsoft/autogen](https://github.com/microsoft/autogen) (55.3K stars, MIT)  
 **Use:** Enterprise multi-agent - Microsoft-backed

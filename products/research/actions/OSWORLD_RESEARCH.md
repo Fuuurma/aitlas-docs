@@ -1,5 +1,8 @@
 # OSWorld — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Evaluation  
 **Reference:** [xlang-ai/OSWorld](https://github.com/xlang-ai/OSWorld) (2.6K stars, Apache 2.0)  
 **Use:** Agent evaluation in OS environments

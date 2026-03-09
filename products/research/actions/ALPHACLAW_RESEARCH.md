@@ -1,5 +1,8 @@
 # AlphaClaw — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 CORE  
 **Reference:** [chrysb/alphaclaw](https://github.com/chrysb/alphaclaw) (130 stars, MIT)  
 **Use:** f.deploy - Agent deployment & management

@@ -1,5 +1,8 @@
 # AionUi — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi) (18.2K stars, Apache 2.0)  
 **Use:** Nexus Alternative - OpenClaw Desktop UI

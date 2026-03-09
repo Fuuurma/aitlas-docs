@@ -1,5 +1,8 @@
 # MCP — Official Protocol Integration
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** ✅ CRITICAL - Official Protocol  
 **Reference:** [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) (80K stars)  
 **Spec:** [modelcontextprotocol.io](https://modelcontextprotocol.io)

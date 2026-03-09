@@ -1,5 +1,8 @@
 # trigger.dev — Foundation for Nexus
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 CORE - **FOUNDATION**  
 **Reference:** [triggerdotdev/trigger.dev](https://github.com/triggerdotdev/trigger.dev) (13.9K stars, Apache 2.0)  
 **Use:** Nexus runtime is **CLONED FROM** trigger.dev

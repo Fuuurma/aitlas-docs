@@ -1,5 +1,8 @@
 # ClawRouter — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [BlockRunAI/ClawRouter](https://github.com/BlockRunAI/ClawRouter) (5.2K stars, MIT)  
 **Use:** Model routing for BYOK users

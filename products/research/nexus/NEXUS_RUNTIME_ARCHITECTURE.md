@@ -1,5 +1,8 @@
 # Nexus Runtime Architecture — Deep Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 ACTIVE  
 **Date:** 2026-03-09  
 **Foundation:** Cloned from **trigger.dev** (Apache 2.0)  

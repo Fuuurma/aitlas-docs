@@ -1,5 +1,8 @@
 # Building on Top of UI Template
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 This guide explains how to build your own Aitlas UI project using this template.
 
 ## Quick Start

@@ -1,5 +1,8 @@
 # OpenCode Integration for Nova
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Provider:** OpenCode  
 **For:** Nova (T3Code clone)  
 **Type:** CLI Wrapper + HTTP API

@@ -1,5 +1,8 @@
 # Agent: f.investor
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Version:** 1.0  
 **Status:** Design Phase  
 **Category:** Professional Agent

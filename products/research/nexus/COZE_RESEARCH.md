@@ -1,5 +1,8 @@
 # Coze — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Platform  
 **Reference:** [coze-dev/coze-studio](https://github.com/coze-dev/coze-studio) (20K stars, Apache 2.0)  
 **Use:** AI bot platform - competitor
