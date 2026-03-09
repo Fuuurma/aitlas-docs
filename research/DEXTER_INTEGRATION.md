@@ -177,7 +177,7 @@ You are f.financial-researcher, a specialized financial research agent.
 ### Architecture Components
 | Component | Dexter | Aitlas Equivalent |
 |-----------|--------|-------------------|
-| Task Planner | Built-in | Aitlas Orchestration (f.loop) |
+| Task Planner | Built-in | Aitlas Orchestration (Nexus runtime) |
 | Tool Execution | Custom | MCP Protocol |
 | Self-Validation | Built-in | Aitlas Memory + Reflection |
 | Scratchpad | JSONL files | Aitlas Memory System |
@@ -260,7 +260,7 @@ bun run gateway
 ### 2. Task Decomposition
 **What:** Break complex queries into steps
 **Why:** Better results, transparent reasoning
-**Aitlas Integration:** Use in f.loop orchestration
+**Aitlas Integration:** Use in Nexus runtime orchestration
 
 ### 3. Self-Validation
 **What:** Agent checks its own work
@@ -344,7 +344,7 @@ async function validate(result: ResearchResult): Promise<Validation> {
 **Dependencies:**
 - Financial Datasets API key
 - Exa API key (optional, for web search)
-- Aitlas orchestration layer (f.loop)
+- Aitlas orchestration layer (Nexus runtime)
 
 ---
 

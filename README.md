@@ -6,7 +6,7 @@
 
 ## 🎯 What is Aitlas?
 
-**Aitlas = Nova + Nexus + Agents Store + Actions**
+**Aitlas = Nova + Nova + Agents Store + Actions**
 
 | Component | Description |
 |-----------|-------------|
@@ -64,7 +64,7 @@ developers → build agents → agents use tools → tools use credits
 
 | Section | Title | Key Insight |
 |---------|-------|-------------|
-| 1-24 | Core Architecture | Vision, Nexus, Agents, Actions, f.loop, Tool Gateway |
+| 1-24 | Core Architecture | Vision, Nexus, Agents, Actions, Nexus runtime, Tool Gateway |
 | **25** | What Aitlas Builds | LLM gaps we fill (Memory, Orchestration, Tools) |
 | **26** | Dependency Graph | How components connect |
 | **27** | Tool Access Matrix | Agent × Tool permissions |
@@ -86,7 +86,7 @@ developers → build agents → agents use tools → tools use credits
 
 | Doc | Description |
 |-----|-------------|
-| [products/actions/f-loop.md](./products/actions/f-loop.md) | **f.loop spec (41KB)** - Durable agent runtime |
+| [products/actions/f-loop.md](./products/actions/f-loop.md) | **Nexus runtime spec (41KB)** - Durable agent runtime |
 | [products/actions/CATALOG.md](./products/actions/CATALOG.md) | Actions catalog (68 actions) |
 | [products/agents-store/ROADMAP.md](./products/agents-store/ROADMAP.md) | Agents roadmap (56 agents) |
 | [products/agents-store/specs/f.investor.md](./products/agents-store/specs/f.investor.md) | f.investor complete spec |
@@ -168,7 +168,7 @@ agent:
   version: 1.2
 
 runtime:
-  loop: f.loop
+  loop: Nexus runtime
 
 skills:
   - web_research
@@ -304,4 +304,4 @@ If it doesn't → no architecture matters.
 
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
 
-> *Build fast. Stay sovereign. Zero token liability. f.loop is the product.*
+> *Build fast. Stay sovereign. Zero token liability. Nexus runtime is the product.*

@@ -17,7 +17,7 @@ The Internet             →  Browser
 The OS                   →  Nexus (T3 Code fork)
 The App Store            →  Agents Store
 The System Utilities     →  Actions (f.xyz)
-The Background Daemons   →  f.loop (Ralph)
+The Background Daemons   →  Nexus runtime (Ralph)
 The File System          →  f.library
 The Execution Sandbox    →  OpenSandbox
 The Universal Connector  →  f.bridge (MCP gateway)
@@ -31,7 +31,7 @@ The Network Layer        →  MCP
 | BYOK always — even paid tier | Zero token liability. Furma charges compute, never tokens. |
 | T3 Code fork not custom UI | Proven chat UX + free Electron desktop. Weeks saved. |
 | Open source extraction | Warden, OpenSandbox, RTK, Agency Agents — don't rebuild battle-tested tools. |
-| f.loop as platform, not infra | External devs calling `POST /tasks` = real moat. |
+| Nexus runtime as platform, not infra | External devs calling `POST /tasks` = real moat. |
 
 ---
 
@@ -111,7 +111,7 @@ T3 Code UI (Nexus fork)
 │  Claude Code → user's key    f.xyz Actions           │
 │  OpenCode → user's key       Agents Store            │
 │  Gemini → user's key         Memory (pgvector)       │
-│                              Tasks (f.loop)          │
+│                              Tasks (Nexus runtime)          │
 │                              OpenSandbox exec        │
 │                              (still BYOK for LLM)   │
 └──────────────────────────────────────────────────────┘
@@ -130,7 +130,7 @@ Requires: Pro subscription ($20/mo) OR credit balance >= 500
 | Chat Panel | ✅ | ✅ |
 | Actions Sidebar | ❌ Locked | ✅ |
 | Agent Panel | ❌ | ✅ |
-| Task Monitor | ❌ | ✅ Live f.loop |
+| Task Monitor | ❌ | ✅ Live Nexus runtime |
 | Workflow Builder | ❌ | ✅ DAG editor |
 
 ### Instinct System (ECC Pattern)
@@ -276,7 +276,7 @@ Long-term vision: `aitlas-runner` = Modal/Fly competitor.
 ```typescript
 f.bridge("mcp://plaid.com/api")  // → instantly has Plaid tools
 ```
-Registers to external MCP registries: Smithery, Pulse, mcp.get. Monetized via f.loop credits.
+Registers to external MCP registries: Smithery, Pulse, mcp.get. Monetized via Nexus runtime credits.
 
 ### MCP Result Card Protocol
 ```typescript
@@ -292,11 +292,11 @@ Nexus renders inline result card with deep link.
 
 ---
 
-## 8. f.loop — Ralph Engine
+## 8. Nexus runtime — Ralph Engine
 
 ### Strategic Position
-> Current: f.loop powers Nexus + Agents  
-> Future: f.loop IS the product — REST API for external devs = real moat
+> Current: Nexus runtime powers Nexus + Agents  
+> Future: Nexus runtime IS the product — REST API for external devs = real moat
 
 ### 5-Phase Execution Loop
 ```
@@ -475,7 +475,7 @@ const result = await sandbox.commands.run('python3 -c "print(1+1)"');
 await sandbox.kill();
 ```
 
-Security: gVisor (default) / Kata / Firecracker. Used by f.loop workers + f.decloy.
+Security: gVisor (default) / Kata / Firecracker. Used by Nexus runtime workers + f.decloy.
 
 Sandbox MCP tools: `execute_code` (2cr), `run_command` (1cr), `browse_web` (3cr).
 
@@ -485,14 +485,14 @@ Sandbox MCP tools: `execute_code` (2cr), `run_command` (1cr), `browse_web` (3cr)
 
 | Project | License | Used For |
 |---------|---------|---------|
-| T3 Code | MIT | Nexus UI + Electron |
+| T3 Code | MIT | Nova + Electron |
 | OpenSandbox (Alibaba) | Apache 2.0 | Code/sandbox execution |
 | RTK | MIT | Token compression |
 | Warden (Sentry) | FSL-1.1 | f.guard engine |
 | Agency Agents | MIT | 61 agent templates |
 | ECC | MIT | Hooks + instinct format |
 | Crush | FSL-1.1 | AGENTS.md format |
-| Trigger.dev | Apache 2.0 | f.loop patterns |
+| Trigger.dev | Apache 2.0 | Nexus runtime patterns |
 | CrewAI | MIT | Orchestration patterns |
 | OpenCode | MIT | BYOK arch reference |
 
@@ -518,7 +518,7 @@ Key models (see full schema in aitlas-nexus prisma/schema.prisma):
 
 **Credits:** CreditLedgerEntry (append-only, balance snapshot), CreditReservation
 
-**f.loop:** Task, TaskStep, ToolCall, ScheduledTask  
+**Nexus runtime:** Task, TaskStep, ToolCall, ScheduledTask  
 - Task status: `PENDING | CLAIMED | RUNNING | COMPLETED | FAILED | TIMEOUT | STUCK | CANCELLED`
 - TaskStep type: `PLAN | ACTION | REFLECTION | FINAL`
 - ToolCall status: `PENDING | SUCCESS | FAILED | TIMEOUT`
@@ -563,8 +563,8 @@ Service-to-service: `Authorization: Bearer <session_token>` + `X-Furma-Internal:
 | f.guard PR scan | 3 |
 | f.support auto-resolve | 3 |
 | execute_code | 2 |
-| f.loop orchestration | 1 (flat) |
-| f.loop compute | 2/hr |
+| Nexus runtime orchestration | 1 (flat) |
+| Nexus runtime compute | 2/hr |
 | f.decloy deploy | 25 |
 | f.decloy runtime | 1/min |
 
@@ -624,7 +624,7 @@ Tool naming: `snake_case`. Each declares `inputSchema` (JSON Schema) + `creditCo
 | Agents Store | Vercel | ui-template |
 | f.twyt/rsrx/library | Vercel | ui-template |
 | f.guard/support/decloy/bridge | Vercel | action-template |
-| f.loop + watchdog + scheduler | Hetzner CX21 | worker-template |
+| Nexus runtime + watchdog + scheduler | Hetzner CX21 | worker-template |
 | OpenSandbox | Hetzner (Docker) | internal |
 | PostgreSQL | Neon eu-west-2 | — |
 | Redis | Upstash | — |
@@ -662,7 +662,7 @@ Error:   { success: false, error: { code, message, details } }
 | Decision | Chosen | Rejected | Reason |
 |----------|--------|----------|--------|
 | Next.js version | **16** | 15 | v16 is current |
-| Nexus UI | T3 Code fork | Custom | Free Electron + proven UX |
+| Nova | T3 Code fork | Custom | Free Electron + proven UX |
 | Task queue | Postgres `FOR UPDATE SKIP LOCKED` | Redis Streams | Zero new infra |
 | Execution sandbox | OpenSandbox | Build custom | Apache 2.0, TS SDK, Firecracker |
 | Code review | Warden (Sentry) | Build custom | Production-ready, auto-fix |
@@ -680,7 +680,7 @@ Error:   { success: false, error: { code, message, details } }
 
 | Doc | Issue |
 |-----|-------|
-| MASTER_ARCHITECTURE v1-v3 | Missing RTK, Tool Gateway, Workflow, Event system, full f.loop spec |
+| MASTER_ARCHITECTURE v1-v3 | Missing RTK, Tool Gateway, Workflow, Event system, full Nexus runtime spec |
 | TECHNICAL_ARCHITECTURE.md | Older patterns, pre-Tool Gateway |
 | ARCHITECTURE_SPEC.md (queue section) | Says Redis Streams — superseded by Postgres polling decision |
 | Any doc: "10 credits/hr" | Revised: 1cr flat + 2/hr + tool credits |
@@ -692,9 +692,9 @@ Error:   { success: false, error: { code, message, details } }
 ## 30. Extensible Loop (Developer Platform)
 
 ### The Core Question
-> **Is f.loop an internal runtime... or a programmable economic layer?**
+> **Is Nexus runtime an internal runtime... or a programmable economic layer?**
 
-**Answer: f.loop is a Public Runtime Protocol.**
+**Answer: Nexus runtime is a Public Runtime Protocol.**
 
 ### Hook System
 Developers can plug into the execution loop:
@@ -809,7 +809,7 @@ agent:
   version: 1.2
 
 runtime:
-  loop: f.loop
+  loop: Nexus runtime
 
 skills:
   - web_research
@@ -988,7 +988,7 @@ Agent Spec → f.deploy → Agent Store
 **Last Updated:** March 2026  
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
 
-> *Build fast. Stay sovereign. Zero token liability. f.loop is the product.*
+> *Build fast. Stay sovereign. Zero token liability. Nexus runtime is the product.*
 
 | Capability | Why | Priority |
 |------------|-----|----------|
@@ -1003,11 +1003,11 @@ Agent Spec → f.deploy → Agent Store
 ## 26. Dependency Graph
 
 ```
-Nexus UI ──────────────────────────────┐
+Nova ──────────────────────────────┐
 Agents Store ──────────────────────┐ │
 f.twyt / f.rsrx / f.library ────┐ │ │
                                 ▼ ▼ ▼
-                              f.loop (Ralph)
+                              Nexus runtime (Ralph)
                                   │
                     ┌─────────────┴─────────────┐
                     ▼                           ▼
@@ -1019,7 +1019,7 @@ f.twyt / f.rsrx / f.library ────┐ │ │
     actions                MCPs
 ```
 
-**Key insight:** Without f.loop, Aitlas is just a chat UI. With it, Aitlas is an agent that works while you sleep.
+**Key insight:** Without Nexus runtime, Aitlas is just a chat UI. With it, Aitlas is an agent that works while you sleep.
 
 ---
 
@@ -1077,7 +1077,7 @@ f.twyt / f.rsrx / f.library ────┐ │ │
 
 | Component | Source | What We Use |
 |-----------|--------|-------------|
-| **Nexus UI** | T3 Code | Desktop + web app, provider router |
+| **Nova** | T3 Code | Desktop + web app, provider router |
 | **Orchestration** | CrewAI | Flows (control) + Crews (teams) |
 | **Handoffs** | OpenAI Agents SDK | Agent-to-agent delegation |
 | **Classification** | Agent Squad | Intent routing |
@@ -1115,7 +1115,7 @@ f.twyt / f.rsrx / f.library ────┐ │ │
 
 | Action | Purpose | Monetization |
 |--------|---------|--------------|
-| f.loop | Execution layer | API usage, premium capacity |
+| Nexus runtime | Execution layer | API usage, premium capacity |
 | f.deploy | Deployment | Developer subscription |
 | f.flow | Workflow orchestration | Premium workflows |
 | f.mcp | MCP gateway | API access |
@@ -1202,7 +1202,7 @@ Actions act as **functional virality triggers:**
 **Allow forks under conditions:**
 
 1. Forks pay royalty/commission to original creator
-2. Forks inherit base credit cost via f.loop usage
+2. Forks inherit base credit cost via Nexus runtime usage
 3. Original agents remain "premium"
 4. Forks can only be free/limited versions
 
@@ -1223,19 +1223,19 @@ Actions act as **functional virality triggers:**
 
 ---
 
-## 39. Actions Monetization: f.loop Credits + Mini SaaS
+## 39. Actions Monetization: Nexus runtime Credits + Mini SaaS
 
 ### The Model
 
 ```
-All actions → f.loop → credits
+All actions → Nexus runtime → credits
 ```
 
 ### Monetization Layers
 
 | Layer | Description |
 |-------|-------------|
-| **Base** | Every action call costs credits via f.loop |
+| **Base** | Every action call costs credits via Nexus runtime |
 | **Subscription** | Higher limits / premium features |
 | **Transaction** | Fees for business actions (f.pay, f.crypto) |
 | **Tiered** | f.library premium research, f.language advanced lessons |
@@ -1243,7 +1243,7 @@ All actions → f.loop → credits
 ### Implications
 
 - Single monetization backbone
-- Every agent/user interaction passes through f.loop → generates revenue
+- Every agent/user interaction passes through Nexus runtime → generates revenue
 - Actions become essential hooks for network usage
 
 
@@ -1255,21 +1255,21 @@ All actions → f.loop → credits
 
 | Old Name | New Name | Description |
 |----------|----------|-------------|
-| Nexus (UI) | **Nova** | Dashboard, chat, tasks |
-| f.loop | **Nexus** | Core product - agent runtime |
+| Nova | **Nova** | Dashboard, chat, tasks |
+| Nexus runtime | **Nexus** | Core product - agent runtime |
 
 ### New Product Structure (4 Products)
 
 | Product | Domain | Description |
 |---------|--------|-------------|
 | **Nova** | nova.aitlas.xyz | UI - dashboard, chat, tasks |
-| **Nexus** | nexus.aitlas.xyz | Agent runtime (formerly f.loop) |
+| **Nexus** | nexus.aitlas.xyz | Agent runtime (formerly Nexus runtime) |
 | **Agents Store** | agents.aitlas.xyz | Marketplace of agents |
 | **Actions** | f.xyz | MCP tools |
 
 ### Key Insight
 
-> f.loop was never "just an action" - it's the core product. The rename reflects reality: Nexus IS the product.
+> Nexus runtime was never "just an action" - it's the core product. The rename reflects reality: Nexus IS the product.
 
 ### Updated Architecture
 

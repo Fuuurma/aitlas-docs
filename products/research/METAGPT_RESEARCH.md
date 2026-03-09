@@ -74,7 +74,7 @@ User Input: "Create a 2048 game"
 | MetaGPT Feature | Aitlas Use |
 |-----------------|------------|
 | **Role-based agents** | → Agents Store (personas) |
-| **SOP-driven** | → f.loop task templates |
+| **SOP-driven** | → Nexus runtime task templates |
 | **Multi-agent collaboration** | → Complex tasks in Nexus |
 | **Code generation** | → f.guard integration |
 | **Full workflow** | → Symphony integration |
@@ -87,7 +87,7 @@ User Input: "Create a 2048 game"
 |---------|---------|--------|
 | Stars | 64.9K | - |
 | Language | Python | TypeScript/Bun |
-| Multi-agent | ✅ | f.loop |
+| Multi-agent | ✅ | Nexus runtime |
 | Role-based | ✅ | Agents Store |
 | Workflow | ✅ | Symphony |
 
@@ -106,7 +106,7 @@ User Input: "Create a 2048 game"
 
 1. **Study** MetaGPT's SOP patterns
 2. **Import** role definitions to Agents Store
-3. **Integrate** with f.loop for multi-agent tasks
+3. **Integrate** with Nexus runtime for multi-agent tasks
 
 ---
 

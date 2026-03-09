@@ -83,7 +83,7 @@ Nexus is the **main hub** where users:
 │  └─────────────────────────────────────────────────────────┘  │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐  │
-│  │                   f.loop (Background)                   │  │
+│  │                   Nexus runtime (Background)                   │  │
 │  │            Long-running tasks via Symphony              │  │
 │  └─────────────────────────────────────────────────────────┘  │
 │                                                                 │
@@ -129,7 +129,7 @@ Keys are encrypted (AES-256-GCM) and stored in DB. We never see them.
 Nexus integrates with **Symphony** for task management:
 - Connect GitHub repositories
 - Track issues as tasks
-- Background execution via f.loop
+- Background execution via Nexus runtime
 - Real-time progress via SSE
 
 ---
@@ -138,7 +138,7 @@ Nexus integrates with **Symphony** for task management:
 
 Aitlas uses credits for:
 - Action calls (f.xyz tools)
-- f.loop compute time
+- Nexus runtime compute time
 - Premium features
 
 Users buy credits or subscribe. Other providers use their own pricing.

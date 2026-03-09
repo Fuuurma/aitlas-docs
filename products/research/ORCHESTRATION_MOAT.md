@@ -1,12 +1,12 @@
 # Orchestration Landscape - Moat Analysis
 
-**Purpose:** Understand the competitive landscape and define the real moat for f.loop
+**Purpose:** Understand the competitive landscape and define the real moat for Nexus runtime
 
 ---
 
 ## The Problem
 
-**f.loop is NOT a moat** - orchestration runtimes exist:
+**Nexus runtime is NOT a moat** - orchestration runtimes exist:
 
 | Runtime | Stars | Type |
 |---------|-------|------|
@@ -62,7 +62,7 @@ The moat must be the **ecosystem** around the runtime:
 │          └───────────────────┼───────────────────┘          │
 │                              ▼                              │
 │                   ┌─────────────────┐                       │
-│                   │     f.loop     │  ← Runtime (NOT moat)  │
+│                   │     Nexus runtime     │  ← Runtime (NOT moat)  │
 │                   │  (Orchestration)                       │
 │                   └─────────────────┘                       │
 │                              │                              │

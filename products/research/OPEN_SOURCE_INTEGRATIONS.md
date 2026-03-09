@@ -12,7 +12,7 @@
 |---------|-------|---------|-------------|--------|
 | **Warden** (Sentry) | 116 | FSL-1.1 | f.guard engine | 🟡 In Progress |
 | **Perplexica** | 32K | MIT | f.research engine | 🟡 In Progress |
-| **RTK** | 4.7K | MIT | Token compression (f.loop) | 🔵 Planned |
+| **RTK** | 4.7K | MIT | Token compression (Nexus runtime) | 🔵 Planned |
 | **Agency Agents** | 12.7K | MIT | Agents Store catalog | 🔵 Planned |
 
 ---

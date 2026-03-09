@@ -1,20 +1,20 @@
-# Nexus Hybrid Model
+# Nova Hybrid Model
 
 **Last Updated:** 2026-03-08  
-**Purpose:** Explain how Nexus (Aitlas UI) combines free BYOK mode with paid Aitlas ecosystem
+**Purpose:** Explain how Nova (Aitlas UI) combines free BYOK mode with paid Aitlas ecosystem
 
 ---
 
 ## Overview
 
-**Aitlas = Nexus + Agents Store + Actions**
+**Aitlas = Nova + Agents Store + Actions**
 
-Nexus is the UI layer of Aitlas. It offers two modes:
+Nova is the UI layer of Aitlas. It offers two modes:
 
 - **Free tier:** BYOK with multiple coding agents (Codex, Claude Code, OpenCode, etc.)
-- **Paid tier:** Full Aitlas ecosystem (Agents Store + Actions + f.loop orchestration)
+- **Paid tier:** Full Aitlas ecosystem (Agents Store + Actions + Nexus runtime orchestration)
 
-**Pricing for f.loop:**
+**Pricing for Nexus runtime:**
 - Subscription: $20/month (unlimited)
 - Credits: Pay-per-use ($5 = 500 credits)
 
@@ -24,19 +24,19 @@ Nexus is the UI layer of Aitlas. It offers two modes:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Nexus UI (T3 Code fork)                  │
+│                    Nova (T3 Code fork)                  │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                 Provider Router                      │   │
 │  │                                                     │   │
 │  │   BYOK Mode (Free)        Aitlas Mode (Paid)       │   │
 │  │   ────────────────        ──────────────────       │   │
-│  │   • Codex                 • Nexus Backend          │   │
+│  │   • Codex                 • Nova Backend          │   │
 │  │   • Claude Code           • f.xyz Actions          │   │
 │  │   • OpenCode              • Agents Store           │   │
 │  │   • Gemini                • Memory (pgvector)      │   │
 │  │   • (User's keys)         • Tasks (Symphony)       │   │
-│  │                           • f.loop orchestration    │   │
+│  │                           • Nexus runtime orchestration    │   │
 │  │                           • (User's keys)          │   │
 │  └─────────────────────────────────────────────────────┘   │
 │                                                             │
@@ -79,14 +79,14 @@ Nexus is the UI layer of Aitlas. It offers two modes:
 | **Agents** | From Agents Store (61+ templates) |
 | **Tools** | Actions library (50+ pre-built) |
 | **Memory** | Persistent, semantic search |
-| **Orchestration** | f.loop (multi-agent coordination) |
+| **Orchestration** | Nexus runtime (multi-agent coordination) |
 | **API Keys** | User provides, stored locally |
 
 **What user gets:**
 - Everything in BYOK mode
 - Agents Store access
 - Actions library
-- f.loop orchestration
+- Nexus runtime orchestration
 - Memory system
 - Task scheduling
 - Parallel execution
@@ -116,7 +116,7 @@ apps/nexus/server/providers/
     ├── agent-runtime.ts   # Our agent runtime
     ├── actions.ts         # f.xyz Actions integration
     ├── memory.ts          # Memory API
-    └── orchestration.ts   # f.loop integration
+    └── orchestration.ts   # Nexus runtime integration
 ```
 
 ### Router Logic
@@ -157,9 +157,9 @@ export async function routeRequest(session: Session, message: Message) {
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Welcome to Nexus                           │
+│  Welcome to Nova                           │
 │                                             │
-│  How would you like to use Nexus?           │
+│  How would you like to use Nova?           │
 │                                             │
 │  ┌─────────────────────────────────────┐   │
 │  │  🆓 Free Mode (BYOK)                │   │
@@ -286,11 +286,11 @@ export async function createCheckoutSession(userId: string) {
 
 ## Key Differences from T3 Code
 
-| Aspect | T3 Code Original | Nexus (Our Fork) |
+| Aspect | T3 Code Original | Nova (Our Fork) |
 |--------|------------------|------------------|
 | **Providers** | Codex only | Codex, Claude, OpenCode, Gemini, Aitlas |
 | **Business model** | Unknown | Free BYOK + Paid Aitlas |
-| **Backend** | Codex CLI | Provider router + Nexus API |
+| **Backend** | Codex CLI | Provider router + Nova API |
 | **Features** | Basic chat | Full ecosystem for Aitlas mode |
 | **Open source** | No contributions | We fork and maintain |
 

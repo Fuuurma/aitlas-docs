@@ -27,7 +27,7 @@
 
 ```
 Aitlas Architecture:
-├── Nexus UI (Chat, Code, Memory panels)
+├── Nova (Chat, Code, Memory panels)
 ├── Orchestration (Memory, Compaction, Planner)
 ├── LLM Provider (Claude/GPT/Gemini)
 └── Execution Layer ← OpenSandbox goes here!

@@ -9,7 +9,7 @@
 
 Actions are MCP-based tools that extend Aitlas capabilities. Each action is a standalone service that can be used by any AI agent.
 
-**Naming Convention:** `f.{name}` (e.g., f.twyt, f.loop, f.library)
+**Naming Convention:** `f.{name}` (e.g., f.twyt, Nexus runtime, f.library)
 
 ---
 
@@ -17,7 +17,7 @@ Actions are MCP-based tools that extend Aitlas capabilities. Each action is a st
 
 | Action | Purpose | Status |
 |--------|---------|--------|
-| f.loop | Orchestration engine | ✅ Production |
+| Nexus runtime | Orchestration engine | ✅ Production |
 | f.library | Knowledge management | ✅ Production |
 | f.twyt | Twitter automation | ✅ Production |
 | f.rsrx | Research assistant | ✅ Production |

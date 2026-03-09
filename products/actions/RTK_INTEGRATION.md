@@ -1,4 +1,4 @@
-# RTK Integration — Token Compression for f.loop
+# RTK Integration — Token Compression for Nexus runtime
 
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Draft  
 **Parent:** f-loop.md | **Type:** Internal Library Integration
@@ -7,9 +7,9 @@
 
 ## Overview
 
-**RTK (Rust Token Killer)** is integrated as an **internal compression library** within f.loop, acting as a universal token optimization layer for the entire Aitlas backbone.
+**RTK (Rust Token Killer)** is integrated as an **internal compression library** within Nexus runtime, acting as a universal token optimization layer for the entire Aitlas backbone.
 
-This document specifies how RTK compresses all inputs/outputs flowing through f.loop, reducing token consumption by 60-80% across Nexus, Agents, and Actions.
+This document specifies how RTK compresses all inputs/outputs flowing through Nexus runtime, reducing token consumption by 60-80% across Nexus, Agents, and Actions.
 
 ---
 
@@ -32,7 +32,7 @@ RTK is battle-tested (4,700+ stars), open-source (MIT), and extremely fast (<10m
 │                         Aitlas Backbone                          │
 │                                                                  │
 │  ┌─────────┐    ┌─────────┐    ┌──────────┐    ┌──────────┐  │
-│  │  Nexus  │    │ Agents  │    │ Actions  │    │  f.loop  │  │
+│  │  Nexus  │    │ Agents  │    │ Actions  │    │  Nexus runtime  │  │
 │  │   UI    │    │  Store  │    │  (f.xyz) │    │  Worker  │  │
 │  └────┬────┘    └────┬─────┘    └────┬─────┘    └────┬─────┘  │
 │       │              │              │              │          │
@@ -77,7 +77,7 @@ Before any task reaches the LLM, the input is compressed:
 
 ### 2. Command Output Compression (Primary Use Case)
 
-f.loop executes commands — RTK compresses the output:
+Nexus runtime executes commands — RTK compresses the output:
 
 | Command | Without RTK | With RTK | Savings |
 |---------|-------------|----------|---------|
@@ -163,7 +163,7 @@ RTK compression is **free** — it's a infrastructure optimization, not a billab
 | Component | Cost |
 |-----------|------|
 | RTK compression | Free (infrastructure) |
-| f.loop execution | Normal credits |
+| Nexus runtime execution | Normal credits |
 | Action calls | Normal credits |
 
 **Rationale:** RTK reduces our LLM costs, so we don't charge for it. It's a competitive advantage.
@@ -216,7 +216,7 @@ Allow users to define regex patterns for their specific output formats.
 ## References
 
 - [RTK GitHub](https://github.com/rtk-ai/rtk)
-- [f.loop Spec](./f-loop.md)
+- [Nexus runtime Spec](./f-loop.md)
 - [Aitlas MCP Spec](../architecture/AITLAS_MCP_SPEC.md)
 
 ---

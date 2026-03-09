@@ -33,7 +33,7 @@ This is a flagship Action — agents use it for:
 │  └─────────────┘    └─────────────┘    └─────────────┘     │
 │         │                   │                  │            │
 │    • Search            • Dashboard            MCP           │
-│    • Deep research     • History           • f.loop        │
+│    • Deep research     • History           • Nexus runtime        │
 │    • Citations        • Export           • Agents         │
 │                                           • BYOK           │
 └─────────────────────────────────────────────────────────────┘
@@ -69,7 +69,7 @@ This is a flagship Action — agents use it for:
 | **Search** | SearxNG | Privacy-focused search |
 | **LLM** | User's key (BYOK) | OpenAI/Claude/Gemini/Groq/Ollama |
 | **DB** | PostgreSQL + pgvector | Research history, embeddings |
-| **Scheduled** | f.loop | Lookouts (scheduled research) |
+| **Scheduled** | Nexus runtime | Lookouts (scheduled research) |
 
 ### Deployment
 
@@ -167,7 +167,7 @@ Research specific to academic papers.
 
 ### `scheduled_research`
 
-Set up recurring research (via f.loop).
+Set up recurring research (via Nexus runtime).
 
 ```typescript
 {
@@ -259,7 +259,7 @@ Extract structured data from research.
 2. **Add MCP wrapper** — Expose as Aitlas Action
 3. **Add BYOK layer** — User provides their LLM key
 4. **Build UI on top** — Next.js dashboard
-5. **Add f.loop integration** — Scheduled research (Lookouts)
+5. **Add Nexus runtime integration** — Scheduled research (Lookouts)
 
 ### Custom Enhancements
 
@@ -278,20 +278,20 @@ Extract structured data from research.
 | Standard research | 5 | ~30 seconds |
 | Deep research | 10 | ~2-5 minutes |
 | Academic search | 4 | Papers only |
-| Scheduled (per run) | 3 | Via f.loop |
+| Scheduled (per run) | 3 | Via Nexus runtime |
 | Compare sources | 2 | Per comparison |
 
 **LLM costs:** User pays via their own API key (BYOK)
 
 ---
 
-## f.loop Integration (Lookouts)
+## Nexus runtime Integration (Lookouts)
 
 **Scheduled research** — Monitor topics over time.
 
 ```
 ┌─────────────────────────────────────────┐
-│             f.loop                       │
+│             Nexus runtime                       │
 │                                         │
 │  Schedule: cron("0 9 * * *")          │
 │       ↓                                 │

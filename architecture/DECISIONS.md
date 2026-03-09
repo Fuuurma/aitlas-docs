@@ -258,7 +258,7 @@ async function handleStuckTask(task: Task) {
 - Webhook - optional configuration
 
 **Who can unstick:**
-- User via Nexus UI (retry, cancel, or provide guidance)
+- User via Nova (retry, cancel, or provide guidance)
 - Admin (for enterprise accounts)
 
 ---
@@ -362,7 +362,7 @@ Step 4: PLAN → "DONE - Report complete"
 **Success criteria:**
 1. Task completes without manual intervention
 2. Result is useful and accurate
-3. Steps are visible in Nexus UI via SSE
+3. Steps are visible in Nova via SSE
 4. Total LLM calls: ~3-5 PLAN + 3 ACT = 6-8 calls (manageable)
 
 ---

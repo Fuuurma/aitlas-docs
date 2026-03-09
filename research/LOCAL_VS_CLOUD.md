@@ -30,7 +30,7 @@
 │                                                                 │
 │  aitlas-cli                    ← Local CLI tool                  │
 │  - Manages ~/.aitlas/                                           │
-│  - Syncs with Nexus                                             │
+│  - Syncs with Nova                                             │
 │  - Runs local agents                                            │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -59,9 +59,9 @@
 │  ├── f.support                 ← Support                        │
 │  ├── f.rsrx                    ← Research                       │
 │  ├── f.decloy                  ← Deployment                     │
-│  └── f.loop                    ← Ralph engine                   │
+│  └── Nexus runtime                    ← Ralph engine                   │
 │                                                                 │
-│  f.loop (Ralph Engine)         ← Durable execution               │
+│  Nexus runtime (Ralph Engine)         ← Durable execution               │
 │  ├── Observes                  ← Monitors tasks                 │
 │  ├── Reasons                   ← Decides next action            │
 │  ├── Acts                      ← Executes via agents            │
@@ -82,18 +82,18 @@
 | `~/.aitlas/config.json` | User preferences, defaults | aitlas-cli |
 | `~/.aitlas/credentials/` | API keys (encrypted) | aitlas-cli |
 | `~/.aitlas/cache/` | Local cache for speed | aitlas-cli |
-| `~/.aitlas/workspaces/` | Isolated task workspaces | f.loop (local mode) |
+| `~/.aitlas/workspaces/` | Isolated task workspaces | Nexus runtime (local mode) |
 
-### Cloud (Nexus DB)
+### Cloud (Nova DB)
 
 | Table | Purpose | Who Manages |
 |-------|---------|-------------|
-| `threads` | Persistent conversations | Nexus |
-| `messages` | Chat history | Nexus |
-| `memory` | Semantic memory (pgvector) | Nexus |
-| `tasks` | Symphony-style tasks | Nexus |
-| `agents` | Active agent instances | Nexus |
-| `actions` | Enabled f.xyz actions | Nexus |
+| `threads` | Persistent conversations | Nova |
+| `messages` | Chat history | Nova |
+| `memory` | Semantic memory (pgvector) | Nova |
+| `tasks` | Symphony-style tasks | Nova |
+| `agents` | Active agent instances | Nova |
+| `actions` | Enabled f.xyz actions | Nova |
 
 ---
 
@@ -102,16 +102,16 @@
 ### Sync Flow
 
 ```
-User works in Nexus (web)
+User works in Nova (web)
         │
         ▼
-Nexus captures all tool calls
+Nova captures all tool calls
         │
         ▼
 PostgreSQL: observations table (per user)
         │
         ▼
-Background worker (f.loop) analyzes
+Background worker (Nexus runtime) analyzes
         │
         ├─ Project-specific instinct → ~/.aitlas/instincts/projects/<hash>/
         └─ Universal instinct → ~/.aitlas/instincts/personal/
@@ -149,7 +149,7 @@ GET  /api/sync/config            → Get user config
 1. **Using web UI** - nexus.aitlas.xyz
 2. **Multi-device** - Access from anywhere
 3. **Team collaboration** - Shared agents, tasks
-4. **Long-running tasks** - f.loop execution
+4. **Long-running tasks** - Nexus runtime execution
 5. **Agent marketplace** - Browse, install agents
 
 ---
@@ -209,7 +209,7 @@ f.xyz                           ← TOOLS
 
 1. **Multi-device** - Access from anywhere
 2. **Collaboration** - Team features
-3. **Always-on** - f.loop runs 24/7
+3. **Always-on** - Nexus runtime runs 24/7
 4. **Marketplace** - Browse, install agents
 5. **Backup** - Never lose data
 
@@ -239,10 +239,10 @@ aitlas run "frontend-wizard"
 aitlas connect ./my-project
 ```
 
-### Nexus Settings
+### Nova Settings
 
 ```typescript
-// In Nexus settings page
+// In Nova settings page
 {
   "sync": {
     "enabled": true,
@@ -296,7 +296,7 @@ aitlas connect ./my-project
 | Agents Store | ❌ | ✅ |
 | Memory (pgvector) | ❌ | ✅ |
 | Tasks (Symphony) | ❌ | ✅ |
-| f.loop orchestration | ❌ | ✅ |
+| Nexus runtime orchestration | ❌ | ✅ |
 | Multi-agent teams | ❌ | ✅ |
 
 ### How It Works
@@ -310,7 +310,7 @@ Adds API keys in ~/.aitlas/credentials/
     ├── GLM_API_KEY
     └── etc.
     ↓
-Selects model in Nexus settings
+Selects model in Nova settings
     ↓
 All agent calls use user's key
     ↓

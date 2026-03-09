@@ -79,7 +79,7 @@ response = client.run(
 | **Lightweight** | → Reference for simple patterns |
 | **Educational** | → Learn orchestration |
 | **OpenAI** | → Future OpenAI integration |
-| **No state** | → Stateless f.loop tasks |
+| **No state** | → Stateless Nexus runtime tasks |
 
 ---
 

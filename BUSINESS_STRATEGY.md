@@ -319,7 +319,7 @@ Furma.tech is a **digital holding company and venture studio** operating across 
 
 | Category | Topics |
 |----------|--------|
-| **Technical** | "Building f.loop: Async AI Execution", "BYOK Encryption Deep Dive" |
+| **Technical** | "Building Nexus runtime: Async AI Execution", "BYOK Encryption Deep Dive" |
 | **Business** | "Why We're Bootstrapped", "Zero Token Liability Model" |
 | **Tutorials** | "Build Your First Agent", "Vector Search in 10 Minutes" |
 | **Case Studies** | "How restauManager Saved 10hrs/Week", "f.library for Research" |
@@ -442,7 +442,7 @@ Furma.tech is a **digital holding company and venture studio** operating across 
 
 #### vs. Zapier/Make
 
-| Feature | Furma (f.loop) | Zapier |
+| Feature | Furma (Nexus runtime) | Zapier |
 |---------|----------------|--------|
 | **AI-Native** | ✅ Yes | ❌ Bolted on |
 | **Pricing** | Credits (pay-per-use) | $20-100/mo |

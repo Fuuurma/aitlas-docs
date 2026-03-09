@@ -366,7 +366,7 @@ Recommended tool execution limits:
 Long tasks must be delegated to:
 
 ```
-f.loop
+Nexus runtime
 ```
 
 ---

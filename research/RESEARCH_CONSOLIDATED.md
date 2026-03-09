@@ -75,7 +75,7 @@
 ### Integration Architecture
 
 ```
-f.loop Worker
+Nexus runtime Worker
      │
      ▼
 Tool Gateway
@@ -130,9 +130,9 @@ const result = await sandbox.execute({
 | Pattern | Description | Use in Aitlas |
 |---------|-------------|---------------|
 | **Scratchpad Logging** | Agent writes reasoning to file | Debugging, transparency |
-| **Task Decomposition** | Break complex goals into subtasks | f.loop planning |
+| **Task Decomposition** | Break complex goals into subtasks | Nexus runtime planning |
 | **Self-Validation** | Agent checks own work before completion | REFLECT phase |
-| **Safety Limits** | Max steps, max cost, timeout | f.loop guardrails |
+| **Safety Limits** | Max steps, max cost, timeout | Nexus runtime guardrails |
 
 ### Architecture
 
@@ -300,7 +300,7 @@ const client = new OpenAI({ apiKey: decryptedKey });
 1. Import agents → Agents Store
 2. Convert YAML format → Aitlas format
 3. Add credit model → Monetize
-4. Connect to Nexus → User activation
+4. Connect to Nova → User activation
 
 **MCP Tools:**
 ```typescript
@@ -324,7 +324,7 @@ activate_agent(id) → session: AgentSession
 
 ### Everything Claude Code (affaan-m/everything-claude-code)
 
-**Stars:** 67K | **License:** MIT | **Use:** Nexus optimization, Skills, Memory, Security
+**Stars:** 67K | **License:** MIT | **Use:** Nova optimization, Skills, Memory, Security
 
 **What:** Performance optimization system for AI agent harnesses from Anthropic hackathon winner.
 

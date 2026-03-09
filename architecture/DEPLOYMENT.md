@@ -15,7 +15,7 @@
 | **f.library** | Vercel | Hono serverless, <25s calls | ~$0 |
 | **f.guard** | Vercel | Hono serverless, <25s calls | ~$0 |
 | **f.support** | Vercel | Hono serverless, <25s calls | ~$0 |
-| **f.loop (Ralph workers)** | Hetzner | Long-running Bun process (>60s) | ~€5–20 |
+| **Nexus runtime (Ralph workers)** | Hetzner | Long-running Bun process (>60s) | ~€5–20 |
 | **PostgreSQL** | Neon | Serverless, pgvector, DB branching | ~$0–19 |
 | **Redis** | Upstash | Serverless, per-request pricing | ~$0 |
 | **Domains** | Cloudflare | DNS + proxy + DDoS protection | ~$0 |
@@ -26,7 +26,7 @@
 
 ## 1. Why Each Platform Was Chosen
 
-### Vercel — Nexus, Agents Store, All Actions
+### Vercel — Nova, Agents Store, All Actions
 
 **Why Vercel over Railway, Fly.io, or raw VPS:**
 - Zero configuration for Next.js and Hono — push to GitHub, it deploys
@@ -42,10 +42,10 @@
 
 **The 25-second limit:**
 All f.xyz actions use Hono and are designed to respond in <25s.
-If a tool call is longer, it's dispatched to Ralph (f.loop), not executed inline.
+If a tool call is longer, it's dispatched to Ralph (Nexus runtime), not executed inline.
 This is the architectural split that makes Vercel viable for actions.
 
-### Hetzner — f.loop (Ralph workers only)
+### Hetzner — Nexus runtime (Ralph workers only)
 
 **Why Hetzner over Vercel/Railway for Ralph:**
 - Ralph runs an infinite `while(true)` loop — not a serverless function
@@ -156,7 +156,7 @@ Function timeout:
   vercel.json: { "functions": { "src/index.ts": { "maxDuration": 25 } } }
 ```
 
-### f.loop (Ralph) — Hetzner
+### Nexus runtime (Ralph) — Hetzner
 ```
 Repo:     github.com/Fuuurma/aitlas-loop
 Platform: Hetzner CX21 (€4.51/mo)
@@ -453,7 +453,7 @@ Its only "address" is the Postgres connection string — it pulls work from the 
 |--------|-------------|--------------|
 | `DATABASE_URL` | Vercel project env + Hetzner `.env` | All services |
 | `ENCRYPTION_KEY` | Vercel project env + Hetzner `.env` | All services |
-| `BETTER_AUTH_SECRET` | Vercel project env | Nexus, Agents Store, Actions |
+| `BETTER_AUTH_SECRET` | Vercel project env | Nova, Agents Store, Actions |
 | `FURMA_INTERNAL_SECRET` | Vercel team env | All Vercel services |
 | `UPSTASH_*` | Vercel team env | All Vercel services |
 | Hetzner `.env` | `/opt/aitlas-loop/.env` (chmod 600) | Ralph workers only |

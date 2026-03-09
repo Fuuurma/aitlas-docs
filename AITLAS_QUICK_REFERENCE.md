@@ -28,7 +28,7 @@
 ## Architecture Layers
 
 ```
-1. Nexus UI (Chat, Code, Actions, Memory panels)
+1. Nova (Chat, Code, Actions, Memory panels)
    ↓
 2. Orchestration (Memory, Compaction, Planner, Tool Router)
    ↓

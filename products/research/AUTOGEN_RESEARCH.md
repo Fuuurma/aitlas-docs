@@ -63,8 +63,8 @@ result = await agent.run(task="Your task here")
 | AutoGen Feature | Aitlas Use |
 |----------------|------------|
 | **MCP Support** | → Our MCP server architecture |
-| **Human-in-loop** | → f.loop approval workflows |
-| **AutoGen Studio** | → Nexus UI for agent building |
+| **Human-in-loop** | → Nexus runtime approval workflows |
+| **AutoGen Studio** | → Nova for agent building |
 | **Tool Use** | → f.xyz Actions integration |
 | **Group Chat** | → Multi-agent collaboration |
 | **Enterprise** | → Production-ready reference |
@@ -78,7 +78,7 @@ result = await agent.run(task="Your task here")
 | Stars | 55.3K | - |
 | Language | Python | TypeScript/Bun |
 | MCP | ✅ Native | ✅ Our focus |
-| Human-in-loop | ✅ | → f.loop |
+| Human-in-loop | ✅ | → Nexus runtime |
 | No-code Studio | ✅ | - |
 | Enterprise | ✅ Microsoft | - |
 
@@ -106,7 +106,7 @@ No-code GUI for building agents:
 ## Next Steps for Aitlas
 
 1. **Study** AutoGen's MCP implementation
-2. **Reference** human-in-loop patterns for f.loop
+2. **Reference** human-in-loop patterns for Nexus runtime
 3. **Consider** AutoGen Studio as Nexus inspiration
 
 ---

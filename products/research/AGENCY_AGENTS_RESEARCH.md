@@ -82,7 +82,7 @@ This is exactly what we need for the **Agents Store**:
 1. Import agents → Agents Store
 2. Convert format → Aitlas format
 3. Add credit model → Monetize
-4. Connect to Nexus → User activation
+4. Connect to Nova → User activation
 ```
 
 ### MCP Tools

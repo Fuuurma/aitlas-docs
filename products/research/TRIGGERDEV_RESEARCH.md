@@ -2,7 +2,7 @@
 
 **Status:** 🔵 CORE  
 **Reference:** [triggerdotdev/trigger.dev](https://github.com/triggerdotdev/trigger.dev) (13.9K stars, Apache 2.0)  
-**Use:** f.loop / Background execution layer - CORE of Aitlas
+**Use:** Nexus runtime / Background execution layer - CORE of Aitlas
 
 ---
 
@@ -29,15 +29,15 @@
 
 ---
 
-## For Aitlas: f.loop
+## For Aitlas: Nexus runtime
 
-### This IS what f.loop should be!
+### This IS what Nexus runtime should be!
 
-f.loop (our background execution) = trigger.dev
+Nexus runtime (our background execution) = trigger.dev
 
 ```
 ┌─────────────────────────────────────────┐
-│              f.loop                         │
+│              Nexus runtime                         │
 │        (trigger.dev-based)                 │
 │                                         │
 │  ┌───────────────────────────────────┐  │
@@ -66,7 +66,7 @@ f.loop (our background execution) = trigger.dev
 
 | Feature | Aitlas Use |
 |---------|------------|
-| Long-running | ✅ f.loop handles long tasks |
+| Long-running | ✅ Nexus runtime handles long tasks |
 | Durable | ✅ Checkpointing survives failures |
 | Retries | ✅ Automatic retry on error |
 | Queues | ✅ Task queuing |
@@ -80,7 +80,7 @@ f.loop (our background execution) = trigger.dev
 
 ## Comparison
 
-| Feature | trigger.dev | Our Current f.loop |
+| Feature | trigger.dev | Our Current Nexus runtime |
 |---------|-------------|-------------------|
 | Stars | 13.9K | - |
 | License | Apache 2.0 | - |
@@ -100,14 +100,14 @@ f.loop (our background execution) = trigger.dev
 
 ### Option 2: Build our own (based on trigger.dev patterns)
 - Study trigger.dev architecture
-- Build f.loop following their patterns
+- Build Nexus runtime following their patterns
 - Add Aitlas-specific features
 
 ---
 
 ## Next Steps
 
-1. **Evaluate** trigger.dev for f.loop
+1. **Evaluate** trigger.dev for Nexus runtime
 2. **Consider** self-hosted vs cloud
 3. **Design** BYOK integration
 4. **Add** credit billing
@@ -122,4 +122,4 @@ f.loop (our background execution) = trigger.dev
 
 ---
 
-*Status: 🔵 CORE - This IS what f.loop should be!*
+*Status: 🔵 CORE - This IS what Nexus runtime should be!*

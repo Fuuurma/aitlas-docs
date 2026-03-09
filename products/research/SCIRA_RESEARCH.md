@@ -102,7 +102,7 @@ Scira's **Lookouts** = scheduled recurring research:
 ## Next Steps
 
 1. **Start with Perplexica** (MIT, more stars)
-2. **Build Lookouts** feature separately (or use f.loop)
+2. **Build Lookouts** feature separately (or use Nexus runtime)
 3. **Evaluate** Scira later for advanced features
 
 ---

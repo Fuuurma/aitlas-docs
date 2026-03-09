@@ -107,7 +107,7 @@ It solves the problem of **managing work instead of supervising coding agents** 
 │  │                    Nexus                              │   │
 │  │                                                      │   │
 │  │  ┌───────────┐    ┌───────────┐    ┌───────────┐   │   │
-│  │  │  Tasks    │───▶│ Symphony  │───▶│  f.loop   │   │   │
+│  │  │  Tasks    │───▶│ Symphony  │───▶│  Nexus runtime   │   │   │
 │  │  │    UI     │    │   Engine  │    │  Worker   │   │   │
 │  │  └───────────┘    └───────────┘    └───────────┘   │   │
 │  │        │                  │                  │         │   │
@@ -123,9 +123,9 @@ It solves the problem of **managing work instead of supervising coding agents** 
 | Component | Nexus Use |
 |----------|----------|
 | Issue Tracker Client | → Task queue (our DB) |
-| Orchestrator | → f.loop task dispatch |
+| Orchestrator | → Nexus runtime task dispatch |
 | Workspace Manager | → Per-task isolation |
-| Agent Runner | → f.loop execution |
+| Agent Runner | → Nexus runtime execution |
 | Status Surface | → Tasks UI progress |
 | Workflow Loader | → Task templates |
 
@@ -217,8 +217,8 @@ notify: {channels}
 - Orchestrator (simplified)
 - Workspace Manager
 
-### Phase 3: Integrate f.loop
-- Agent Runner → f.loop
+### Phase 3: Integrate Nexus runtime
+- Agent Runner → Nexus runtime
 - Progress streaming
 - Status updates
 
@@ -242,7 +242,7 @@ notify: {channels}
 
 ## Comparison: Symphony vs Alternatives
 
-| Feature | Symphony | Temporal | f.loop |
+| Feature | Symphony | Temporal | Nexus runtime |
 |---------|----------|----------|--------|
 | Agent-native | ✅ | ❌ | ✅ |
 | Issue tracking | ✅ | ❌ | ❌ |
@@ -256,7 +256,7 @@ notify: {channels}
 
 - [Symphony GitHub](https://github.com/openai/symphony)
 - [Symphony SPEC.md](https://github.com/openai/symphony/blob/main/SPEC.md)
-- [f.loop Spec](./f-loop.md)
+- [Nexus runtime Spec](./f-loop.md)
 - [Nexus Spec](../products/nexus/README.md)
 
 ---

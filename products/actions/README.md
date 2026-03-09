@@ -98,7 +98,7 @@ Keep Actions simple. Let Agents be the intelligence.
 
 | Category | Actions | Purpose |
 |----------|---------|---------|
-| **Infrastructure** | f.loop, f.decloy | Platform foundation |
+| **Infrastructure** | Nexus runtime, f.decloy | Platform foundation |
 | **Intelligence** | f.rsrx, f.guard, f.library | Agent reasoning |
 | **Business Automation** | f.support | Vertical solutions |
 | **Core Primitives** | f.browser, f.exec, f.search, f.files, f.notify | Essential capabilities |
@@ -113,7 +113,7 @@ Keep Actions simple. Let Agents be the intelligence.
 | **f.guard** | f.xyz/guard | AI code review + security audit | 2/review | 🟡 Roadmap |
 | **f.support** | f.xyz/support | AI helpdesk automation | 1-3/ticket | 🟡 Roadmap |
 | **f.decloy** | f.xyz/decloy | MicroVM agent deployment | 25/deploy + 1/min | 🟡 Roadmap |
-| **f.loop** | f.xyz/loop | Durable agent runtime (Ralph) | 1/task + 2/hr | 🟡 Dev |
+| **Nexus runtime** | f.xyz/loop | Durable agent runtime (Ralph) | 1/task + 2/hr | 🟡 Dev |
 | **f.browser** | f.xyz/browser | Web browsing automation | 3/session | 🔴 Planned |
 | **f.exec** | f.xyz/exec | Sandboxed code execution | 2/execution | 🔴 Planned |
 | **f.search** | f.xyz/search | Web search (Brave/Google) | 1/query | 🔴 Planned |
@@ -531,7 +531,7 @@ Aitlas
 │   ├── f.files (planned)
 │   └── f.notify (planned)
 │
-├── f.loop (agent runtime)
+├── Nexus runtime (agent runtime)
 │
 └── MCP ecosystem
 ```
@@ -543,7 +543,7 @@ Aitlas
 | Layer | Product | Purpose |
 |-------|---------|---------|
 | **Interface** | Nexus | User interaction |
-| **Runtime** | f.loop | Agent execution |
+| **Runtime** | Nexus runtime | Agent execution |
 | **Capabilities** | Actions | Tools and skills |
 | **Deployment** | f.decloy | Agent hosting |
 | **Memory** | f.library | Knowledge persistence |
@@ -562,7 +562,7 @@ Very clean separation.
 | [f.guard](./f-guard.md) | Code review + security | 🟡 Roadmap |
 | [f.support](./f-support.md) | AI helpdesk | 🟡 Roadmap |
 | [f.decloy](./f-decloy.md) | MicroVM deployment | 🟡 Roadmap |
-| [f.loop](./f-loop.md) | Ralph engine (durable execution) | 🟡 Development |
+| [Nexus runtime](./f-loop.md) | Ralph engine (durable execution) | 🟡 Development |
 
 ---
 

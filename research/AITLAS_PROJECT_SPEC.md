@@ -18,7 +18,7 @@ Aitlas projects fall into three categories:
 **Stack:** Next.js 16 + React 19 + TypeScript + Tailwind + shadcn/ui
 
 **Use Cases:**
-- Dashboards (Nexus, Agents Store)
+- Dashboards (Nova, Agents Store)
 - Product landing pages
 - Admin interfaces
 - User-facing applications
@@ -150,7 +150,7 @@ All projects MUST include the base Aitlas schema:
 - `CreditBalance` - User balances
 
 **Custom Models:**
-Prefix with service name (e.g., `TwytQuery`, `NexusProject`)
+Prefix with service name (e.g., `TwytQuery`, `NovaProject`)
 
 ### 2.2 Authentication
 
@@ -491,7 +491,7 @@ vercel --prod
 
 ## 10. Examples
 
-### 10.1 UI Project: Nexus
+### 10.1 UI Project: Nova
 
 - **Type:** UI
 - **Purpose:** AI Command Center

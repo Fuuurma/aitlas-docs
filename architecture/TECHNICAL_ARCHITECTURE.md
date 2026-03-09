@@ -49,14 +49,14 @@
 | **Cache** | `lib/cache.ts` | LRU with TTL |
 | **Database** | `lib/prisma.ts` | Prisma singleton |
 | **Constants** | `lib/constants.ts` | Centralized config |
-| **Worker** | `worker.ts` | f.loop Ralph engine |
+| **Worker** | `worker.ts` | Nexus runtime Ralph engine |
 
 ### 3. Zero Token Liability (BYOK Model)
 
 ```
 User provides API key → Furma never pays for tokens
                       ↓
-Furma monetizes compute (f.loop) + infrastructure (f.decloy)
+Furma monetizes compute (Nexus runtime) + infrastructure (f.decloy)
 ```
 
 ---
@@ -68,7 +68,7 @@ Furma monetizes compute (f.loop) + infrastructure (f.decloy)
 | Component | Technology | Purpose |
 |-----------|------------|---------|
 | **Framework** | Next.js 16 | UI + API gateway |
-| **Runtime** | Bun | Speed + f.loop execution |
+| **Runtime** | Bun | Speed + Nexus runtime execution |
 | **Database** | PostgreSQL + pgvector | Relational + vector search |
 | **ORM** | Prisma 6 | Type-safe database access |
 | **UI** | React 19 + Tailwind v4 | shadcn/ui components |
@@ -88,13 +88,13 @@ Furma monetizes compute (f.loop) + infrastructure (f.decloy)
 | Layer | Platform | Purpose |
 |-------|----------|---------|
 | **UI** | Vercel | Edge deployment (60s timeout) |
-| **Workers** | Hetzner/Railway | f.loop (unlimited execution) |
+| **Workers** | Hetzner/Railway | Nexus runtime (unlimited execution) |
 | **Database** | Neon/Supabase | Serverless PostgreSQL |
 | **Cache** | Upstash Redis | Rate limiting + caching |
 
 ---
 
-## Asynchronous Execution Pattern (f.loop)
+## Asynchronous Execution Pattern (Nexus runtime)
 
 ### The Problem
 
@@ -104,7 +104,7 @@ AI agents → 5-30 minutes execution
 Result → TIMEOUT ❌
 ```
 
-### The Solution (f.loop)
+### The Solution (Nexus runtime)
 
 ```
 ┌─────────────────┐
@@ -123,7 +123,7 @@ Result → TIMEOUT ❌
          │ 5. Update COMPLETED
          ▼
 ┌─────────────────┐
-│  f.loop Worker  │
+│  Nexus runtime Worker  │
 │  Hetzner/Railway│
 │  (Bun 24/7)     │
 └─────────────────┘
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
   return Response.json({ taskId: task.id, status: 'PENDING' });
 }
 
-// f.loop worker (unlimited execution)
+// Nexus runtime worker (unlimited execution)
 async function processQueue() {
   const task = await prisma.taskQueue.findFirst({
     where: { status: 'PENDING' },
@@ -310,7 +310,7 @@ CreditTransaction logged (audit trail)
                           │ MCP calls
                           ▼
 ┌─────────────────────────────────────────────────────────┐
-│  Hetzner/Railway (Worker Layer - f.loop)               │
+│  Hetzner/Railway (Worker Layer - Nexus runtime)               │
 │  - Bun runtime                                          │
 │  - 24/7 execution (no timeout)                          │
 │  - Ralph loop engine                                    │
@@ -343,7 +343,7 @@ BYOK_ENCRYPTION_KEY=""  # openssl rand -base64 32
 UPSTASH_REDIS_REST_URL=""
 UPSTASH_REDIS_REST_TOKEN=""
 
-# AI (for local LLM routing in f.loop)
+# AI (for local LLM routing in Nexus runtime)
 OPENAI_API_KEY=""
 ANTHROPIC_API_KEY=""
 ```

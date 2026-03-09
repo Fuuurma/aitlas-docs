@@ -77,7 +77,7 @@ result = crew.kickoff()
 | crewAI Feature | Aitlas Use |
 |----------------|------------|
 | **Crews** | → Multi-agent collaboration |
-| **Tasks** | → f.loop task definitions |
+| **Tasks** | → Nexus runtime task definitions |
 | **Processes** | → Symphony workflow patterns |
 | **Memory** | → f.library integration |
 | **crewAI Studio** | → Nexus agent builder |
@@ -92,7 +92,7 @@ result = crew.kickoff()
 | Stars | 45.5K | - |
 | Language | Python | TypeScript/Bun |
 | Crews | ✅ Native | Our target |
-| Tasks | ✅ Native | f.loop |
+| Tasks | ✅ Native | Nexus runtime |
 | Memory | ✅ | f.library |
 | Studio | ✅ No-code | - |
 

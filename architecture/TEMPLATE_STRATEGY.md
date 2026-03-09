@@ -14,9 +14,9 @@ The CLI is a thin convenience layer — it doesn't add architectural complexity.
 
 ```
 GitHub: Fuuurma/
-├── aitlas-ui-template        ← Next.js 15 + shadcn (Nexus, Agents Store, dashboards)
+├── aitlas-ui-template        ← Next.js 15 + shadcn (Nova, Agents Store, dashboards)
 ├── aitlas-action-template    ← Hono + MCP (all f.xyz actions)
-├── aitlas-worker-template    ← Bun + Postgres queue (Ralph / f.loop workers)
+├── aitlas-worker-template    ← Bun + Postgres queue (Ralph / Nexus runtime workers)
 └── aitlas-cli                ← Generator CLI: `aitlas new <type> <name>`
 ```
 
@@ -32,9 +32,9 @@ The duplication is managed by the CLI scaffolding the correct version at clone t
 
 | Template | Stack | Used For | Host |
 |----------|-------|----------|------|
-| `ui` | Next.js 15 + Bun + shadcn/ui + Better Auth | Nexus, Agents Store, product dashboards | Vercel |
+| `ui` | Next.js 15 + Bun + shadcn/ui + Better Auth | Nova, Agents Store, product dashboards | Vercel |
 | `action` | Hono + Bun + Zod + MCP | All f.xyz actions (f.twyt, f.rsrx, f.library…) | Vercel (serverless) |
-| `worker` | Bun + Postgres + Pino | Ralph (f.loop), schedulers, watchers | Hetzner (long-running) |
+| `worker` | Bun + Postgres + Pino | Ralph (Nexus runtime), schedulers, watchers | Hetzner (long-running) |
 
 ### Decision Guide
 
@@ -59,7 +59,7 @@ Neon Postgres (single instance)
 ├── All Session records (Better Auth — valid cross-service)
 ├── All ApiKey records (encrypted BYOK keys)
 ├── All CreditLedger records
-├── All Task records (f.loop queue)
+├── All Task records (Nexus runtime queue)
 ├── All ToolRegistry records
 └── Service-specific tables (prefixed by service name)
 ```

@@ -2,7 +2,7 @@
 
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
 **Repo:** `aitlas-nexus` | **Host:** Hetzner (Bun workers) + Vercel (API gateway)  
-**Formerly:** f.loop  
+**Formerly:** Nexus runtime  
 **Maintained by:** Herb (AI CTO)
 
 ---
@@ -30,12 +30,12 @@
 
 ## 1. Mental Model & Positioning
 
-### What f.loop Actually Is
+### What Nexus runtime Actually Is
 
-f.loop is not a background job runner. It is the **Durable Agent Runtime** — the engine that powers every autonomous action in the Aitlas ecosystem.
+Nexus runtime is not a background job runner. It is the **Durable Agent Runtime** — the engine that powers every autonomous action in the Aitlas ecosystem.
 
 ```
-Without f.loop:          With f.loop:
+Without Nexus runtime:          With Nexus runtime:
 ─────────────────        ──────────────────────────────────
 Nexus = chat UI          Nexus = command interface for agents
 Agents = prompts         Agents = autonomous running workers
@@ -57,11 +57,11 @@ f.decloy = hosting       f.decloy = agent lifecycle manager
 
 ### The Strategic Opportunity
 
-f.loop exposed as a **developer API** (not just internal infrastructure) transforms Aitlas from a UI product into an **Agent Infrastructure Platform**. Developers outside Aitlas can `POST /tasks` and get durable agent execution. This is the moat.
+Nexus runtime exposed as a **developer API** (not just internal infrastructure) transforms Aitlas from a UI product into an **Agent Infrastructure Platform**. Developers outside Aitlas can `POST /tasks` and get durable agent execution. This is the moat.
 
 ```
-Current scope:   f.loop powers Nexus + Agents
-Future scope:    f.loop is the product — Nexus is one of many clients
+Current scope:   Nexus runtime powers Nexus + Agents
+Future scope:    Nexus runtime is the product — Nexus is one of many clients
 ```
 
 ### The Aitlas Stack
@@ -69,15 +69,15 @@ Future scope:    f.loop is the product — Nexus is one of many clients
 ```
 Aitlas
 │
-├── Nexus (UI) ──────────────────── Calls f.loop via MCP
+├── Nova ──────────────────── Calls Nexus runtime via MCP
 │
-├── Agents Store (Marketplace) ─── Agents reference f.loop capabilities
+├── Agents Store (Marketplace) ─── Agents reference Nexus runtime capabilities
 │
-├── Actions (f.xyz tools) ───────── Executed by f.loop via Tool Gateway
+├── Actions (f.xyz tools) ───────── Executed by Nexus runtime via Tool Gateway
 │
-├── f.loop (Agent Runtime) ←────── POWERS EVERYTHING
+├── Nexus runtime (Agent Runtime) ←────── POWERS EVERYTHING
 │
-├── f.decloy (Agent Hosting) ────── Uses f.loop for lifecycle
+├── f.decloy (Agent Hosting) ────── Uses Nexus runtime for lifecycle
 │
 └── MCP Registry (Curated Tools) ── Routed through Tool Gateway
 ```
@@ -97,7 +97,7 @@ The original OBSERVE → REASON → ACT → EVALUATE loop is good but missing th
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    f.loop — Ralph Engine                         │
+│                    Nexus runtime — Ralph Engine                         │
 │                    Bun Worker Process                            │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                   │
@@ -858,7 +858,7 @@ GROUP BY worker_id;
 
 ## 12. MCP Tool API (Public)
 
-f.loop exposes these tools via MCP at `https://f.xyz/loop/api/mcp`.
+Nexus runtime exposes these tools via MCP at `https://f.xyz/loop/api/mcp`.
 
 ### dispatch_background_task
 
@@ -985,7 +985,7 @@ f.loop exposes these tools via MCP at `https://f.xyz/loop/api/mcp`.
 
 ## 13. REST API (Developer Platform)
 
-In addition to MCP tools (used by agents), f.loop exposes a REST API for direct developer access. This is the foundation of the "Agent Infrastructure Platform" strategic opportunity.
+In addition to MCP tools (used by agents), Nexus runtime exposes a REST API for direct developer access. This is the foundation of the "Agent Infrastructure Platform" strategic opportunity.
 
 ```
 Base URL: https://api.aitlas.xyz/v1/loop
@@ -1216,7 +1216,7 @@ model ScheduledTask {
 - [ ] Usage dashboard for developers
 - [ ] Horizontal scaling documentation + Hetzner setup scripts
 
-**Milestone:** External developers can use f.loop via REST API.
+**Milestone:** External developers can use Nexus runtime via REST API.
 
 ---
 

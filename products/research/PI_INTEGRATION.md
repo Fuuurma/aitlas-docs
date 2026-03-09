@@ -23,9 +23,9 @@ Pi provides a **complete agent framework** that could power multiple parts of Ai
 |------------|------------------|---------------|
 | `pi-coding-agent` | Nexus Core | Terminal-based coding agent |
 | `pi-ai` | Nexus LLM Layer | Unified multi-provider LLM API |
-| `pi-agent-core` | f.loop | Agent runtime with tool calling |
-| `pi-tui` | Nexus UI (TUI) | Terminal UI components |
-| `pi-web-ui` | Nexus UI (Web) | Web chat components |
+| `pi-agent-core` | Nexus runtime | Agent runtime with tool calling |
+| `pi-tui` | Nova (TUI) | Terminal UI components |
+| `pi-web-ui` | Nova (Web) | Web chat components |
 | `pi-mom` | Future: Slack Bot | Slack integration |
 | `pi-pods` | f.decloy | vLLM deployment |
 
@@ -208,7 +208,7 @@ Pi → MCP → Nexus/Agents
 - Connect Pi via MCP as external agent
 
 ### Phase 2: Deep Integration
-- Evaluate using pi-agent-core for f.loop
+- Evaluate using pi-agent-core for Nexus runtime
 - Consider pi-tui for terminal Nexus
 - Explore pi-mom for Slack bot
 
@@ -237,7 +237,7 @@ Pi → MCP → Nexus/Agents
 
 1. **Deep dive** into pi-agent-core architecture
 2. **Test** pi-coding-agent locally
-3. **Evaluate** f.loop vs pi-agent-core
+3. **Evaluate** Nexus runtime vs pi-agent-core
 4. **Prototype** Pi integration via MCP
 5. **Contact** badlogic for potential partnership
 

@@ -24,7 +24,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 |-----------|---------------|
 | WORKFLOW.md pattern | Per-project task configuration |
 | Per-task workspace isolation | Each task gets isolated execution |
-| Orchestrator pattern | f.loop manages task execution |
+| Orchestrator pattern | Nexus runtime manages task execution |
 | Reconciliation loop | Detect stale runs, stop agents |
 | Multi-turn continuation | Agents run across multiple turns |
 | Hook system | before_run, after_run, etc. |
@@ -37,7 +37,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 #### Integration Location
 - `apps/nexus/lib/orchestrator/` - Task orchestration
 - `apps/nexus/lib/workspace/` - Workspace management
-- `apps/loop/lib/` - Ralph engine (f.loop)
+- `apps/loop/lib/` - Ralph engine (Nexus runtime)
 
 ---
 
@@ -45,7 +45,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 
 **Repo:** https://github.com/triggerdotdev/trigger.dev  
 **License:** Apache 2.0  
-**Used For:** f.loop (Ralph) durable execution engine  
+**Used For:** Nexus runtime (Ralph) durable execution engine  
 
 #### What We Use
 | Component | How We Use It |
@@ -62,7 +62,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 - Some notification features
 
 #### Integration Location
-- `apps/loop/` - f.loop (Ralph engine)
+- `apps/loop/` - Nexus runtime (Ralph engine)
 - Built on Trigger.dev core
 
 ---
@@ -84,7 +84,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 #### What We Skip
 - Copy-paste prompts (we adapt to our architecture)
 - Some platform-specific agents (TikTok, Xiaohongshu)
-- Manual activation (we auto-dispatch via f.loop)
+- Manual activation (we auto-dispatch via Nexus runtime)
 
 #### Agent Format We Use
 ```yaml
@@ -206,7 +206,7 @@ T3 Code UI (forked as Nexus)
         ├── f.xyz Actions
         ├── Agents Store
         ├── Memory + Tasks
-        └── f.loop orchestration
+        └── Nexus runtime orchestration
 ```
 
 **Why this works:**

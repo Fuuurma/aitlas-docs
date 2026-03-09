@@ -1,7 +1,7 @@
 # f.rsrx — Research Agent
 
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
-**Repo:** `f-rsrx` | **Host:** Vercel (API) + f.loop (execution)  
+**Repo:** `f-rsrx` | **Host:** Vercel (API) + Nexus runtime (execution)  
 **Type:** Research Agent
 
 ---
@@ -335,7 +335,7 @@ const server = new Server({
   ]
 });
 
-// Register with f.loop Tool Gateway
+// Register with Nexus runtime Tool Gateway
 await gateway.register({
   name: 'f.rsrx',
   tools: ['search_web', 'scrape_url', 'synthesize']

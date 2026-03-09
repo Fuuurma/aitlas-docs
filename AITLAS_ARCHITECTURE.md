@@ -11,7 +11,7 @@
 3. [Nexus — The Hub](#3-nexus--the-hub)
 4. [Agents — The Store](#4-agents--the-store)
 5. [Actions — The Engine (f.xyz)](#5-actions--the-engine-fxyz)
-6. [The Ralph Engine (f.loop)](#6-the-ralph-engine-floop)
+6. [The Ralph Engine (Nexus runtime)](#6-the-ralph-engine-floop)
 7. [MCP Strategy & Protocol](#7-mcp-strategy--protocol)
 8. [aitlas-core-template — The DNA](#8-aitlas-core-template--the-dna)
 9. [Shared Data Models (Prisma)](#9-shared-data-models-prisma)
@@ -38,7 +38,7 @@ The Internet         →   Browser
 The OS               →   Nexus
 The App Store        →   Agents
 The System Utilities →   Actions (f.xyz)
-The Background Daemons → f.loop (Ralph)
+The Background Daemons → Nexus runtime (Ralph)
 The File System      →   f.library
 The Network Layer    →   MCP
 ```
@@ -65,7 +65,7 @@ aitlas.xyz (Root Domain)
 │     ├── /twyt          → f.twyt service
 │     ├── /library       → f.library service
 │     ├── /rsrx          → f.rsrx service
-│     ├── /loop          → f.loop orchestrator
+│     ├── /loop          → Nexus runtime orchestrator
 │     └── /guard         → f.guard service
 └── loop.internal        → Ralph workers (Hetzner, Bun, private)
 ```
@@ -76,7 +76,7 @@ aitlas.xyz (Root Domain)
 Nexus
   └── depends on → Auth Service (shared)
   └── depends on → Credit Ledger (shared DB)
-  └── orchestrates → f.loop (via task queue)
+  └── orchestrates → Nexus runtime (via task queue)
   └── calls → Actions (f.xyz) via MCP
   └── displays → Agents (from Agents Store manifest API)
 
@@ -85,7 +85,7 @@ Agents Store
   └── reads → Agent manifests (DB)
   └── triggers → Nexus agent activation
 
-f.loop (Ralph)
+Nexus runtime (Ralph)
   └── polls → Task Queue (Postgres, Neon)
   └── calls → f.xyz Actions (via HTTP MCP)
   └── calls → Third-party MCPs (via user config)
@@ -131,7 +131,7 @@ UI state:
 System prompt injected:
 "You are Aitlas, a sovereign AI operating system. You have access to
 the following tools via MCP: [DYNAMIC TOOL LIST INJECTED HERE].
-For long-running tasks, dispatch to f.loop. Always confirm before
+For long-running tasks, dispatch to Nexus runtime. Always confirm before
 dispatching tasks that will cost more than 10 credits."
 
 Gate:
@@ -164,7 +164,7 @@ UI state:
        │
        ├─ If LLM calls a tool:
        │     ├─ Short task (<30s): execute inline via f.xyz HTTP
-       │     └─ Long task (>30s): dispatch to f.loop task queue
+       │     └─ Long task (>30s): dispatch to Nexus runtime task queue
        │           └─ Return taskId to UI immediately
        │           └─ UI polls /api/tasks/:id for progress
        │
@@ -280,7 +280,7 @@ Actions are **Furma-native MCP servers** — each is a standalone microservice t
 
 | Action | MCP Tool Name | Description | Credit Cost | Status |
 |--------|--------------|-------------|-------------|--------|
-| **f.loop** | `dispatch_background_task` | Dispatch long async jobs to Ralph | 10/hr of compute | 🟡 Dev |
+| **Nexus runtime** | `dispatch_background_task` | Dispatch long async jobs to Ralph | 10/hr of compute | 🟡 Dev |
 | **f.twyt** | `search_twitter`, `get_user_timeline` | Twitter semantic search & ingestion | 1/query | ✅ Prod |
 | **f.library** | `ingest_document`, `search_knowledge_base` | Vector knowledge base (pgvector) | 2/ingest, 1/search | ✅ Prod |
 | **f.rsrx** | `deep_research`, `synthesize_report` | Multi-source research synthesis | 5/report | 🟡 Dev |
@@ -314,7 +314,7 @@ f.twyt/
 
 ---
 
-## 6. The Ralph Engine (f.loop)
+## 6. The Ralph Engine (Nexus runtime)
 
 ### What It Is
 Ralph is Aitlas's **durable background execution layer** — a fleet of Bun workers running on Hetzner that pick up long-running agentic tasks from the PostgreSQL task queue and execute them step-by-step, surviving server reboots, LLM errors, and network failures.
@@ -326,7 +326,7 @@ Vercel functions timeout at 60 seconds. Agentic tasks (deep research, autonomous
 
 ```
 ┌──────────────────────────────────────────────────┐
-│                  f.loop (Ralph)                   │
+│                  Nexus runtime (Ralph)                   │
 │             Bun Worker Process                    │
 │             Hetzner VPS (loop.internal)           │
 ├──────────────────────────────────────────────────┤
@@ -655,7 +655,7 @@ When Nexus calls an f.xyz action on behalf of a user:
 | f.rsrx deep research | 5 credits | $0.05 |
 | f.guard code review | 2 credits | $0.02 |
 | f.support ticket | 3 credits | $0.03 |
-| f.loop compute (per hour) | 10 credits | $0.10/hr |
+| Nexus runtime compute (per hour) | 10 credits | $0.10/hr |
 
 ---
 
@@ -729,7 +729,7 @@ export function decryptApiKey(keyData: string, iv: string, tag: string): string 
 | nexus.aitlas.xyz | Vercel | Auto (edge) |
 | agents.aitlas.xyz | Vercel | Auto (edge) |
 | f.xyz (all actions) | Vercel | Auto (edge) |
-| f.loop (Ralph) | Hetzner CX21 | Manual horizontal |
+| Nexus runtime (Ralph) | Hetzner CX21 | Manual horizontal |
 | PostgreSQL | Neon (serverless) | Auto |
 | Redis | Upstash | Auto |
 | Static assets | Vercel / Cloudflare CDN | Auto |

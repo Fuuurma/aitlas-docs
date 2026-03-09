@@ -2,7 +2,7 @@
 
 **Status:** 🔵 Research  
 **Reference:** [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) (67K stars, MIT)  
-**Use:** Nexus optimization, Skills, Memory, Security
+**Use:** Nova optimization, Skills, Memory, Security
 
 ---
 

@@ -366,7 +366,7 @@ const token = generateServiceToken({
 
 // In f.twyt
 const result = await validateServiceSession(token, {
-  allowedServices: ['nexus', 'agents', 'f.loop'],
+  allowedServices: ['nexus', 'agents', 'Nexus runtime'],
   secret: process.env.FURMA_INTERNAL_SECRET,
 });
 

@@ -45,7 +45,7 @@ rsrx.f.xyz
 **Actions in this category:** f.twyt, f.rsrx, f.library
 
 ### Type 2: Utility Actions (Hono, headless)
-**f.guard · f.support · f.loop · f.decloy**
+**f.guard · f.support · Nexus runtime · f.decloy**
 
 These produce simple structured outputs. No user ever visits `guard.f.xyz` to browse a UI. They only exist to be called by agents and Nexus.
 
@@ -58,7 +58,7 @@ guard.f.xyz (or internally routed)
 
 **Template:** `aitlas-action-template` (Hono)  
 **Deploy:** Vercel serverless  
-**Actions in this category:** f.guard, f.support, f.loop API gateway, f.decloy
+**Actions in this category:** f.guard, f.support, Nexus runtime API gateway, f.decloy
 
 ---
 
@@ -71,7 +71,7 @@ guard.f.xyz (or internally routed)
 | **f.library** | Mini-App | Next.js (ui) | Document store + search | ✅ Yes |
 | **f.guard** | Utility | Hono | ❌ None | ❌ Only in Nexus |
 | **f.support** | Utility | Hono | ❌ None | ❌ Only in Nexus |
-| **f.loop** | Worker | Bun | ❌ None | ❌ Internal runtime |
+| **Nexus runtime** | Worker | Bun | ❌ None | ❌ Internal runtime |
 | **f.decloy** | Utility | Hono | ❌ None | ❌ Only in Nexus |
 
 ---
@@ -232,7 +232,7 @@ model ResearchReport {
   report      String   @db.Text   // Full markdown report
   sources     Json                // Array of sources
   confidence  String              // "high" | "medium" | "low"
-  taskId      String?             // If triggered by f.loop task
+  taskId      String?             // If triggered by Nexus runtime task
   createdAt   DateTime @default(now())
   
   @@index([userId, createdAt(sort: Desc)])
@@ -351,7 +351,7 @@ aitlas-worker-template (Bun, no HTTP)
 | f.guard | Vercel | action (Hono) | guard.f.xyz |
 | f.support | Vercel | action (Hono) | support.f.xyz |
 | f.decloy | Vercel | action (Hono) | decloy.f.xyz |
-| f.loop workers | Hetzner | worker (Bun) | (no domain) |
+| Nexus runtime workers | Hetzner | worker (Bun) | (no domain) |
 | PostgreSQL | Neon | — | — |
 | Redis | Upstash | — | — |
 

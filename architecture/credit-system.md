@@ -34,7 +34,7 @@ The Aitlas credit system is the monetization layer that powers all compute-inten
 | f.rsrx deep research | 5 | $0.05 |
 | f.guard code review | 2 | $0.02 |
 | f.support ticket | 3 | $0.03 |
-| f.loop compute (per hour) | 10 | $0.10/hr |
+| Nexus runtime compute (per hour) | 10 | $0.10/hr |
 | f.decloy deployment | 75 | $0.75 |
 
 ---
@@ -94,7 +94,7 @@ import { reserveCredits } from '@/lib/credit-middleware';
 const reservation = await reserveCredits({
   userId: 'user_abc123',
   amount: 20,
-  reason: 'f.loop:background_task',
+  reason: 'Nexus runtime:background_task',
   taskId: 'task_456',
 });
 
@@ -222,7 +222,7 @@ export async function POST(request: Request) {
 
 ### Pattern 2: Asynchronous Task with Reservation
 
-For long tasks (> 30 seconds) that run in f.loop.
+For long tasks (> 30 seconds) that run in Nexus runtime.
 
 ```typescript
 // API route - dispatch task
@@ -234,7 +234,7 @@ export async function POST(request: Request) {
   const reservation = await reserveCredits({
     userId,
     amount: 20,
-    reason: 'f.loop:long_task',
+    reason: 'Nexus runtime:long_task',
     taskId,
   });
   

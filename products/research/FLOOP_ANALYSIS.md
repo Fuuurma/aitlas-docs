@@ -1,6 +1,6 @@
-# Building the Best f.loop — Analysis
+# Building the Best Nexus runtime — Analysis
 
-**Goal:** Create f.loop that beats the competition by learning from what's good in each.
+**Goal:** Create Nexus runtime that beats the competition by learning from what's good in each.
 
 ---
 
@@ -71,7 +71,7 @@ crew.kickoff()
 
 ---
 
-## What We Need for f.loop
+## What We Need for Nexus runtime
 
 | Need | From Where |
 |------|------------|
@@ -87,11 +87,11 @@ crew.kickoff()
 
 ---
 
-## The Perfect f.loop
+## The Perfect Nexus runtime
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     f.loop (OUR VERSION)                    │
+│                     Nexus runtime (OUR VERSION)                    │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌─────────────────────────────────────────────────────┐  │
@@ -112,7 +112,7 @@ crew.kickoff()
 │  │         • BYOK (user's LLM key)                    │  │
 │  │         • Credits (monetization)                    │  │
 │  │         • Actions (f.xyz integration)               │  │
-│  │         • Nexus (UI)                                │  │
+│  │         • Nova                                │  │
 │  │         • Agents Store (skills)                      │  │
 │  └─────────────────────────────────────────────────────┘  │
 │                                                              │
@@ -121,7 +121,7 @@ crew.kickoff()
 
 ---
 
-## f.loop Features
+## Nexus runtime Features
 
 | Feature | Source | Description |
 |---------|--------|-------------|
@@ -154,14 +154,14 @@ crew.kickoff()
 
 The moat is NOT the runtime - it's the **ecosystem**:
 
-- f.loop is the engine
+- Nexus runtime is the engine
 - Actions are the tools
 - Agents are the workers
-- Nexus is the UI
+- Nova is the UI
 - Credits is the business
 
 **Together = Unbeatable ecosystem**
 
 ---
 
-*Summary: Build f.loop combining best of all 6 + our unique BYOK + Credits*
+*Summary: Build Nexus runtime combining best of all 6 + our unique BYOK + Credits*

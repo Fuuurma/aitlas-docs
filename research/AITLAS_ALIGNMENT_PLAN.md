@@ -41,7 +41,7 @@ model ApiKey {
   @@unique([userId, provider])
 }
 
-// 3. f.loop Task Queue (Ralph Engine)
+// 3. Nexus runtime Task Queue (Ralph Engine)
 model TaskQueue {
   id String @id @default(cuid())
   userId String
@@ -82,7 +82,7 @@ lib/
 
 **Key Changes:**
 - Rule Zero: Polyrepo isolation
-- 15s timeout → f.loop for heavy tasks
+- 15s timeout → Nexus runtime for heavy tasks
 - BYOK encryption required
 - userId in EVERY Prisma query
 - MCP-only communication
@@ -141,7 +141,7 @@ RSRX_SYNTHESIZE_COST=5
 
 ---
 
-### 6. Add f.loop Worker Integration
+### 6. Add Nexus runtime Worker Integration
 
 **For Long Tasks:**
 ```typescript
@@ -151,7 +151,7 @@ export async function POST(req: Request) {
   return Response.json({ result });  // TIMEOUT!
 }
 
-// AFTER (f.loop async pattern)
+// AFTER (Nexus runtime async pattern)
 export async function POST(req: Request) {
   const task = await prisma.taskQueue.create({
     data: {
@@ -232,7 +232,7 @@ export async function POST(req: Request) {
 - [ ] Schema migration works
 - [ ] BYOK encryption tested (100% coverage)
 - [ ] Credit deduction works
-- [ ] f.loop async pattern tested
+- [ ] Nexus runtime async pattern tested
 - [ ] MCP tools exposed correctly
 - [ ] Rate limiting active
 - [ ] userId scoping in ALL queries
@@ -248,7 +248,7 @@ export async function POST(req: Request) {
 - ✅ Aitlas Actions (MCP servers)
 - ✅ Credit-burning (revenue generating)
 - ✅ BYOK-powered (zero token liability)
-- ✅ f.loop integrated (no timeouts)
+- ✅ Nexus runtime integrated (no timeouts)
 - ✅ Furma DNA compliant (security, logging, rate-limiting)
 
 **Nexus can then:**

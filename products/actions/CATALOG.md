@@ -8,7 +8,7 @@
 
 | Action | Status | Description |
 |--------|--------|-------------|
-| **f.loop** | ✅ Active | Durable agent runtime |
+| **Nexus runtime** | ✅ Active | Durable agent runtime |
 | **f.library** | ✅ Active | Memory/knowledge management |
 | **f.twyt** | ✅ Active | Twitter automation |
 | **f.rsrx** | 📋 Planned | Research assistant |
@@ -21,7 +21,7 @@
 
 ## Core Actions
 
-### f.loop - Durable Agent Runtime
+### Nexus runtime - Durable Agent Runtime
 
 **The backbone of Aitlas.**
 
@@ -235,7 +235,7 @@ Result: Structured markdown report
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| f.loop spec | ✅ Complete | 41KB spec |
+| Nexus runtime spec | ✅ Complete | 41KB spec |
 | f.rsrx spec | ✅ Complete | Phase 1 tools defined |
 | Tool Gateway | 📋 Planned | Central auth/RTK/retry |
 | RTK integration | 📋 Planned | In Tool Gateway |

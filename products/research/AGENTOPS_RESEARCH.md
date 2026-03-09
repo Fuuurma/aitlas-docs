@@ -29,13 +29,13 @@
 
 ## For Aitlas: Observability
 
-### Essential for Nexus + Nexus (f.loop)!
+### Essential for Nexus + Nexus (Nexus runtime)!
 
 | Use Case | Description |
 |----------|-------------|
 | **Nexus** | Monitor chat sessions |
 | **Nexus** | Track agent performance |
-| **f.loop** | Monitor task execution |
+| **Nexus runtime** | Monitor task execution |
 | **Analytics** | User behavior insights |
 | **Costs** | Track LLM usage |
 

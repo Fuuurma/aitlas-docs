@@ -66,7 +66,7 @@ const result = await agent.stream("Hello");
 | **Bun** | ✅ Works with Bun! |
 | **Agents** | → Nexus agent definitions |
 | **Tools** | → f.xyz Actions as MCP |
-| **Workflows** | → f.loop task flows |
+| **Workflows** | → Nexus runtime task flows |
 | **RAG** | → f.library integration |
 | **Deployment** | → f.deploy reference |
 | **MCP** | → Our MCP architecture |
@@ -92,7 +92,7 @@ const result = await agent.stream("Hello");
 2. **Same runtime** - Bun
 3. **MCP built-in** - Our architecture!
 4. **RAG** - Can power f.library
-5. **Workflows** - Similar to f.loop
+5. **Workflows** - Similar to Nexus runtime
 6. **Production-ready** - Edge deployment
 
 ---
@@ -108,7 +108,7 @@ const result = await agent.stream("Hello");
 
 ## Next Steps for Aitlas
 
-1. **EVALUATE** Mastra as f.loop foundation!
+1. **EVALUATE** Mastra as Nexus runtime foundation!
 2. **Consider** migrating to Mastra patterns
 3. **Use** as reference for TypeScript agent design
 
