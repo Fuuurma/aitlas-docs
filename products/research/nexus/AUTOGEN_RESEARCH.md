@@ -1,41 +1,190 @@
-# AutoGen — Research
+# AutoGen — Multi-Agent Framework
 
-**Status:** 🔵 Reference (Multi-agent framework)  
-**Reference:** [microsoft/autogen](https://github.com/microsoft/autogen) (55K stars, MIT)  
-**Use:** Multi-agent orchestration / Research reference
+**Status:** 🔵 Reference  
+**Reference:** [microsoft/autogen](https://github.com/microsoft/autogen)  
+**Stars:** 55.3K ⭐ | **Language:** Python | **License:** MIT  
+**Created:** August 2023  
+**Website:** [microsoft.github.io/autogen](https://microsoft.github.io/autogen)
 
 ---
 
 ## Overview
 
-**AutoGen** = Microsoft's framework for building AI agents.
+**AutoGen** = Microsoft's framework for creating multi-agent AI applications.
 
-> "AutoGen enables next-generation AI applications with a diverse set of agents of varying capabilities that can work together to solve tasks."
+> "AutoGen is a framework for creating multi-agent AI applications that can act autonomously or work alongside humans."
+
+Now with **AutoGen Studio** for no-code GUI development.
 
 ---
 
-## Key Features
+## Key Stats
 
-| Feature | Description |
-|---------|-------------|
-| **Multi-agent** | Multiple agents collaborate |
-| **Customizable** | Agent roles, prompts, tools |
-| **Conversation-driven** | Agents talk to each other |
-| **Code Execution** | Built-in code generation/execution |
-| **Human-in-loop** | Human can intervene |
+| Metric | Value |
+|--------|-------|
+| Stars | 55.3K |
+| Language | Python |
+| License | MIT |
+| Created | Aug 2023 |
+| Python | 3.10+ |
+| Contributors | 700+ |
 
 ---
 
 ## Architecture
 
-```python
-# Example: Two-agent conversation
-assistant = AssistantAgent("assistant", llm_config=...)
-user_proxy = UserProxyAgent("user_proxy")
+### Layered Design
 
-user_proxy.initiate_chat(
-    assistant,
-    message="Write a Python script to analyze data"
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Applications                          │
+│              (Magentic-One, etc.)                       │
+├─────────────────────────────────────────────────────────┤
+│                  AgentChat API                          │
+│         (High-level, opinionated patterns)               │
+├─────────────────────────────────────────────────────────┤
+│                   Core API                              │
+│     (Message passing, event-driven, runtime)             │
+├─────────────────────────────────────────────────────────┤
+│                 Extensions API                          │
+│      (LLM clients, code execution, MCP tools)           │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Multi-Agent Patterns
+
+```python
+# Agent as Tool - agents can use other agents
+math_agent = AssistantAgent("math_expert", ...)
+math_agent_tool = AgentTool(math_agent, return_value_as_last_message=True)
+
+agent = AssistantAgent(
+    "assistant",
+    tools=[math_agent_tool]
+)
+```
+
+---
+
+## Key Features
+
+### 1. Multi-Agent Orchestration
+
+**Two-Agent Chat**
+```python
+from autogen_agentchat.teams import SelectorGroupChat
+
+team = SelectorGroupChat(
+    participants=[assistant, critic],
+    termination_condition=StopCondition("no more iterations")
+)
+```
+
+**Group Chat**
+```python
+from autogen_agentchat.teams import RoundRobinGroupChat
+
+team = RoundRobinGroupChat(participants=[agent1, agent2, agent3])
+```
+
+### 2. Human-in-the-Loop
+
+```python
+from autogen_agentchat.agents import UserProxyAgent
+
+user_proxy = UserProxyAgent("user", input_func=input)
+```
+
+### 3. Code Execution
+
+```python
+from autogen_ext.code executors import LocalCommandLineCodeExecutor
+
+executor = LocalCommandLineCodeExecutor()
+```
+
+### 4. MCP Integration
+
+```python
+from autogen_ext.tools.mcp import McpWorkbench, StdioServerParams
+
+async with McpWorkbench(server_params) as mcp:
+    agent = AssistantAgent("assistant", workbench=mcp)
+```
+
+### 5. AutoGen Studio
+
+No-code GUI for building multi-agent workflows.
+
+```bash
+autogenstudio ui --port 8080
+```
+
+---
+
+## SDK Structure
+
+### Packages
+
+| Package | Purpose |
+|---------|---------|
+| `autogen-core` | Low-level message passing, events |
+| `autogen-agentchat` | High-level agent patterns |
+| `autogen-ext` | Extensions (OpenAI, code executor, MCP) |
+| `autogenstudio` | No-code GUI |
+| `agbench` | Benchmarking |
+
+### Language Support
+
+| Language | Status |
+|----------|--------|
+| Python | ✅ Primary |
+| .NET | ✅ (via AutoGen.NET) |
+
+---
+
+## Code Examples
+
+### Hello World
+
+```python
+import asyncio
+from autogen_agentchat.agents import AssistantAgent
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+
+async def main():
+    client = OpenAIChatCompletionClient(model="gpt-4.1")
+    agent = AssistantAgent("assistant", model_client=client)
+    print(await agent.run(task="Say 'Hello World!'"))
+
+asyncio.run(main())
+```
+
+### Multi-Agent with Tools
+
+```python
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.tools import AgentTool
+
+math_agent = AssistantAgent("math", system_message="Math expert")
+math_tool = AgentTool(math_agent, return_value_as_last_message=True)
+
+assistant = AssistantAgent(
+    "assistant",
+    tools=[math_tool],
+    max_tool_iterations=10
+)
+```
+
+### Code Execution
+
+```python
+from autogen_ext.code_executors import LocalCommandLineCodeExecutor
+
+executor = LocalCommandLineCodeExecutor()
+code_agent = AssistantAgent(
+    "coder",
+    code_executor=executor
 )
 ```
 
@@ -44,21 +193,65 @@ user_proxy.initiate_chat(
 ## For Nexus
 
 ### What to Learn
-- Multi-agent conversation patterns
-- Role-based agent design
-- Code execution sandbox patterns
+
+| Pattern | How to Apply |
+|---------|-------------|
+| **Agent-as-tool** | Agents can invoke other agents |
+| **Selector routing** | Dynamic agent selection |
+| **Group chat** | Multiple agents collaborate |
+| **Human-in-loop** | Approval workflows |
+| **Layered API** | Core vs high-level separation |
 
 ### Weaknesses for Nexus
-- Python-only (not TypeScript-native)
-- Complex framework, hard to customize
-- No built-in durable execution
-- No background job system
-- Heavy, overkill for simple agents
+
+| Issue | Impact |
+|-------|--------|
+| Python-only | Not TypeScript-native |
+| Heavy framework | Complex, hard to customize |
+| No durable execution | No checkpointing for long tasks |
+| No background jobs | Not for async workflows |
+| No MCP built-in | Would need custom adapter |
+| Microsoft ecosystem | Vendor lock-in |
+
+---
+
+## Comparison
+
+| Feature | AutoGen | LangGraph | Temporal | Nexus |
+|---------|---------|-----------|----------|-------|
+| Multi-agent | ✅ Excellent | ✅ | ❌ | Planned |
+| Durable | ❌ | ✅ Checkpoint | ✅ | ✅ |
+| Background jobs | ❌ | ❌ | ✅ | ✅ |
+| MCP | ✅ New | ❌ | ❌ | ✅ |
+| TypeScript | ❌ | Limited | Limited | ✅ |
+| Python-first | ✅ | ✅ | ❌ | ❌ |
+| Lightweight | ❌ | ❌ | ❌ | ✅ |
+
+---
+
+## Ecosystem
+
+| Tool | Description |
+|------|-------------|
+| **AutoGen Studio** | No-code GUI |
+| **AutoGen Bench** | Benchmarking suite |
+| **Magentic-One** | SOTA multi-agent team |
+| **Discord** | Community (15K+ members) |
+
+---
+
+## Resources
+
+- [Docs](https://microsoft.github.io/autogen/)
+- [AutoGen Studio](https://microsoft.github.io/autogen/stable/user-guide/autogenstudio-user-guide/)
+- [Discord](https://aka.ms/autogen-discord)
+- [Blog](https://devblogs.microsoft.com/autogen/)
 
 ---
 
 ## Related
 
-- [Floop Analysis](./FLOOP_ANALYSIS.md) — Competitor comparison
 - [LangGraph](./LANGGRAPH_RESEARCH.md) — Graph-based alternative
+- [Temporal](./TEMPORAL_RESEARCH.md) — Enterprise workflows
 - [Trigger.dev](./TRIGGERDEV_RESEARCH.md) — Background jobs
+- [Floop Analysis](./FLOOP_ANALYSIS.md) — Competitor comparison
