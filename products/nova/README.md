@@ -1,5 +1,8 @@
 # Nova — The Web UI
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** nova.aitlas.xyz  
 **Status:** 🟡 Development  
 **Stack:** Next.js 15, Bun, Neon Postgres, Prisma 6, Better Auth, T3 Code

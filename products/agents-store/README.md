@@ -1,5 +1,8 @@
 # Agents Store - The App Store for AI Agents
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** agents.aitlas.xyz  
 **Status:** 🟡 Development  
 **Stack:** Next.js 15, Bun, Neon Postgres, Prisma 6

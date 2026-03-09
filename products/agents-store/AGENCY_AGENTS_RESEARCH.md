@@ -1,5 +1,8 @@
 # Agency Agents — Research
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🔵 Research  
 **Reference:** [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) (12.7K stars, MIT)  
 **Use:** Agents Store + Skills

@@ -1,5 +1,8 @@
 # f.library - Vector Knowledge Base
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.xyz/library  
 **Status:** ✅ Production  
 **Credits:** 2/ingest, 1/search

@@ -1,5 +1,8 @@
 # Aitlas Agents - Future Roadmap
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** Planning Phase  
 **Last Updated:** 2026-03-08
 

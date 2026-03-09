@@ -1,5 +1,8 @@
 # f.support — AI Helpdesk Automation
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.xyz/support  
 **Status:** 🟡 Roadmap  
 **Category:** Business Automation Tool  

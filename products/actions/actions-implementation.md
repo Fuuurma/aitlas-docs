@@ -1,5 +1,8 @@
 # Actions Implementation Summary
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Product:** Actions (f.xyz) - MCP Tools for Aitlas  
 **Foundation:** MCP Protocol + Official MCP Servers  
 **Stack:** TypeScript + Bun + Hono

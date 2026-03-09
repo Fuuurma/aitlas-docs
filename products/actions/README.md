@@ -1,5 +1,8 @@
 # Actions — The Engine (f.xyz)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.xyz  
 **Status:** 🟡 Development  
 **Stack:** Next.js 15, Bun, Neon Postgres, Prisma 6

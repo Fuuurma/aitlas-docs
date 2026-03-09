@@ -1,5 +1,8 @@
 # Actions Catalog
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **All Aitlas actions: 68 planned across 9 categories.**
 
 ---

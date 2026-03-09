@@ -1,5 +1,8 @@
 # f.guard — AI Code Review & Security
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.guard.aitlas.xyz  
 **Status:** 🟡 Development (Warden Integration)  
 **Credits:** 2/review, 5/repo-scan, 3/PR-auto-scan, 2/auto-fix  

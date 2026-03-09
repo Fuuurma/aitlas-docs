@@ -1,5 +1,8 @@
 # Nova Chat Implementation Plan
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Created:** 2026-03-09  
 **Status:** Draft  
 **Goal:** Build a multi-provider AI coding chat desktop app based on T3 Code architecture

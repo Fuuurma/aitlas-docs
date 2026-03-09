@@ -1,5 +1,8 @@
 # Nova Dashboard Implementation Plan
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Created:** 2026-03-09  
 **Status:** Planning  
 **Fork Source:** [Mission Control](https://github.com/builderz-labs/mission-control) v1.3.0

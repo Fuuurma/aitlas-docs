@@ -1,5 +1,8 @@
 # Nova Chat Build - Implementation Notes
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Created:** 2026-03-09
 **Status:** Complete
 **Task:** Build Nova's multi-provider chat system

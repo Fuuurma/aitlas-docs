@@ -1,5 +1,8 @@
 # Orchestration Landscape - Moat Analysis
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Purpose:** Understand the competitive landscape and define the real moat for Nexus runtime
 
 ---

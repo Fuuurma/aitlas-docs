@@ -1,5 +1,8 @@
 # Symphony — Nova Tasks Integration
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** 🟡 Integration Candidate  
 **Reference:** [openai/symphony](https://github.com/openai/symphony) (9K stars, Apache 2.0)  
 **For:** Nova → Tasks UI (in web UI)  

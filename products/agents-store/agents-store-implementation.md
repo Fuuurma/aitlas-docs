@@ -1,5 +1,8 @@
 # Agents Store Implementation Summary
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Product:** Agents Store - Marketplace for AI Agents & Skills  
 **Foundation:** Agency Agents + sanyuan-skills + Antigravity Awesome Skills  
 **Stack:** TypeScript + PostgreSQL

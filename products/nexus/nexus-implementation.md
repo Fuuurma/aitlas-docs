@@ -1,5 +1,8 @@
 # Nexus Implementation Summary
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Product:** Nexus - Runtime Engine for Aitlas  
 **Foundation:** trigger.dev + Mastra + AutoGen + Pi  
 **Stack:** TypeScript + Bun + Hono

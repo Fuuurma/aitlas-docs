@@ -1,5 +1,8 @@
 # Nova Dashboard Build Notes
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Created:** 2026-03-09
 **Author:** Atlas (Subagent)
 **Status:** Complete

@@ -1,5 +1,8 @@
 # Nova Build Session (2026-03-09)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 ## Status: ✅ Foundation Complete
 
 **Repo:** https://github.com/Fuuurma/Nova  

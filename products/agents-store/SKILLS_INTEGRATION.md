@@ -1,5 +1,8 @@
 # Skills Integration for Agents Store
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Goal:** Populate Agents Store with quality skills from open source
 
 ---

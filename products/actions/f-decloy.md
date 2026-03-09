@@ -1,5 +1,8 @@
 # f.decloy - Agent Deployment Platform
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.xyz/decloy  
 **Status:** 🟡 Roadmap  
 **Credits:** 25/deploy + 1/minute runtime

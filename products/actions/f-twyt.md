@@ -1,5 +1,8 @@
 # f.twyt — Twitter Search & Ingestion
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.xyz/twyt  
 **Status:** ✅ Production  
 **Category:** Intelligence / Social Signal Tool  

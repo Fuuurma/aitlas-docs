@@ -1,5 +1,8 @@
 # Aitlas Actions - Future Roadmap
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Status:** Planning Phase  
 **Last Updated:** 2026-03-08
 
@@ -763,4 +766,3 @@ To propose a new action:
 | Tier 3 (Q4 2026) | 5 |
 | Extended (2027) | 46 |
 | **Total** | **68** |
-

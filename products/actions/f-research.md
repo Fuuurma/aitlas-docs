@@ -1,5 +1,8 @@
 # f.research — AI Research Engine
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.research.aitlas.xyz  
 **Status:** 🟡 Development (Perplexica Integration)  
 **Credits:** 5/query, 10/deep-research, 3/scheduled  

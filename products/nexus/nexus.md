@@ -1,5 +1,8 @@
 # Nexus — Durable Agent Runtime (Orchestration)
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
 **Foundation:** **Cloned from trigger.dev** (Apache 2.0) — customized for AI agents  
 **Repo:** `aitlas-nexus` | **Host:** Hetzner (Bun workers) + Vercel (API gateway)  

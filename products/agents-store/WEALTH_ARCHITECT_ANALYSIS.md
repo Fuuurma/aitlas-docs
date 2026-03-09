@@ -1,5 +1,8 @@
 # Professional System Prompt Analysis: Wealth Architect
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Source:** X/Twitter ( leaked system prompt )  
 **Analysis Date:** 2026-03-08  
 **Quality Level:** ⭐⭐⭐⭐⭐ Professional Grade

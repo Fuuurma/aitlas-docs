@@ -1,5 +1,8 @@
 # f.finance — AI Stock Analysis
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Domain:** f.finance.aitlas.xyz  
 **Status:** 🟡 Research (AI Hedge Fund Integration)  
 **Credits:** 2/analyze, 5/deep-dive, 1/signal, 3/portfolio  

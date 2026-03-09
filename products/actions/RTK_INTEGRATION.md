@@ -1,5 +1,8 @@
 # RTK Integration — Token Compression for Nexus runtime
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Draft  
 **Parent:** nexus.md | **Type:** Internal Library Integration
 

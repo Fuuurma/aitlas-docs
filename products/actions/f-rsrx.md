@@ -1,5 +1,8 @@
 # f.rsrx — Research Agent
 
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
 **Repo:** `f-rsrx` | **Host:** Vercel (API) + Nexus runtime (execution)  
 **Type:** Research Agent
