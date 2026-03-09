@@ -37,7 +37,7 @@ Nexus runtime is not a background job runner. It is the **Durable Agent Runtime*
 ```
 Without Nexus runtime:          With Nexus runtime:
 ─────────────────        ──────────────────────────────────
-Nexus = chat UI          Nexus = command interface for agents
+Nova = chat UI          Nova = command interface for agents
 Agents = prompts         Agents = autonomous running workers
 Actions = API calls      Actions = durable tool invocations
 f.decloy = hosting       f.decloy = agent lifecycle manager

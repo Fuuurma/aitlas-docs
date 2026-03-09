@@ -542,7 +542,7 @@ Aitlas
 
 | Layer | Product | Purpose |
 |-------|---------|---------|
-| **Interface** | Nexus | User interaction |
+| **Interface** | Nova | User interaction |
 | **Runtime** | Nexus runtime | Agent execution |
 | **Capabilities** | Actions | Tools and skills |
 | **Deployment** | f.decloy | Agent hosting |

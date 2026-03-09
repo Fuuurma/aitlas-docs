@@ -20,7 +20,7 @@ It's based on **T3 Code** and connects to multiple AI providers:
 
 ## Strategic Value
 
-Nexus is the **main hub** where users:
+Nova is the **main hub** where users:
 - Chat with AI (via Codex/Claude/OpenCode/Aitlas)
 - Manage their account
 - View dashboard & stats

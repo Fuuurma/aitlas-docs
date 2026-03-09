@@ -34,7 +34,7 @@
 | Use Case | Description |
 |----------|-------------|
 | **f.guard** | Run code analysis safely |
-| **Nexus** | Execute code in chat |
+| **Nova** | Execute code in chat |
 | **Testing** | Run agent tests |
 | **Sandbox** | Isolate dangerous operations |
 

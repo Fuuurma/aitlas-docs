@@ -172,7 +172,7 @@ export async function POST(req: Request) {
 
 ### Part 3: The Nexus Integration — Result Cards
 
-When Nexus or an agent calls a mini-app action via MCP, the result comes back as structured data. Nexus renders a **compact result card** inline in chat, with a deep link to the full experience.
+When Nova or an agent calls a mini-app action via MCP, the result comes back as structured data. Nova renders a **compact result card** inline in chat, with a deep link to the full experience.
 
 ```
 [Chat message from assistant]
@@ -264,7 +264,7 @@ Deep link: `https://rsrx.f.xyz/reports/{id}`
 Nexus detects tool results from mini-app actions and renders a rich card instead of raw JSON.
 
 ```typescript
-// In Nexus: components/chat/ToolResultCard.tsx
+// In Nova: components/chat/ToolResultCard.tsx
 
 interface ToolResult {
   toolName: string;

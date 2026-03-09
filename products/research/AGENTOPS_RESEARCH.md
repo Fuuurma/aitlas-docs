@@ -33,7 +33,7 @@
 
 | Use Case | Description |
 |----------|-------------|
-| **Nexus** | Monitor chat sessions |
+| **Nova** | Monitor chat sessions |
 | **Nexus** | Track agent performance |
 | **Nexus runtime** | Monitor task execution |
 | **Analytics** | User behavior insights |

@@ -17,7 +17,7 @@
 │  │  B2B SaaS       │         │  Aitlas         │       │
 │  │  (Cash Engine)  │         │  (Growth)       │       │
 │  │                 │         │                 │       │
-│  │  restauManager  │         │  Nexus (Hub)    │       │
+│  │  restauManager  │         │  Nova (Hub)    │       │
 │  │  tours/Guides   │         │  Agents (Store) │       │
 │  │                 │         │  Actions (f.xyz)│       │
 │  └─────────────────┘         └─────────────────┘       │
@@ -265,7 +265,7 @@ const items = await prisma.item.findMany({
 
 ## Credit System (The Paywall)
 
-### Free Tier (Nexus Chat)
+### Free Tier (Nova Chat)
 
 ```
 User logs in → Pastes BYOK key → Chats with agents → FREE

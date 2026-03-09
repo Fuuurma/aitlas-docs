@@ -35,7 +35,7 @@ Aitlas is a **sovereign agentic OS** — a web workspace where users bring their
 
 ```
 The Internet         →   Browser
-The OS               →   Nexus
+The OS               →   Nova
 The App Store        →   Agents
 The System Utilities →   Actions (f.xyz)
 The Background Daemons → Nexus runtime (Ralph)
@@ -59,7 +59,7 @@ The Network Layer    →   MCP
 
 ```
 aitlas.xyz (Root Domain)
-├── nexus.aitlas.xyz     → Nexus Web App (Next.js, Vercel)
+├── nova.aitlas.xyz     → Nova Web App (Next.js, Vercel)
 ├── agents.aitlas.xyz    → Agents Store (Next.js, Vercel)
 ├── f.xyz                → Actions API Gateway (Next.js, Vercel)
 │     ├── /twyt          → f.twyt service
@@ -73,7 +73,7 @@ aitlas.xyz (Root Domain)
 ### The Dependency Graph
 
 ```
-Nexus
+Nova
   └── depends on → Auth Service (shared)
   └── depends on → Credit Ledger (shared DB)
   └── orchestrates → Nexus runtime (via task queue)
@@ -95,7 +95,7 @@ Nexus runtime (Ralph)
 
 ---
 
-## 3. Nexus — The Hub
+## 3. Nova — The Hub
 
 ### What It Is
 A web-based AI workspace. Think Claude.ai but where the user owns the LLM key, the tools, and the compute. The UI is the command center for everything in Aitlas.
@@ -145,7 +145,7 @@ UI state:
 - Cost to Furma: credits consumed per tool call
 ```
 
-### Nexus Data Flow (Agentic Mode)
+### Nova Data Flow (Agentic Mode)
 
 ```
 [User sends message]
@@ -172,7 +172,7 @@ UI state:
 [Stream response back to user via SSE]
 ```
 
-### Nexus Tech Stack
+### Nova Tech Stack
 
 | Layer | Choice | Reason |
 |-------|--------|--------|
@@ -227,7 +227,7 @@ interface AgentManifest {
 - **Agents Store** is a separate Next.js app (`agents.aitlas.xyz`)
 - It is **read-only for browsing** (no auth required)
 - **Hiring an agent** redirects to Nexus with `?agentId=xxx` param
-- Nexus activates the agent, checks required actions are available, charges credits
+- Nova activates the agent, checks required actions are available, charges credits
 
 ### Agent Activation Flow
 
@@ -244,7 +244,7 @@ interface AgentManifest {
          │
          ▼
 [Agent activated: stored in UserAgent table]
-[Next chat session in Nexus uses agent's basePrompt + skill set]
+[Next chat session in Nova uses agent's basePrompt + skill set]
 ```
 
 ### Revenue Share Mechanics

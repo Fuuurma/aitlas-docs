@@ -2,7 +2,7 @@
 
 **Status:** 🔵 CORE  
 **Reference:** [pingdotgg/t3code](https://github.com/pingdotgg/t3code) (4.2K stars, MIT)  
-**Use:** Nexus Chat UI - core of agent interaction
+**Use:** Nova Chat UI - core of agent interaction
 
 ---
 
@@ -32,7 +32,7 @@ By the creators of **t3** (the popular Next.js stack).
 
 ### This is the CORE of Nexus!
 
-Nexus is built on **T3 Code** - this is the chat UI where users interact with agents.
+Nova is built on **T3 Code** - this is the chat UI where users interact with agents.
 
 ```
 ┌─────────────────────────────────────────┐
@@ -111,4 +111,4 @@ Nexus is built on **T3 Code** - this is the chat UI where users interact with ag
 
 ---
 
-*Status: 🔵 CORE - This IS the Nexus chat UI*
+*Status: 🔵 CORE - This IS the Nova chat UI*
