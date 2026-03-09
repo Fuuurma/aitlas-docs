@@ -1,5 +1,7 @@
 # Furma.tech - Technical Architecture
 
+> ⚠️ **DEPRECATED** — Key content merged to [MASTER_ARCHITECTURE.md](./MASTER_ARCHITECTURE.md)
+
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 

@@ -1,4 +1,6 @@
 # Aitlas — Full Architecture Document
+
+> ⚠️ **DEPRECATED** — See [architecture/MASTER_ARCHITECTURE.md](./architecture/MASTER_ARCHITECTURE.md) (canonical source)
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
 **Owner:** Furma.tech | **Maintained by:** Herb (AI CTO)
 
