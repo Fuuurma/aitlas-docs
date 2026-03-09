@@ -111,4 +111,30 @@ Nova is built on **T3 Code** - this is the chat UI where users interact with age
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | ❌ | Runtime, not UI |
+| **Nova** | ✅ **DIRECT** | Chat UI foundation |
+| **Actions** | ❌ | Tools |
+| **Agents Store** | ❌ | Marketplace |
+
+### T3 Code IS Nova
+
+This is the **foundation of Nova** - the chat UI where users interact with agents.
+
+### Implementation
+
+| Layer | T3 Code → Nova |
+|-------|----------------|
+| Chat | Already works |
+| Agent | Add support |
+| Dashboard | Build from scratch |
+| Tasks | Integrate Symphony |
+
+---
+
 *Status: 🔵 CORE - This IS the Nova chat UI*

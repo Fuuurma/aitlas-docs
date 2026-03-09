@@ -59,3 +59,26 @@ Study Codex code for architectural insights:
 ---
 
 *Status: 🔵 Reference — Not for integration, study only*
+
+---
+
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | ❌ | Runtime |
+| **Nova** | 🔵 Provider | Coding agent |
+| **Actions** | ❌ | Tools |
+| **Agents Store** | ❌ | Marketplace |
+
+### Codex for Nova
+
+Codex is a **provider** - Nova can use it as one of multiple coding agents.
+
+### Provider Selection
+
+Nova users can choose: Codex, Claude Code, OpenCode, etc.
+
+---

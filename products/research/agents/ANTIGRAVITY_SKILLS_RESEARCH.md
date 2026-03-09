@@ -59,4 +59,28 @@
 
 ---
 
+## 🔌 How It Fits in Aitlas
+
+### Product Alignment
+
+| Aitlas Product | Fit Level | Use Case |
+|---------------|-----------|----------|
+| **Nexus** | ❌ | Runtime |
+| **Nova** | ❌ | UI |
+| **Actions** | ❌ | Tools |
+| **Agents Store** | ✅ **DIRECT** | Skills to import |
+
+### This is the GOAL
+
+Antigravity has 1000+ skills - that's what **Agents Store** should become!
+
+### Implementation
+
+1. Import skills to Agents Store
+2. Convert to Aitlas format
+3. Add credit pricing
+4. Enable monetization
+
+---
+
 *Status: 🔵 Research - GOLD MINE for Agents Store!*
