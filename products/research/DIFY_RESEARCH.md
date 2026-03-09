@@ -40,7 +40,7 @@
 
 | Dify Has | We Have |
 |----------|---------|
-| No-code UI | Nexus |
+| No-code UI | Nova |
 | Workflow | Nexus (Symphony) |
 | RAG | f.library |
 | Agents | Agents Store |

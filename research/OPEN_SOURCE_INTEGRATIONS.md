@@ -57,7 +57,7 @@ Aitlas leverages best-in-class open source projects. We don't use 100% of any pr
 | Webhook triggers | External integrations |
 
 #### What We Skip
-- Their UI (we have Nexus)
+- Their UI (we have Nova)
 - Their cloud hosting (self-hosted)
 - Some notification features
 
@@ -166,7 +166,7 @@ Use functional patterns over classes.
 
 **Repo:** https://github.com/pingdotgg/t3code  
 **License:** MIT  
-**Used For:** Nexus chat UI, desktop app, provider routing  
+**Used For:** Nova chat UI, desktop app, provider routing  
 
 #### What We Use
 | Component | How We Use It |
@@ -193,7 +193,7 @@ Use functional patterns over classes.
 We fork T3 Code and offer two modes:
 
 ```
-T3 Code UI (forked as Nexus)
+T3 Code UI (forked as Nova)
     │
     ├── BYOK Mode (Free)
     │   ├── Codex → User's OpenAI key

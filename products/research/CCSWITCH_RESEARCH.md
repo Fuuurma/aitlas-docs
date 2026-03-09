@@ -31,7 +31,7 @@
 
 ### This is a Nexus competitor/alternative!
 
-A desktop UI that connects to multiple AI providers - similar to what Nexus does but as a desktop app.
+A desktop UI that connects to multiple AI providers - similar to what Nova does but as a desktop app.
 
 ### Comparison
 

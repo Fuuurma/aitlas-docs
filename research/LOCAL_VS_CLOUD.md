@@ -264,7 +264,7 @@ aitlas connect ./my-project
 | What's in it? | Instincts, config, credentials, cache |
 | How does it connect to Nexus? | API sync |
 | When is it used? | CLI usage, offline, privacy-sensitive |
-| When is Nexus used? | Web UI, multi-device, collaboration |
+| When is Nova used? | Web UI, multi-device, collaboration |
 | Is Aitlas BYOK? | **YES** - User provides model API keys |
 
 **Key Insight:** ~/.aitlas/ is your personal brain that syncs with the cloud brain (Nexus). They complement each other, they don't replace each other.
