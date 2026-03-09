@@ -1157,3 +1157,92 @@ f.twyt / f.rsrx / f.library ────┐ │ │
 | f.language | Language learning | Subscription |
 | f.hack | Security tools | Premium access |
 
+
+### 6. Support / Safety Actions
+
+| Action | Purpose | Monetization |
+|--------|---------|--------------|
+| f.guard | Trust, safety, moderation | Premium monitoring (enterprise) |
+| f.support | Helpdesk automation | Enhanced features (business) |
+
+---
+
+## 37. Integrations & Ecosystem Growth
+
+### Integration Architecture
+
+- All actions exposed via MCP → agents dynamically call them
+- Nexus = central UI for all integrations
+
+### Ecosystem Growth Tie-In
+
+Actions act as **functional virality triggers:**
+
+| Action | Viral Mechanism |
+|--------|-----------------|
+| f.pay | Workflow → notification → invite friends → credits to creator |
+| f.research | Results shared → invite others → ecosystem grows |
+
+**Key:** Tie monetization to actual usage and adoption, not just upfront purchase.
+
+---
+
+## 38. Agent Store: Forking Strategy
+
+### Forking Trade-offs
+
+| Pros | Cons |
+|------|------|
+| Encourages experimentation | May dilute revenue |
+| Helps ecosystem growth | Complicates curated quality |
+| Network effects (more forks = more users) | Users may find low-quality forks |
+
+### Strategic Compromise
+
+**Allow forks under conditions:**
+
+1. Forks pay royalty/commission to original creator
+2. Forks inherit base credit cost via f.loop usage
+3. Original agents remain "premium"
+4. Forks can only be free/limited versions
+
+**Result:** Virality without cannibalizing revenue
+
+### Core Aitlas Agents
+
+**Must have:** Default, high-quality agents shipped with platform.
+
+**Purpose:**
+- Showcase best practices → inspire developers
+- Provide immediate value for consumers
+- Anchor ecosystem growth
+
+**Monetization:**
+- Free for adoption to drive ecosystem usage
+- OR partially gated: advanced features require subscription/credits
+
+---
+
+## 39. Actions Monetization: f.loop Credits + Mini SaaS
+
+### The Model
+
+```
+All actions → f.loop → credits
+```
+
+### Monetization Layers
+
+| Layer | Description |
+|-------|-------------|
+| **Base** | Every action call costs credits via f.loop |
+| **Subscription** | Higher limits / premium features |
+| **Transaction** | Fees for business actions (f.pay, f.crypto) |
+| **Tiered** | f.library premium research, f.language advanced lessons |
+
+### Implications
+
+- Single monetization backbone
+- Every agent/user interaction passes through f.loop → generates revenue
+- Actions become essential hooks for network usage
+
