@@ -293,6 +293,6 @@ Existing shadcn/ui components used:
 
 ## References
 
-- T3 Code Architecture: `/Users/sergi/Projects/aitlas-docs/implementation/nova-chat-implementation.md`
+- T3 Code Architecture: [nova-chat-implementation.md](./nova-chat-implementation.md)
 - Provider patterns from T3 Code analysis
 - JSON-RPC 2.0 Specification: https://www.jsonrpc.org/specification
