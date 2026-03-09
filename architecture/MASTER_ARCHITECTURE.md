@@ -691,3 +691,107 @@ Error:   { success: false, error: { code, message, details } }
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
 
 > *Build fast. Stay sovereign. Zero token liability. f.loop is the product.*
+
+---
+
+## 25. What Aitlas Builds (LLMs Don't Have)
+
+| Capability | Why | Priority |
+|------------|-----|----------|
+| Persistent Memory | LLMs forget between sessions | P0 |
+| Auto-Compaction | LLMs don't auto-summarize | P0 |
+| Agent Orchestration | Multi-agent coordination | P1 |
+| Codebase Search | Semantic file search | P1 |
+| Tool Ecosystem | 68+ pre-built tools | P1 |
+
+---
+
+## 26. Dependency Graph
+
+```
+Nexus UI ──────────────────────────────┐
+Agents Store ──────────────────────┐ │
+f.twyt / f.rsrx / f.library ────┐ │ │
+                                ▼ ▼ ▼
+                              f.loop (Ralph)
+                                  │
+                    ┌─────────────┴─────────────┐
+                    ▼                           ▼
+              Tool Gateway              Postgres queue
+                    │
+          ┌─────────┼─────────┐
+          ▼         ▼         ▼
+      f.xyz    OpenSandbox  3rd-party
+    actions                MCPs
+```
+
+**Key insight:** Without f.loop, Aitlas is just a chat UI. With it, Aitlas is an agent that works while you sleep.
+
+---
+
+## 27. Tool Access Matrix
+
+| Agent | f.finance | f.crypto | f.vault | f.scrape | f.news |
+|-------|-----------|----------|---------|----------|--------|
+| f.investor | ✅ | ✅ | ❌ | ✅ | ✅ |
+| f.coder | ❌ | ❌ | ✅ | ✅ | ❌ |
+| f.researcher | ❌ | ❌ | ❌ | ✅ | ✅ |
+| f.hacker | ❌ | ✅ | ✅ | ✅ | ❌ |
+
+---
+
+## 28. How They Work Together
+
+### Example: User asks "Build me a landing page"
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ NEXUS (UI)                                                   │
+│   User: "Build me a landing page for my SaaS"               │
+└──────────────────────┬───────────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│ F.LOOP (Orchestrator)                                        │
+│                                                              │
+│   1. CLASSIFY → Frontend Specialist agent                   │
+│   2. CREATE CREW:                                            │
+│      ├── Designer Agent (layout)                             │
+│      ├── Coder Agent (implementation)                        │
+│      └── Reviewer Agent (quality check)                      │
+│   3. EXECUTE FLOW:                                           │
+│      @start → Designer creates mockup                        │
+│      @listen → Coder implements in React                     │
+│      @listen → Reviewer checks accessibility                 │
+│   4. USE ACTIONS:                                            │
+│      ├── file_write (create components)                      │
+│      ├── bash (run dev server)                               │
+│      └── git_check (commit changes)                          │
+└──────────────────────┬───────────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│ NEXUS (UI)                                                   │
+│   Show: Live preview, files created, git status              │
+│   Agent: "Landing page created! 5 components, deployed."     │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 29. Open Source Leverage
+
+| Component | Source | What We Use |
+|-----------|--------|-------------|
+| **Nexus UI** | T3 Code | Desktop + web app, provider router |
+| **Orchestration** | CrewAI | Flows (control) + Crews (teams) |
+| **Handoffs** | OpenAI Agents SDK | Agent-to-agent delegation |
+| **Classification** | Agent Squad | Intent routing |
+| **Reactions** | Agent Orchestrator | Auto-handling |
+| **State** | LangGraph | Checkpointing, persistence |
+| **Context** | Crush | AGENTS.md format |
+
+---
+
+**Last Updated:** March 2026  
+**Maintained by:** Herb (AI CTO) + Furma (CEO)
