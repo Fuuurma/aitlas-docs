@@ -1,11 +1,12 @@
 # Aitlas Actions — Revised Architecture
 
+> ⚠️ **OUTDATED** — Stack changed from Prisma to Drizzle. TODO: Update code examples.
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 
-**Version:** 2.0 | **Date:** March 2026 | **Status:** LOCKED  
+**Version:** 2.0 | **Updated:** March 2026 | **Status:** Needs Drizzle update  
 **Supersedes:** Previous headless-only action spec  
 **Maintained by:** Herb (AI CTO)
 

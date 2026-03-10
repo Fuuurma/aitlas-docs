@@ -1,14 +1,14 @@
 # AITLAS_PROJECT_SPEC.md
 
+> ⚠️ **OUTDATED** — Stack changed. TODO: Update Prisma → Drizzle, template names, tech stack.
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 
-
 **Version:** 1.0.0  
-**Created:** 2026-03-07  
-**Status:** ✅ Production Standard
+**Updated:** March 2026  
+**Status:** Needs update
 
 > Standard specification for all Aitlas projects. Ensures consistency, maintainability, and interoperability across the Aitlas ecosystem.
 

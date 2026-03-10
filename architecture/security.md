@@ -1,10 +1,10 @@
 # Security Practices
 
+> ⚠️ **OUTDATED** — Stack changed from Prisma to Drizzle. TODO: Update code examples.
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
-
 
 This document outlines security requirements for all Furma products.
 

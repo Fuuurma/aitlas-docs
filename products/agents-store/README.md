@@ -1,11 +1,13 @@
 # Agents Store - The App Store for AI Agents
 
+> ⚠️ **OUTDATED** — Stack changed from Prisma to Drizzle. TODO: Update schema examples.
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 **Domain:** agents.aitlas.xyz  
 **Status:** 🟡 Development  
-**Stack:** Next.js 15, Bun, Neon Postgres, Prisma 6
+**Stack:** Next.js 16, Bun, Neon Postgres, Drizzle ORM
 
 ---
 

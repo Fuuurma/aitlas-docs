@@ -1,18 +1,14 @@
 # Performance Optimizations
 
-
-> ⚠️ **Proprietary** — All Aitlas products are closed source. No open source license.
-
+> ⚠️ **OUTDATED** — Stack changed from Prisma to Drizzle. TODO: Update code examples.
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
-
-
 **Version:** 1.0.0  
-**Date:** March 6, 2026  
+**Updated:** March 2026  
+**Status:** Needs Drizzle update  
 **Status:** Production Ready
 
 ---

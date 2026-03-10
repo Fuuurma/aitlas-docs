@@ -1,6 +1,8 @@
 # Aitlas Documentation
 
-**Source of truth for all Aitlas template repositories.**
+**Source of truth for all Aitlas products.**
+
+> **Version:** 1.0 | **Updated:** March 2026 | **Status:** ⚠️ Under cleanup
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
@@ -78,12 +80,6 @@ developers → build agents → agents use tools → tools use credits
 | **33** | Cold Start Strategy | 3-step bootstrap |
 | **34** | Rollout Plan | Day 1 → Week 12, 5 phases |
 
-### Research
-
-| Doc | Description |
-|-----|-------------|
-| [research/RESEARCH_CONSOLIDATED.md](./research/RESEARCH_CONSOLIDATED.md) | Frameworks, integrations, deployment models |
-
 ### Products
 
 | Doc | Description |
@@ -104,13 +100,13 @@ developers → build agents → agents use tools → tools use credits
 ## 🚀 Quick Start
 
 ```bash
-# Clone a template with docs
-git clone --recurse-submodules https://github.com/Fuuurma/aitlas-ui-template.git my-project
+# Clone a template
+git clone https://github.com/Fuuurma/aitlas-frontend-template.git my-project
 
 # Install and run
 cd my-project
-pnpm install
-pnpm dev
+bun install
+bun dev
 ```
 
 ---
@@ -119,10 +115,9 @@ pnpm dev
 
 | Metric | Count |
 |--------|-------|
-| **Actions Planned** | 68 (9 categories) |
-| **Agents Planned** | 56 (10 categories) |
-| **Template Repos** | 4 |
-| **Architecture Quality** | 8.5/10 |
+| **Products** | 4 (Nova, Nexus, Agents Store, Actions) |
+| **Template Repos** | 3 |
+| **Tech Stack** | Next.js 16 + Elixir + Drizzle |
 
 ---
 
@@ -130,10 +125,9 @@ pnpm dev
 
 | Template | Purpose | Stack |
 |----------|---------|-------|
-| [aitlas-ui-template](https://github.com/Fuuurma/aitlas-ui-template) | Web apps | Next.js 16, React, shadcn |
-| [aitlas-action-template](https://github.com/Fuuurma/aitlas-action-template) | MCP tools | Hono, TypeScript |
-| [aitlas-worker-template](https://github.com/Fuuurma/aitlas-worker-template) | Background jobs | Bun, Postgres |
-| [aitlas-cli](https://github.com/Fuuurma/aitlas-cli) | CLI tools | Node.js, Commander |
+| [aitlas-frontend-template](https://github.com/Fuuurma/aitlas-frontend-template) | Web apps | Next.js 16, Bun, shadcn/ui |
+| [aitlas-backend-template](https://github.com/Fuuurma/aitlas-backend-template) | Backend services | Elixir, Phoenix, Oban |
+| [aitlas-cli](https://github.com/Fuuurma/aitlas-cli) | CLI tools | Bun, Commander |
 
 ---
 
@@ -244,37 +238,23 @@ git push
 
 ```
 aitlas-docs/
-├── README.md
-├── DEVELOPER_GUIDE.md
+├── README.md                    # This file
+├── ROADMAP.md                   # Product roadmap
+├── DEVELOPER_GUIDE.md           # Developer setup guide
 │
 ├── architecture/
-│   ├── MASTER_ARCHITECTURE.md    # CANONICAL (1,091 lines)
-│   ├── DECISIONS.md              # ADRs
-│   ├── DEPLOYMENT.md             # Deployment architecture
-│   ├── ACTIONS_ARCHITECTURE.md   # Actions architecture
-│   ├── credit-system.md          # Credit system
-│   ├── AGENT_SPEC.md             # Agent specification
-│   ├── AGENT_SYSTEM_PROMPT_TEMPLATE.md
-│   ├── AITLAS_MCP_SPEC.md        # MCP specification
-│   ├── mcp-protocol.md           # MCP implementation
-│   ├── TECHNICAL_ARCHITECTURE.md
-│   ├── SDK_SPEC.md
-│   ├── TEMPLATE_STRATEGY.md
-│   ├── performance.md
-│   └── security.md
-│
-├── research/
-│   └── *.md                      # Research docs
+│   ├── MASTER_ARCHITECTURE.md   # CANONICAL - Full architecture spec
+│   ├── DECISIONS.md            # Architecture Decision Records
+│   ├── DEPLOYMENT.md           # Deployment architecture
+│   ├── ACTIONS_ARCHITECTURE.md # Actions system
+│   ├── credit-system.md        # Credit/monetization system
+│   └── ...
 │
 └── products/
-    ├── actions/
-    │   ├── nexus.md             # 41KB spec
-    │   └── CATALOG.md
-    └── agents-store/
-        ├── ROADMAP.md
-        ├── WEALTH_ARCHITECT_ANALYSIS.md
-        └── specs/
-            └── f.investor.md
+    ├── nova/                   # Web UI
+    ├── nexus/                  # Agent runtime (Elixir)
+    ├── actions/                # MCP tools (f.xyz)
+    └── agents-store/           # Agent marketplace
 ```
 
 ---

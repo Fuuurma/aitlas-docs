@@ -5,7 +5,7 @@
 ---
 **Domain:** nova.aitlas.xyz  
 **Status:** 🟡 Development  
-**Stack:** Next.js 15, Bun, Neon Postgres, Prisma 6, Better Auth, T3 Code
+**Stack:** Next.js 16, Bun, Neon Postgres, Drizzle ORM, Better Auth, aitlas-frontend-template
 
 ---
 

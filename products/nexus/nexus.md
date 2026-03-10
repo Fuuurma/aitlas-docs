@@ -1,11 +1,13 @@
 # Nexus — Durable Agent Runtime (Orchestration)
 
+> ⚠️ **OUTDATED** — Stack changed. TODO: Update to Elixir backend, Prisma → Drizzle.
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
-**Version:** 1.0 | **Date:** March 2026 | **Status:** Active Spec  
+**Version:** 1.0 | **Updated:** March 2026 | **Status:** Needs update  
 **Foundation:** **Cloned from trigger.dev** (Apache 2.0) — customized for AI agents  
-**Repo:** `aitlas-nexus` | **Host:** Hetzner (Bun workers) + Vercel (API gateway)  
+**Repo:** `aitlas-nexus` | **Stack:** Elixir/Phoenix/Oban → Neon Postgres  
 **Formerly:** Nexus runtime  
 **Maintained by:** Herb (AI CTO)
 

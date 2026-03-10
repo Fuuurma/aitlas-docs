@@ -5,7 +5,7 @@
 ---
 **Domain:** f.xyz  
 **Status:** 🟡 Development  
-**Stack:** Next.js 15, Bun, Neon Postgres, Prisma 6
+**Stack:** Next.js 16, Bun, Neon Postgres, Drizzle ORM
 
 ---
 
@@ -15,8 +15,8 @@
 
 | Type | Actions | Template | Has Standalone UI |
 |------|---------|----------|-------------------|
-| **Mini-App** | f.twyt, f.rsrx, f.library | `aitlas-ui-template` (Next.js) | ✅ Full product |
-| **Utility** | f.guard, f.support, f.decloy | `aitlas-action-template` (Hono) | ❌ Headless MCP only |
+| **Mini-App** | f.twyt, f.rsrx, f.library | `aitlas-frontend-template` (Next.js) | ✅ Full product |
+| **Utility** | f.guard, f.support, f.decloy | `aitlas-backend-template` (Elixir) | ❌ Headless MCP only |
 
 **See:** [ACTIONS_ARCHITECTURE.md](../../architecture/ACTIONS_ARCHITECTURE.md) for full spec.
 
