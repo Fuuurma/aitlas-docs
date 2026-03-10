@@ -1281,6 +1281,111 @@ Respond in JSON:
 
 ---
 
+## Appendix: Phoenix Channels for Task Streaming
+
+Nexus broadcasts task events to Nova via Phoenix Channels (WebSocket). This is the real-time layer for step-by-step updates.
+
+### UserSocket Module
+
+```elixir
+# lib/nexus_web/channels/user_socket.ex
+defmodule NexusWeb.UserSocket do
+  use Phoenix.Socket
+
+  channel "task:*", NexusWeb.TaskChannel
+
+  @impl true
+  def connect(%{"token" => token}, socket, _connect_info) do
+    case validate_session_token(token) do
+      {:ok, user_id} -> {:ok, assign(socket, :user_id, user_id)}
+      :error -> :error
+    end
+  end
+
+  @impl true
+  def id(socket), do: "user_socket:#{socket.assigns.user_id}"
+end
+```
+
+### TaskChannel Module
+
+```elixir
+# lib/nexus_web/channels/task_channel.ex
+defmodule NexusWeb.TaskChannel do
+  use NexusWeb, :channel
+
+  @impl true
+  def join("task:" <> task_id, _params, socket) do
+    # Verify this user owns this task
+    case Tasks.get_for_user(task_id, socket.assigns.user_id) do
+      {:ok, task} ->
+        # Send current state immediately on join
+        {:ok, %{task: task}, assign(socket, :task_id, task_id)}
+      {:error, _} ->
+        {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  @impl true
+  def handle_in("cancel", _params, socket) do
+    Tasks.cancel(socket.assigns.task_id, socket.assigns.user_id)
+    {:reply, :ok, socket}
+  end
+end
+```
+
+### Endpoint Configuration
+
+```elixir
+# lib/nexus_web/endpoint.ex
+socket "/socket", NexusWeb.UserSocket,
+  websocket: true,
+  longpoll: false
+```
+
+### Agent Loop Broadcasts
+
+Inside Nexus.AgentLoop — after each step completes:
+
+```elixir
+NexusWeb.Endpoint.broadcast("task:#{task.id}", "step", %{
+  id: step.id,
+  step_number: step.step_number,
+  type: step.type,
+  content: step.content,
+  tool_name: step.tool_name,
+  tool_input: step.tool_input,
+  tool_output: step.tool_output,
+  credits_used: step.credits_used,
+  duration_ms: step.duration_ms,
+  status: "completed"
+})
+```
+
+On task completion:
+
+```elixir
+NexusWeb.Endpoint.broadcast("task:#{task.id}", "complete", %{
+  task_id: task.id,
+  result: task.result,
+  total_credits_used: task.credits_used,
+  total_duration_ms: task.duration_ms,
+  total_steps: task.step_count
+})
+```
+
+On task stuck:
+
+```elixir
+NexusWeb.Endpoint.broadcast("task:#{task.id}", "stuck", %{
+  task_id: task.id,
+  reason: step.content,
+  last_step: step.step_number
+})
+```
+
+---
+
 **Last Updated:** March 6, 2026  
 **Next Review:** After Phase 1 ships  
 **Maintained by:** Herb (AI CTO)

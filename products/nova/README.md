@@ -150,6 +150,21 @@ Aitlas uses credits for:
 
 Users buy credits or subscribe. Other providers use their own pricing.
 
+**Important:** Credits are owned by **Nexus**, not Nova. Nexus reads/writes the `credit_ledger` table directly. Nova only reads the balance for display. See Section 22 in the technical doc for details.
+
+---
+
+## Key Architecture Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| **Credit ownership** | Nexus owns credits | Tool calls happen at runtime in Nexus. Nova cannot pre-deduct accurately. |
+| **Hire token** | JWT with 5min TTL | Shared secret `HIRE_TOKEN_SECRET` between Agents Store and Nova. |
+| **Task streaming** | Phoenix Channels (WebSocket) | Bidirectional, mature, built into Elixir backend. |
+| **Source repos** | Build fresh, don't clone | License risk. Task monitor is 4 simple components — build from spec. |
+
+See [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md) Section 22 for full details.
+
 ---
 
 ## Development Phases

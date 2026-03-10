@@ -1953,6 +1953,272 @@ Build in this exact sequence. Each step is a shippable milestone.
 
 ---
 
+## 22. Clarifications & Decisions
+
+This section captures definitive answers to architecture questions. No ambiguity.
+
+### 22.1 Credit Ownership — Nexus Owns Credits (Option B)
+
+**Nova cannot know how many credits a task will use before it runs.** Tool calls happen inside Nexus at runtime. Nova dispatching a task and trying to pre-deduct is guesswork. It would either over-deduct (bad UX) or under-deduct (bad business).
+
+**Nexus reads and writes `credit_ledger` directly** — both services share the same Neon Postgres instance. The `credit_ledger` table is in the same DB. Nexus has the DB credentials. There is no need to proxy credits through Nova.
+
+**Flow:**
+
+```
+Nova: POST /api/tasks (just validates session + tier gate)
+   │
+   ▼
+Nexus: check balance (SELECT from credit_ledger)
+   if insufficient → reject with 402
+   reserve credits (INSERT -N to ledger, reason: "reserve")
+   run task
+   per tool call: deduct on success only (INSERT -N, reason: "tool:f.rsrx.web_search")
+   on complete: refund unused reservation
+   broadcast credits_used in "complete" Phoenix Channel event
+   │
+   ▼
+Nova: receives credits_used in stream
+   triggers React Query refetch of /api/credits
+   balance updates in topbar
+```
+
+**Nova's `POST /api/tasks` route does no credit check.** It just validates session and tier:
+
+```ts
+// src/app/api/tasks/route.ts — simplified
+export async function POST(req: NextRequest) {
+  const session = await requireSession();
+  if (getUserTier(session) === "free") return 403;
+
+  const body = schema.parse(await req.json());
+
+  // Nexus will check + deduct credits itself
+  // If insufficient, Nexus returns 402
+  const result = await nexus.dispatchTask({
+    userId: session.user.id,
+    ...body,
+  });
+
+  if (result.error === "insufficient_credits") {
+    return NextResponse.json({ error: "Not enough credits" }, { status: 402 });
+  }
+
+  return NextResponse.json({ taskId: result.taskId });
+}
+```
+
+Nova's `/api/credits` route is a **read-only query** against the shared DB — it never writes.
+
+---
+
+### 22.2 Hire Token — JWT with 5min TTL
+
+JWT. Signed by Agents Store with `HIRE_TOKEN_SECRET` (shared secret, identical on both services). Short TTL: 5 minutes.
+
+**Agents Store signs:**
+
+```ts
+// agents-store/src/lib/hire-token.ts
+import { SignJWT } from "jose";
+
+export async function createHireToken(payload: {
+  agentSlug: string;
+  agentVersion: string;
+  userId: string;
+  isTrial: boolean;
+  prefilledGoal?: string;
+}) {
+  const secret = new TextEncoder().encode(env.HIRE_TOKEN_SECRET);
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("5m")
+    .sign(secret);
+}
+```
+
+**Nova verifies:**
+
+```ts
+// nova/src/lib/hire-token.ts
+import { jwtVerify } from "jose";
+
+export async function verifyHireToken(token: string) {
+  const secret = new TextEncoder().encode(env.HIRE_TOKEN_SECRET);
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return payload as HireTokenPayload;
+  } catch {
+    return null; // expired or invalid — just load agent fresh without prefill
+  }
+}
+```
+
+Add `jose` to Nova:
+```bash
+bun add jose
+```
+
+Add to both `.env`:
+```bash
+HIRE_TOKEN_SECRET="same-secret-on-both-services"
+```
+
+---
+
+### 22.3 MCP Connections — Config Shapes
+
+Each MCP server type has a known config shape. All stored encrypted as JSON in `encrypted_config`. The `mcp_server_id` tells Nova how to decrypt and use it.
+
+```ts
+// src/lib/mcp-config-types.ts
+
+type MCPConfigMap = {
+  github: {
+    type: "pat" | "oauth";
+    access_token: string;
+    refresh_token?: string;     // OAuth only
+    expires_at?: string;        // OAuth only
+    scope: string;
+  };
+  notion: {
+    type: "oauth";
+    access_token: string;
+    bot_id: string;
+    workspace_name: string;
+    expires_at?: string;
+  };
+  slack: {
+    type: "oauth";
+    access_token: string;
+    team_id: string;
+    team_name: string;
+    bot_user_id: string;
+  };
+  linear: {
+    type: "api_key";
+    api_key: string;
+    team_id?: string;
+  };
+  airtable: {
+    type: "api_key";
+    personal_access_token: string;
+  };
+};
+```
+
+**Storage:**
+
+```ts
+// POST /api/connections
+const config: MCPConfigMap[typeof body.mcpServerId] = body.config;
+const { ciphertext, iv } = encrypt(JSON.stringify(config));
+
+await db.insert(mcpConnections).values({
+  userId: session.user.id,
+  mcpServerId: body.mcpServerId,
+  displayName: body.displayName,
+  encryptedConfig: ciphertext,
+  iv,
+  scopes: body.scopes ?? [],
+  expiresAt: config.expires_at ? new Date(config.expires_at) : null,
+});
+```
+
+When Nexus needs an MCP connection for a task, it fetches the encrypted config via the internal API, decrypts inline, and uses it for the MCP call. Same `ENCRYPTION_KEY`, shared across all services.
+
+---
+
+### 22.4 Source Repo Licenses — Build Fresh, Don't Clone
+
+**IMPORTANT:** Before porting any code from source repos, verify the license.
+
+- `pingdotgg/t3code` — MIT ✅
+- `builderz-labs/mission-control` — MIT ✅
+- `openai/symphony` — **UNVERIFIED** ⚠️
+
+**Recommendation:** Build the task monitor fresh using the spec in this doc. The components are simple (TaskList, TaskDetail, StepCard, StatusBadge — ~4 components). Don't take the license risk.
+
+The task monitor is fully spec'd in Section 10. Buildable in 2–3 days without cloning anything.
+
+---
+
+### 22.5 Utility Hooks & Functions
+
+**`useInterval`:**
+
+```ts
+// src/hooks/use-interval.ts
+import { useEffect, useRef } from "react";
+
+export function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef(callback);
+  useEffect(() => { savedCallback.current = callback; }, [callback]);
+
+  useEffect(() => {
+    if (delay === null) return;
+    const id = setInterval(() => savedCallback.current(), delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
+```
+
+**`getDecryptedKey` signature:**
+
+```ts
+// src/server/crypto.ts
+import "server-only";
+import { db } from "@/server/db";
+import { apiKeys } from "@/server/db/schema";
+import { and, eq } from "drizzle-orm";
+import { decrypt } from "./crypto-utils";
+
+export async function getDecryptedKey(
+  userId: string,
+  provider: "openai" | "anthropic" | "gemini"
+): Promise<string> {
+  const key = await db.query.apiKeys.findFirst({
+    where: and(eq(apiKeys.userId, userId), eq(apiKeys.provider, provider)),
+  });
+
+  if (!key) throw new Error(`No ${provider} key stored for user`);
+
+  // decrypt inline — result never assigned to named variable in calling code
+  return decrypt(key.encryptedKey, key.iv);
+}
+```
+
+**Credits optimistic update with rollback:**
+
+```ts
+async function dispatchTask(payload: TaskPayload) {
+  // Snapshot before optimistic update
+  const previous = queryClient.getQueryData(["credits", userId]);
+
+  // Optimistic deduct
+  queryClient.setQueryData(["credits", userId], (old: Credits) => ({
+    ...old,
+    balance: old.balance - ESTIMATED_TASK_COST,
+  }));
+
+  try {
+    const result = await fetch("/api/tasks", { method: "POST", body: JSON.stringify(payload) });
+    if (!result.ok) throw new Error("Dispatch failed");
+    return result.json();
+  } catch (err) {
+    // Rollback on failure
+    queryClient.setQueryData(["credits", userId], previous);
+    throw err;
+  } finally {
+    // Always refetch real balance after task completes
+    // (done in useNexusStream onComplete handler)
+  }
+}
+```
+
+---
+
 **Last Updated:** March 2026  
 **Maintained by:** Herb (AI CTO) + Furma (CEO)
 
