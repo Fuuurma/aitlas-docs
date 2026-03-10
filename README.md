@@ -93,10 +93,11 @@ developers → build agents → agents use tools → tools use credits
 
 | Doc | Description |
 |-----|-------------|
-| [products/nexus/nexus.md](./products/nexus/nexus.md) | **Nexus runtime spec (41KB)** - Based on trigger.dev |
+| [products/nexus/nexus-technical-doc.md](./products/nexus/nexus-technical-doc.md) | **CANONICAL** - Nexus full spec (90KB) |
+| [architecture/agent-graphs-technical-doc.md](./architecture/agent-graphs-technical-doc.md) | **CANONICAL** - Agent Graphs (40KB) |
 | [products/actions/CATALOG.md](./products/actions/CATALOG.md) | Actions catalog (68 actions) |
-| [products/agents-store/ROADMAP.md](./products/agents-store/ROADMAP.md) | Agents roadmap (56 agents) |
-| [products/agents-store/specs/f.investor.md](./products/agents-store/specs/f.investor.md) | f.investor complete spec |
+| [products/nova/NOVA_TECHNICAL_DOC.md](./products/nova/NOVA_TECHNICAL_DOC.md) | **CANONICAL** - Nova full spec (65KB) |
+| [products/agents-store/AGENTS_STORE_TECHNICAL_DOC.md](./products/agents-store/AGENTS_STORE_TECHNICAL_DOC.md) | **CANONICAL** - Agents Store (65KB) |
 
 ### Developer
 

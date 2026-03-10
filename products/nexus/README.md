@@ -1,8 +1,12 @@
 # Nexus — Agent OS
 
-> ⚠️ **OUTDATED** — Stack changed. TODO: Update to Elixir backend.
-
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
+
+---
+
+> **📖 Canonical Doc:** [nexus-technical-doc.md](./nexus-technical-doc.md) (90KB, 2907 lines)
+
+---
 
 ## Overview
 
@@ -16,42 +20,6 @@ Nexus is the **agent operating system** — the execution engine that runs AI ag
 
 ---
 
-## Core Files
-
-| File | Description |
-|------|-------------|
-| [architecture.md](./architecture.md) | Technical architecture (30 sections) |
-| [nexus.md](./nexus.md) | Runtime specification |
-| [db-architecture.md](./db-architecture.md) | Database schema |
-| [ORCHESTRATION_MOAT.md](./ORCHESTRATION_MOAT.md) | Competitive analysis |
-| [SYMPHONY_INTEGRATION.md](./SYMPHONY_INTEGRATION.md) | Symphony integration |
-
----
-
-## Architecture
-
-```
-Nova (UI) → Nexus API → Oban Queue → Agent Loop (GenServer)
-                                          ↓
-                              Tool Registry → Tool Executor → MCP
-                                          ↓
-                              Memory Engine → pgvector
-                                          ↓
-                              Replay Engine (trace storage)
-```
-
-## The 5-Phase Execution Loop
-
-```
-① OBSERVE   — Load task, memory context, tool registry
-② PLAN      — LLM decides next action
-③ ACT       — Tool execution via MCP
-④ REFLECT   — LLM evaluates result quality
-⑤ PERSIST   — Write step + hash to trace, update memory
-```
-
----
-
 ## Key Features
 
 - **Durable Execution** — Oban jobs survive crashes
@@ -61,10 +29,11 @@ Nova (UI) → Nexus API → Oban Queue → Agent Loop (GenServer)
 - **MCP-native** — First-class MCP tool support
 - **BYOK** — User provides their own API keys
 - **Hard Limits** — max_iterations, max_tool_calls, max_tokens, credit_budget
+- **Agent Graphs** — Agents can call other agents as tools
 
 ---
 
-## The 8 Internal Engines
+## The 10 Engines
 
 1. **Provider Router** — OpenAI / Anthropic / Gemini / local
 2. **Context Builder** — system + history + memory + tools
@@ -74,6 +43,19 @@ Nova (UI) → Nexus API → Oban Queue → Agent Loop (GenServer)
 6. **Memory Engine** — GenServer (hot) + Redis + pgvector
 7. **File Processor** — parse / chunk / embed
 8. **Observability** — events, metrics, traces
+9. **Workspace Manager** — isolated execution environments
+10. **Codex Client** — OpenAI Codex integration
+
+---
+
+## Related Docs
+
+| File | Description |
+|------|-------------|
+| [nexus-technical-doc.md](./nexus-technical-doc.md) | **CANONICAL** - Full technical spec |
+| [agent-graphs-technical-doc.md](./agent-graphs-technical-doc.md) | Agent-to-agent execution |
+| [symphony-analysis.md](./symphony-analysis.md) | Symphony analysis |
+| [ORCHESTRATION_MOAT.md](./ORCHESTRATION_MOAT.md) | Competitive analysis |
 
 ---
 
@@ -88,7 +70,4 @@ Nova (UI) → Nexus API → Oban Queue → Agent Loop (GenServer)
 
 ---
 
-## Related
-
-- [MASTER_ARCHITECTURE](../../architecture/MASTER_ARCHITECTURE.md) — Canonical source
-- [Nexus Research](../research/nexus/) — Competitor analysis
+*Last Updated: March 2026*
