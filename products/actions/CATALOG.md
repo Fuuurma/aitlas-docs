@@ -3,6 +3,7 @@
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
+**Version:** 1.0 | **Updated:** March 2026  
 **All Aitlas actions: 68 planned across 9 categories.**
 
 ---

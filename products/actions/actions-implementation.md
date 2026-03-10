@@ -1,11 +1,13 @@
 # Actions Implementation Summary
 
+> ⚠️ **DEPRECATED** — See [ACTIONS_ARCHITECTURE.md](../../architecture/ACTIONS_ARCHITECTURE.md)
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 **Product:** Actions (f.xyz) - MCP Tools for Aitlas  
-**Foundation:** MCP Protocol + Official MCP Servers  
-**Stack:** TypeScript + Bun + Hono
+**Stack:** Next.js 16 + Elixir (updated)  
+**See:** [ACTIONS_ARCHITECTURE.md](../../architecture/ACTIONS_ARCHITECTURE.md) (canonical)
 
 ---
 
