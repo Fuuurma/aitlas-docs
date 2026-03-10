@@ -9,9 +9,13 @@
 
 ---
 
+> **📖 Canonical Doc:** [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md) (65KB, 1960 lines)
+
+---
+
 ## Overview
 
-**Nova** = The Aitlas Web UI (formerly Nexus).
+**Nova** = The Aitlas Web UI (the user-facing shell).
 
 It's based on **T3 Code** and connects to multiple AI providers:
 - **Codex** (OpenAI)
@@ -174,8 +178,8 @@ Users buy credits or subscribe. Other providers use their own pricing.
 
 ## Repo
 
-**GitHub:** https://github.com/Fuuurma/aitlas-nexus
+**Template:** [aitlas-frontend-template](https://github.com/Fuuurma/aitlas-frontend-template)
 
 ---
 
-*Last Updated: March 9, 2026*
+*Last Updated: March 2026*

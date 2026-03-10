@@ -11,6 +11,10 @@
 
 ---
 
+> **📖 Canonical Doc:** [AGENTS_STORE_TECHNICAL_DOC.md](./AGENTS_STORE_TECHNICAL_DOC.md) (65KB, 1941 lines)
+
+---
+
 ## Strategic Value
 
 **Agents = Preconfigured AI Workers**

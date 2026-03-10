@@ -1,5 +1,7 @@
 # Nexus — Agent OS
 
+> ⚠️ **OUTDATED** — Stack changed. TODO: Update to Elixir backend.
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ## Overview
@@ -7,8 +9,10 @@
 Nexus is the **agent operating system** — the execution engine that runs AI agents with deterministic replay.
 
 **Stack:** Pure Elixir / Phoenix / Oban  
-**Host:** Hetzner CPX31  
+**Host:** Hetzner  
 **DB:** Neon Postgres (pgvector)
+
+**Template:** [aitlas-backend-template](https://github.com/Fuuurma/aitlas-backend-template)
 
 ---
 
