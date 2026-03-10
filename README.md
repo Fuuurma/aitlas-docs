@@ -225,7 +225,7 @@ vim architecture/MASTER_ARCHITECTURE.md
 git add . && git commit -m "docs: update" && git push
 
 # Update templates
-cd /path/to/aitlas-ui-template
+cd /path/to/aitlas-frontend-template
 git submodule update --remote aitlas-docs
 git add aitlas-docs
 git commit -m "docs: update from aitlas-docs"
