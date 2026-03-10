@@ -1,6 +1,3 @@
-> ⚠️ **DEPRECATED** — Content superseded by [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md)
-
-> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 
