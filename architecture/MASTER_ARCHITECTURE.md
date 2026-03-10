@@ -1,10 +1,21 @@
 # Aitlas — Master Architecture Document
-**Version:** 7.0 | **Date:** March 2026 | **Status:** CANONICAL  
+**Version:** 8.0 | **Date:** March 2026 | **Status:** CANONICAL  
 **Owner:** Furma.tech | **Maintained by:** Herb (AI CTO)
 
 > ⚠️ Proprietary. All Aitlas products are closed source.  
 > This is the single source of truth. Supersedes all previous versions.  
 > **Nexus implementation detail:** See `nexus-technical-doc.md` (canonical Nexus spec).
+
+---
+
+## Changelog from v7
+
+| Change | Type | Reason |
+|--------|------|--------|
+| **Nexus engines: 10 → 11** (Capability Graph) | 🟢 V1 Feature | Tool selection at scale requires semantic filtering |
+| **Capability Graph** (Engine 11) — semantic tool hierarchy, capability-aware filtering | 🟢 V1 Feature | 100+ tools = LLM selection failure; filter before LLM sees |
+| **Context Compression Pipeline** — relevance filter → summarization → retrieval | 🟢 V1 Enhancement | Context explosion is #1 agent failure mode |
+| **BudgetGuard** — centralized multi-layer enforcement | 🟢 V1 Enhancement | Runaway prevention across all budget types |
 
 ---
 
@@ -215,7 +226,7 @@ Step 5 [FINAL]   ✓  Report generated
 ### What It Is
 The agent operating system. Built in pure Elixir/OTP. Every agent task is an OTP GenServer process. Crashes are isolated and auto-recovered by supervisors. Oban handles durability and retries.
 
-### The Ten Internal Engines (v7 — updated from v6)
+### The Eleven Internal Engines (v8 — updated from v7)
 
 ```
 NEXUS RUNTIME
@@ -223,16 +234,20 @@ NEXUS RUNTIME
 │                             provider types: :api | :local_agent
 ├── 2. Context Builder      — system + history + memory + files + tools
 │                             Liquid templates via Solid
+│                             Context Compression Pipeline (v8)
 ├── 3. Agent Loop           — core execution brain (hardened safeguards)
+│                             BudgetGuard: multi-layer enforcement
 ├── 4. Tool Executor        — MCP + internal + API + code + filesystem
 ├── 5. Tool Registry        — register / resolve / validate / track
 ├── 6. Memory Engine        — short-term (GenServer state) + vector + episodic
 ├── 7. File Processor       — parse / chunk / embed / index
 ├── 8. Observability        — events, metrics, traces, cost tracking
 │   + Replay Engine         — deterministic trace + replay (§12)
-├── 9. Workspace Manager    — per-task sandboxed dirs   ← FROM SYMPHONY ← NEW
-└── 10. Codex Client        — JSON-RPC 2.0 over stdio   ← FROM SYMPHONY ← NEW
-                              (Codex / Claude Code / OpenCode)
+├── 9. Workspace Manager    — per-task sandboxed dirs   ← FROM SYMPHONY
+├── 10. Codex Client        — JSON-RPC 2.0 over stdio   ← FROM SYMPHONY
+│                             (Codex / Claude Code / OpenCode)
+└── 11. Capability Graph    — semantic tool hierarchy   ← NEW v8
+                              capability-aware tool filtering
 ```
 
 > **Full implementation spec:** `nexus-technical-doc.md`
@@ -285,14 +300,58 @@ system_prompt (Liquid template, rendered via Solid)
 + conversation_history    (from Postgres)
 + vector_memories         (semantic search, pgvector, HNSW index)
 + relevant_files          (from file processor)
-+ tool_definitions        (from Tool Registry)
++ tool_definitions        (from Capability Graph — filtered)
 → assembled_context
 ```
 
 **System prompts are Liquid templates.** Variables: `{{ user.goal }}`, `{{ agent.name }}`, `{{ task.id }}`, `{{ memory.recent_summaries }}`, `{{ tools | map: 'name' }}`. Plain-text prompts work unchanged (no templates required).
 
+**Context Compression Pipeline (v8):**
+
+Before each LLM call, Nexus runs a multi-stage compression pipeline to prevent context explosion:
+
+```
+Raw history
+    ↓
+[1] Relevance Filter — drop steps not related to current goal
+    ↓
+[2] Summarization — replace long sections with summaries
+    ↓
+[3] Vector Memory Retrieval — reinsert important facts via embeddings
+    ↓
+[4] Prompt Assembly — final context with system + goal + plan + tools
+```
+
+This keeps context small even after 20+ agent steps:
+
+```elixir
+defmodule Nexus.ContextBuilder do
+  def build(%{task: task, agent_spec: agent, loop_state: state}) do
+    system = build_system_prompt(agent, task, state)
+    history = state.messages
+
+    # Context Compression Pipeline
+    history = history
+      |> RelevanceFilter.filter(goal: task.goal, keep_last_n: 10)
+      |> Summarizer.compact(max_tokens: agent.execution.max_context_tokens)
+      |> MemoryInjector.inject(task.user_id, agent.id)
+
+    tools = CapabilityGraph.filter(goal: task.goal, context: %{agent: agent})
+
+    assemble(system, history, tools)
+  end
+end
+```
+
+| Stage | Purpose | v1 Implementation |
+|-------|---------|-------------------|
+| **Relevance Filter** | Drop irrelevant steps | Keyword matching |
+| **Summarization** | Compress long sections | LLM summary |
+| **Memory Retrieval** | Reinject context | pgvector search |
+| **Prompt Assembly** | Final assembly | Template rendering |
+
 Context compaction (v1): sliding window (last N messages) + conversation summary.  
-Context compaction (v2): semantic extraction → vector memory.
+Context compaction (v2): semantic extraction → vector memory + relevance scoring.
 
 ### 3. Agent Loop (Hardened)
 
@@ -543,6 +602,117 @@ Workspace.create(task_id)
 ```
 
 Steps broadcast via Phoenix Channel identically to API-based tasks — Nova UI is unaware of the difference.
+
+### 11. Capability Graph ← NEW (v8)
+
+**Problem:** At 100+ tools, LLMs struggle to select tools correctly. A flat list of all tools overwhelms the model and leads to poor selections. This is a known failure point in agent systems.
+
+**Solution:** Semantic capability hierarchy. Tools are organized by capability, and Nexus filters tools *before* the LLM sees them based on the task context.
+
+```
+Knowledge
+ ├ Web Search
+ ├ Twitter Search
+ ├ Academic Papers
+ └ Vector Library
+
+Development
+ ├ Code Execution
+ ├ Repo Analysis
+ └ Deployment
+
+Communication
+ ├ Email
+ ├ Slack
+ └ Discord
+```
+
+Each tool registers its capabilities:
+
+```elixir
+%Tool{
+  name: "web_search",
+  capabilities: ["knowledge", "search", "web"],
+  cost: 2,
+  latency_ms: 3000,
+  reliability_score: 0.98
+}
+```
+
+The `CapabilityGraph` module then filters tools based on task intent:
+
+```elixir
+# User request: "Research AI startups"
+# Nexus exposes only:
+tools = CapabilityGraph.filter(goal: "Research AI startups", context: task)
+# → [web_search, twitter_search, research_synthesis, vector_library]
+
+# NOT exposed (irrelevant):
+# → deploy_microvm, send_email, slack_message
+```
+
+This massively improves:
+- **Agent accuracy** — fewer wrong tool selections
+- **Token usage** — smaller tool schema in prompt
+- **Reliability** — reduced hallucination surface
+
+**Implementation:**
+
+```elixir
+defmodule Nexus.CapabilityGraph do
+  # Build capability tree from registered tools
+  def build_index(tools) :: :ok
+
+  # Filter tools based on task goal + context
+  def filter(goal: String.t(), context: map()) :: [Tool.t()]
+
+  # Get tools by capability path
+  def by_capability(path: String.t()) :: [Tool.t()]
+
+  # Suggest capabilities for a goal (used for tool suggestions in Nova)
+  def suggest_capabilities(goal: String.t()) :: [String.t()]
+end
+```
+
+The capability graph is built at startup from all registered tools and stored in ETS for fast lookup. Filtering uses:
+1. **Keyword matching** on goal vs tool descriptions (v1)
+2. **Embedding similarity** on goal vs capability embeddings (v2)
+3. **LLM-based classification** for ambiguous cases (v2)
+
+### BudgetGuard ← NEW (v8)
+
+Centralized multi-layer budget enforcement. Prevents runaway agents across all budget dimensions.
+
+```elixir
+defmodule Nexus.BudgetGuard do
+  @doc "Check if execution can proceed"
+  def check(state) :: :ok | {:exceeded, reason}
+
+  @doc "Record usage after each step"
+  def record(state, usage) :: state
+
+  @doc "Get remaining budget across all dimensions"
+  def remaining(state) :: %{
+    credits: integer(),
+    tokens: integer(),
+    tool_calls: integer(),
+    runtime_ms: integer(),
+    agent_depth: integer()
+  }
+end
+```
+
+**Budget types enforced:**
+
+| Budget | Default | Purpose |
+|--------|---------|---------|
+| `credit_budget` | User-set | Cost cap |
+| `token_budget` | 200k | Key burn prevention |
+| `tool_call_budget` | 50 | Tool spam prevention |
+| `runtime_budget_ms` | 30 min | Wall clock timeout |
+| `agent_depth_budget` | 3 | Graph depth limit |
+
+All budgets are checked on every iteration. Any budget exceeded → task stops immediately with appropriate error.
 
 ### Tracker Adapter Behaviour ← NEW (from Symphony)
 

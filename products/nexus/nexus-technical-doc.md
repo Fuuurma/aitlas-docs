@@ -1,5 +1,5 @@
 # Nexus — Technical Implementation Document
-**Version:** 1.0 | **Date:** March 2026 | **Status:** CANONICAL  
+**Version:** 1.1 | **Date:** March 2026 | **Status:** CANONICAL  
 **Owner:** Furma.tech | **Maintained by:** Herb (AI CTO)
 
 > Nexus is the agent operating system of Aitlas.  
@@ -15,7 +15,7 @@
 
 1. [What Nexus Is](#1-what-nexus-is)
 2. [Repo Structure](#2-repo-structure)
-3. [The Ten Engines](#3-the-ten-engines)
+3. [The Eleven Engines](#3-the-eleven-engines)
 4. [Application Supervision Tree](#4-application-supervision-tree)
 5. [Engine 1 — Provider Router](#5-engine-1--provider-router)
 6. [Engine 2 — Context Builder](#6-engine-2--context-builder)
@@ -27,18 +27,20 @@
 12. [Engine 8 — Observability](#12-engine-8--observability)
 13. [Engine 9 — Workspace Manager](#13-engine-9--workspace-manager)
 14. [Engine 10 — Codex Client](#14-engine-10--codex-client)
-15. [Replay Engine](#15-replay-engine)
-16. [Phoenix Channels](#16-phoenix-channels)
-17. [Oban Workers](#17-oban-workers)
-18. [API Layer](#18-api-layer)
-19. [Database Schema](#19-database-schema)
-20. [Security Layer](#20-security-layer)
-21. [Credit System](#21-credit-system)
-22. [BYOK Key Handling](#22-byok-key-handling)
-23. [MCP Client](#23-mcp-client)
-24. [Config & Environment](#24-config--environment)
-25. [Dependencies](#25-dependencies)
-26. [Build Order](#26-build-order)
+15. [Engine 11 — Capability Graph](#15-engine-11--capability-graph)
+16. [BudgetGuard](#16-budgetguard)
+17. [Replay Engine](#17-replay-engine)
+18. [Phoenix Channels](#18-phoenix-channels)
+19. [Oban Workers](#19-oban-workers)
+20. [API Layer](#20-api-layer)
+21. [Database Schema](#21-database-schema)
+22. [Security Layer](#22-security-layer)
+23. [Credit System](#23-credit-system)
+24. [BYOK Key Handling](#24-byok-key-handling)
+25. [MCP Client](#25-mcp-client)
+26. [Config & Environment](#26-config--environment)
+27. [Dependencies](#27-dependencies)
+28. [Build Order](#28-build-order)
 
 ---
 
@@ -144,6 +146,14 @@ aitlas-nexus/
 │   │   ├── codex_client/
 │   │   │   └── codex_client.ex           ← JSON-RPC over stdio (Symphony)
 │   │   │
+│   │   ├── capability_graph/
+│   │   │   ├── capability_graph.ex       ← Semantic tool hierarchy
+│   │   │   ├── capability_node.ex        ← Tree node struct
+│   │   │   └── filter.ex                 ← Goal-based tool filtering
+│   │   │
+│   │   ├── budget_guard/
+│   │   │   └── budget_guard.ex           ← Multi-layer budget enforcement
+│   │   │
 │   │   ├── replay_engine/
 │   │   │   └── replay_engine.ex          ← Exact | Live | Fork
 │   │   │
@@ -207,9 +217,9 @@ aitlas-nexus/
 
 ---
 
-## 3. The Ten Engines
+## 3. The Eleven Engines
 
-Nexus is composed of ten internal engines. Each is a distinct module boundary. Engines call each other in one direction: down the stack. No circular dependencies.
+Nexus is composed of eleven internal engines. Each is a distinct module boundary. Engines call each other in one direction: down the stack. No circular dependencies.
 
 ```
 NEXUS RUNTIME
@@ -221,10 +231,12 @@ NEXUS RUNTIME
   │  ENGINE 2   Context Builder                              │
   │             system + history + memory + files + tools    │
   │             Liquid templates via Solid                   │
+  │             Context Compression Pipeline (v1.1)          │
   ├──────────────────────────────────────────────────────────┤
   │  ENGINE 3   Agent Loop                  ← CORE           │
   │             PLAN → ACT → REFLECT → PERSIST              │
   │             5 hard limits + heuristic fallback           │
+  │             BudgetGuard: multi-layer enforcement         │
   ├──────────────────────────────────────────────────────────┤
   │  ENGINE 4   Tool Executor                                │
   │             Validate → Execute → Hash → Charge           │
@@ -247,9 +259,14 @@ NEXUS RUNTIME
   │  ENGINE 10  Codex Client               ← FROM SYMPHONY   │
   │             JSON-RPC 2.0 over stdio                      │
   │             Codex / Claude Code / OpenCode               │
+  ├──────────────────────────────────────────────────────────┤
+  │  ENGINE 11  Capability Graph           ← NEW v1.1        │
+  │             Semantic tool hierarchy                      │
+  │             Capability-aware tool filtering              │
   └──────────────────────────────────────────────────────────┘
   
   + REPLAY ENGINE  (cross-cutting, uses all engines)
+  + BUDGET GUARD  (cross-cutting, multi-layer enforcement)
   + PHOENIX CHANNELS  (streaming layer)
 ```
 
@@ -1874,7 +1891,298 @@ end
 
 ---
 
-## 15. Replay Engine
+## 15. Engine 11 — Capability Graph
+
+**Problem:** At 100+ tools, LLMs struggle to select tools correctly. A flat list of all tools overwhelms the model and leads to poor selections. This is a known failure point in agent systems.
+
+**Solution:** Semantic capability hierarchy. Tools are organized by capability, and Nexus filters tools *before* the LLM sees them based on the task context.
+
+### Capability Hierarchy
+
+```
+Knowledge
+ ├ Web Search
+ ├ Twitter Search
+ ├ Academic Papers
+ └ Vector Library
+
+Development
+ ├ Code Execution
+ ├ Repo Analysis
+ └ Deployment
+
+Communication
+ ├ Email
+ ├ Slack
+ └ Discord
+```
+
+### Tool Registration with Capabilities
+
+```elixir
+# lib/nexus/tool_registry/tool.ex
+defmodule Nexus.ToolRegistry.Tool do
+  defstruct [
+    :name,
+    :namespace,
+    :full_name,
+    :version,
+    :endpoint,
+    :description,
+    :input_schema,
+    :credit_cost,
+    :timeout_ms,
+    :requires_auth,
+    :tags,
+    # ── Capability Graph fields ──────────────────────────
+    capabilities: [],        # ["knowledge", "search", "web"]
+    latency_ms: 3000,        # average response time
+    reliability_score: 0.98  # success rate (0.0 - 1.0)
+  ]
+end
+```
+
+### Capability Graph Module
+
+```elixir
+# lib/nexus/capability_graph/capability_graph.ex
+defmodule Nexus.CapabilityGraph do
+  use GenServer
+  require Logger
+
+  @table :nexus_capability_graph
+
+  # ── Public API ────────────────────────────────────────────
+
+  @doc "Build capability index from all registered tools"
+  def build_index do
+    GenServer.call(__MODULE__, :build_index)
+  end
+
+  @doc "Filter tools based on task goal + context"
+  def filter(goal: goal, context: context) do
+    # V1: keyword matching on goal vs capabilities
+    # V2: embedding similarity on goal vs capability embeddings
+    capabilities = infer_capabilities(goal)
+    tools_for_capabilities(capabilities, context)
+  end
+
+  @doc "Get all tools for a capability path"
+  def tools_for_capability(capability_path) do
+    case :ets.lookup(@table, capability_path) do
+      [{^capability_path, tools}] -> tools
+      [] -> []
+    end
+  end
+
+  @doc "Suggest capabilities for a goal (Nova UI helper)"
+  def suggest_capabilities(goal) do
+    # Keyword extraction + matching
+    infer_capabilities(goal)
+  end
+
+  # ── GenServer ─────────────────────────────────────────────
+
+  def start_link(_), do: GenServer.start_link(__MODULE__, [], name: __MODULE__)
+
+  @impl true
+  def init(_) do
+    :ets.new(@table, [:set, :public, :named_table, read_concurrency: true])
+    {:ok, %{}}
+  end
+
+  @impl true
+  def handle_call(:build_index, _from, state) do
+    tools = Nexus.ToolRegistry.all_tools()
+
+    # Build capability → tools mapping
+    by_capability = Enum.group_by(tools, fn tool ->
+      tool.capabilities |> List.first() || "general"
+    end)
+
+    Enum.each(by_capability, fn {cap, tools} ->
+      :ets.insert(@table, {cap, tools})
+    end)
+
+    Logger.info("CapabilityGraph: indexed #{length(tools)} tools into #{map_size(by_capability)} capabilities")
+    {:reply, :ok, state}
+  end
+
+  # ── Private ───────────────────────────────────────────────
+
+  defp infer_capabilities(goal) do
+    goal_lower = String.downcase(goal)
+
+    capabilities = []
+
+    # Keyword-based capability inference (V1)
+    capabilities = if String.contains?(goal_lower, ["search", "find", "research", "look up"]),
+      do: ["knowledge", "search"] ++ capabilities, else: capabilities
+
+    capabilities = if String.contains?(goal_lower, ["code", "implement", "build", "develop"]),
+      do: ["development", "code"] ++ capabilities, else: capabilities
+
+    capabilities = if String.contains?(goal_lower, ["email", "send", "message", "notify"]),
+      do: ["communication", "messaging"] ++ capabilities, else: capabilities
+
+    capabilities = if String.contains?(goal_lower, ["analyze", "data", "report", "metrics"]),
+      do: ["analysis", "data"] ++ capabilities, else: capabilities
+
+    capabilities
+  end
+
+  defp tools_for_capabilities(capabilities, context) do
+    # Get tools matching any of the inferred capabilities
+    # Plus always include agent tools if agent.allow_subagents
+    tools = capabilities
+      |> Enum.flat_map(fn cap -> tools_for_capability(cap) end)
+      |> Enum.uniq_by(& &1.full_name)
+
+    # Filter by agent allowlist if present
+    case context[:agent] do
+      %{tools: %{tool_allowlist: allowlist}} when is_list(allowlist) ->
+        Enum.filter(tools, fn tool -> tool.full_name in allowlist end)
+
+      _ ->
+        tools
+    end
+  end
+end
+```
+
+### Integration with Tool Registry
+
+```elixir
+# In ToolRegistry.register/1
+def register(%Tool{} = tool) do
+  :ets.insert(@table, {tool.full_name, tool})
+  # Rebuild capability graph on new tool registration
+  Nexus.CapabilityGraph.build_index()
+  :ok
+end
+
+# In ToolRegistry.list_for_agent/1 — updated to use CapabilityGraph
+def list_for_agent(agent_spec) do
+  # V1: Use allowlist directly (backward compatible)
+  # V2: Use CapabilityGraph.filter for semantic selection
+  agent_spec.tools.tool_allowlist
+  |> Enum.flat_map(fn name ->
+    case resolve(name) do
+      {:ok, tool}      -> [tool]
+      {:error, _}      -> []
+    end
+  end)
+end
+```
+
+---
+
+## 16. BudgetGuard
+
+Centralized multi-layer budget enforcement. Prevents runaway agents across all budget dimensions.
+
+### Budget Types
+
+```elixir
+defmodule Nexus.BudgetGuard do
+  @moduledoc """
+  Multi-layer budget enforcement. Checked on every agent loop iteration.
+  """
+
+  @default_limits %{
+    credit_budget:      nil,      # User-set, no default
+    token_budget:       200_000,
+    tool_call_budget:   50,
+    runtime_budget_ms:  30 * 60 * 1000,  # 30 min
+    agent_depth_budget: 3         # For agent graphs
+  }
+
+  defstruct Map.keys(@default_limits)
+
+  # ── Public API ────────────────────────────────────────────
+
+  @doc "Create a budget guard from task config"
+  def from_task(task) do
+    %__MODULE__{
+      credit_budget:      task.credit_budget,
+      token_budget:       task.max_tokens || @default_limits[:token_budget],
+      tool_call_budget:   task.max_tool_calls || @default_limits[:tool_call_budget],
+      runtime_budget_ms:  task.max_runtime_ms || @default_limits[:runtime_budget_ms],
+      agent_depth_budget: task.max_agent_depth || @default_limits[:agent_depth_budget]
+    }
+  end
+
+  @doc "Check if execution can proceed"
+  def check(guard, state) do
+    cond do
+      state.credits_used >= guard.credit_budget ->
+        {:exceeded, :credit_budget, state.credits_used, guard.credit_budget}
+
+      state.tokens_used >= guard.token_budget ->
+        {:exceeded, :token_budget, state.tokens_used, guard.token_budget}
+
+      state.tool_calls_made >= guard.tool_call_budget ->
+        {:exceeded, :tool_call_budget, state.tool_calls_made, guard.tool_call_budget}
+
+      elapsed_ms(state) >= guard.runtime_budget_ms ->
+        {:exceeded, :runtime_budget_ms, elapsed_ms(state), guard.runtime_budget_ms}
+
+      state.graph_depth >= guard.agent_depth_budget ->
+        {:exceeded, :agent_depth_budget, state.graph_depth, guard.agent_depth_budget}
+
+      true ->
+        :ok
+    end
+  end
+
+  @doc "Get remaining budget across all dimensions"
+  def remaining(guard, state) do
+    %{
+      credits:    guard.credit_budget && max(0, guard.credit_budget - state.credits_used),
+      tokens:     max(0, guard.token_budget - state.tokens_used),
+      tool_calls: max(0, guard.tool_call_budget - state.tool_calls_made),
+      runtime_ms: max(0, guard.runtime_budget_ms - elapsed_ms(state)),
+      agent_depth: max(0, guard.agent_depth_budget - (state.graph_depth || 0))
+    }
+  end
+
+  # ── Private ───────────────────────────────────────────────
+
+  defp elapsed_ms(state) do
+    System.monotonic_time(:millisecond) - state.start_time
+  end
+end
+```
+
+### Integration with Agent Loop
+
+```elixir
+# In Nexus.AgentLoop — updated check_limits
+defp check_limits(state, start_ms) do
+  guard = Nexus.BudgetGuard.from_task(state.task)
+
+  case Nexus.BudgetGuard.check(guard, %{state | start_time: start_ms}) do
+    :ok -> :ok
+    {:exceeded, reason, current, max} -> {:exceeded, {reason, current, max}}
+  end
+end
+```
+
+### Why Multiple Budget Types
+
+| Budget | Purpose | Failure Prevented |
+|--------|---------|-------------------|
+| `credit_budget` | Cost control | Unexpected charges |
+| `token_budget` | Key protection | Burning user's API key |
+| `tool_call_budget` | Tool spam | Infinite tool loops |
+| `runtime_budget_ms` | Wall clock | Zombie processes |
+| `agent_depth_budget` | Graph depth | Recursive agent spawning |
+
+Enterprise customers require multi-layer budgets. A single credit limit is insufficient.
+
+---
+
+## 17. Replay Engine
 
 ```elixir
 # lib/nexus/replay_engine/replay_engine.ex
@@ -1968,7 +2276,7 @@ end
 
 ---
 
-## 16. Phoenix Channels
+## 18. Phoenix Channels
 
 Real-time streaming from Nexus to Nova. Every agent step is broadcast as it completes.
 
@@ -2054,7 +2362,7 @@ end
 
 ---
 
-## 17. Oban Workers
+## 19. Oban Workers
 
 ```elixir
 # lib/nexus/workers/agent_runner.ex
@@ -2183,7 +2491,7 @@ config :nexus, Oban,
 
 ---
 
-## 18. API Layer
+## 20. API Layer
 
 ```elixir
 # lib/nexus_web/router.ex
@@ -2296,7 +2604,7 @@ end
 
 ---
 
-## 19. Database Schema
+## 21. Database Schema
 
 ```sql
 -- ─── Tasks ──────────────────────────────────────────────────
@@ -2461,7 +2769,7 @@ CREATE VIEW credit_balances AS
 
 ---
 
-## 20. Security Layer
+## 22. Security Layer
 
 ```elixir
 # lib/nexus/injection_guard/injection_guard.ex
@@ -2540,7 +2848,7 @@ end
 
 ---
 
-## 21. Credit System
+## 23. Credit System
 
 ```elixir
 # lib/nexus/credits/credits.ex
@@ -2608,7 +2916,7 @@ end
 
 ---
 
-## 22. BYOK Key Handling
+## 24. BYOK Key Handling
 
 ```elixir
 # lib/nexus/crypto/crypto.ex
@@ -2659,7 +2967,7 @@ end
 
 ---
 
-## 23. MCP Client
+## 25. MCP Client
 
 See §8 Engine 4 (ToolExecutor) for the full `Nexus.MCP.Client` implementation.
 
@@ -2669,7 +2977,7 @@ External MCP connections (user-connected services like GitHub, Notion) follow th
 
 ---
 
-## 24. Config & Environment
+## 26. Config & Environment
 
 ```elixir
 # config/runtime.exs
@@ -2730,7 +3038,7 @@ MCP_API_KEY="external-mcp-key"
 
 ---
 
-## 25. Dependencies
+## 27. Dependencies
 
 ```elixir
 # mix.exs
@@ -2781,7 +3089,7 @@ end
 
 ---
 
-## 26. Build Order
+## 28. Build Order
 
 Build in strict sequence. Each phase is independently runnable.
 
