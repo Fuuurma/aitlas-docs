@@ -1,11 +1,14 @@
 # Nova Dashboard Build Notes
 
+> ⚠️ **DEPRECATED** — Content merged into [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md)
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 **Created:** 2026-03-09
 **Author:** Atlas (Subagent)
-**Status:** Complete
+**Status:** Deprecated  
+**See:** [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md) (canonical)
 
 ---
 

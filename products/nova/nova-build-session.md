@@ -1,12 +1,13 @@
 # Nova Build Session (2026-03-09)
 
+> ⚠️ **DEPRECATED** — Content merged into [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md)
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
-## Status: ✅ Foundation Complete
+## Status: ✅ Deprecated
 
-**Repo:** https://github.com/Fuuurma/Nova  
-**Location:** `./Nova/`
+**See:** [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md) (canonical)
 
 ---
 

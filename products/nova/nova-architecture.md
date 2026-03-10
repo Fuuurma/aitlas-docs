@@ -1,11 +1,12 @@
 # Nova — Architecture Decision (2026-03-09)
 
+> ⚠️ **DEPRECATED** — Content merged into [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md)
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
-**Status:** 🔵 ACTIVE  
-**Architecture:** T3 Code (Chat) + Mission Control (Dashboard)  
-**License:** MIT + MIT
+**Status:** 🔵 DEPRECATED  
+**See:** [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md) (canonical)
 
 ---
 

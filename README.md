@@ -2,7 +2,7 @@
 
 **Source of truth for all Aitlas products.**
 
-> **Version:** 1.0 | **Updated:** March 2026 | **Status:** ⚠️ Under cleanup
+> **Version:** 1.1 | **Updated:** March 2026 | **Status:** ✅ Cleaned up
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 

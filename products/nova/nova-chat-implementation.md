@@ -1,11 +1,13 @@
 # Nova Chat Implementation Plan
 
+> ⚠️ **DEPRECATED** — Content merged into [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md)
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 **Created:** 2026-03-09  
-**Status:** Draft  
-**Goal:** Build a multi-provider AI coding chat desktop app based on T3 Code architecture
+**Status:** Deprecated  
+**See:** [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md) (canonical)
 
 ---
 

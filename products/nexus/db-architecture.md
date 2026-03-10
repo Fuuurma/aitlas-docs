@@ -1,17 +1,12 @@
-Below is the **complete Nexus database architecture**. This is the layer that determines whether the runtime can scale to **millions of agent runs** without collapsing. The schema is designed for:
+> ⚠️ **DEPRECATED** — Stack changed (Prisma → Drizzle/Ecto). See [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md)
 
-* deterministic replay
-* high-throughput agent execution
-* vector memory retrieval
-* observability
-* tool orchestration
-* multi-tenant usage
-
-The design assumes **PostgreSQL** as the primary database and integrates well with job systems like Oban.
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 
-# NEXUS — Database Architecture
+# NEXUS — Database Architecture (Deprecated)
+
+**See:** [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md) (canonical)
 
 Version: v1
 Database: PostgreSQL

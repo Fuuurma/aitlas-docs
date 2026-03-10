@@ -1,11 +1,14 @@
 # Agents Store Implementation Summary
 
+> ⚠️ **DEPRECATED** — Stack changed. See [AGENTS_STORE_TECHNICAL_DOC.md](./AGENTS_STORE_TECHNICAL_DOC.md)
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 **Product:** Agents Store - Marketplace for AI Agents & Skills  
 **Foundation:** Agency Agents + sanyuan-skills + Antigravity Awesome Skills  
-**Stack:** TypeScript + PostgreSQL
+**Stack:** Next.js 16 + Drizzle ORM  
+**See:** [AGENTS_STORE_TECHNICAL_DOC.md](./AGENTS_STORE_TECHNICAL_DOC.md) (canonical)
 
 ---
 

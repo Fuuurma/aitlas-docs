@@ -1,11 +1,12 @@
 # Nova Implementation Summary
 
+> ⚠️ **DEPRECATED** — Content merged into [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md)
+
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 **Product:** Nova - User Interface for Aitlas  
-**Foundation:** Fork of Mission Control (builderz-labs/mission-control)  
-**Stack:** React/Next.js + TypeScript
+**See:** [NOVA_TECHNICAL_DOC.md](./NOVA_TECHNICAL_DOC.md) (canonical)
 
 ---
 

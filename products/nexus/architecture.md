@@ -1,15 +1,14 @@
-Below is a **complete technical architecture document for Nexus** based on everything we discussed: limits, replay, compaction, tool calling, filesystem, memory, BYOK providers, and leveraging OSS components like Oban, Jido, DeerFlow, and Trigger.dev.
+> ⚠️ **DEPRECATED** — Content superseded by [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md)
 
-This is written as if it were the **internal engineering spec** for Nexus.
+> ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 
-# NEXUS — Technical Architecture
+# NEXUS — Technical Architecture (Deprecated)
 
 Agent Runtime & Execution Engine for AITLAS
 
-Version: v1
-Status: Architecture Specification
+**See:** [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md) (canonical)
 
 ---
 
