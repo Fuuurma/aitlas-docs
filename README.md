@@ -59,10 +59,19 @@ developers → build agents → agents use tools → tools use credits
 
 ### Core Architecture
 
-| Doc | Description |
-|-----|-------------|
-| [MASTER_ARCHITECTURE.md](./architecture/MASTER_ARCHITECTURE.md) | **CANONICAL** - Single source of truth (1,091 lines) |
-| [DECISIONS.md](./architecture/DECISIONS.md) | Architecture Decision Records (ADRs) |
+| File | Description |
+|------|-------------|
+| [`MASTER_ARCHITECTURE.md`](./architecture/MASTER_ARCHITECTURE.md) | **CANONICAL** - Single source of truth |
+
+### Architecture Subfolders
+
+| Folder | Description |
+|--------|-------------|
+| [`reference/`](architecture/reference/) | SDK, style guides |
+| [`integrations/`](architecture/integrations/) | MCP, protocols |
+| [`operations/`](architecture/operations/) | Deployment, decisions |
+| [`agents/`](architecture/agents/) | Agent specs, prompts |
+| [`deprecated/`](architecture/deprecated/) | Outdated - see canonical |
 
 ### Key Sections in MASTER_ARCHITECTURE.md
 
@@ -244,11 +253,11 @@ aitlas-docs/
 │
 ├── architecture/
 │   ├── MASTER_ARCHITECTURE.md   # CANONICAL - Full architecture spec
-│   ├── DECISIONS.md            # Architecture Decision Records
-│   ├── DEPLOYMENT.md           # Deployment architecture
-│   ├── ACTIONS_ARCHITECTURE.md # Actions system
-│   ├── credit-system.md        # Credit/monetization system
-│   └── ...
+│   ├── reference/               # SDK, style guides
+│   ├── integrations/            # MCP, protocols
+│   ├── operations/              # Deployment, decisions
+│   ├── agents/                  # Agent specs
+│   └── deprecated/              # Outdated (see canonical)
 │
 └── products/
     ├── nova/                   # Web UI
