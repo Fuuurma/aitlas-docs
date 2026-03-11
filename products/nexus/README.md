@@ -54,7 +54,7 @@ Nexus is the **agent operating system** — the execution engine that runs AI ag
 | File | Description |
 |------|-------------|
 | [nexus-technical-doc.md](./nexus-technical-doc.md) | **CANONICAL** - Full technical spec |
-| [agent-graphs-technical-doc.md](./agent-graphs-technical-doc.md) | **CANONICAL** - Agent-to-agent execution |
+| [agent-graphs-technical-doc.md](../architecture/agent-graphs.md) | **CANONICAL** - Agent-to-agent execution |
 | [symphony-analysis.md](./symphony-analysis.md) | Symphony analysis |
 | [SYMPHONY_GAP_ANALYSIS.md](./SYMPHONY_GAP_ANALYSIS.md) | Symphony vs Nexus gap analysis |
 | [CORE_LOGIC_REVIEW.md](./CORE_LOGIC_REVIEW.md) | Core logic review (critical issues) |
