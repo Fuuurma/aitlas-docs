@@ -24,7 +24,7 @@
 
 ## Gap Details
 
-### 1. Retry Queue with Exponential Backoff
+### 1. Retry Queue with Exponential Backoff ✅ COMPLETE
 
 **Symphony:**
 ```elixir
@@ -40,14 +40,18 @@
 backoff = min(base * 2^(attempt-1), max_backoff_ms)
 ```
 
-**Nexus Missing:**
-- No retry queue in AgentLoop
-- No exponential backoff
-- Failed tasks stay failed
+**Nexus Implementation:** `Aitlas.RetryQueue`
+```elixir
+# Schedule a retry
+{:ok, entry} = RetryQueue.schedule(task_id, attempt: 2, error: "API timeout")
 
-**Recommendation:** Add `Aitlas.AgentLoop.RetryQueue` module.
+# Backoff: 10s → 30s → 60s → 120s → 300s (max 5 min)
+# Max 5 attempts per task
+```
 
-### 2. Reconciliation on Startup
+**Status:** ✅ Implemented, tested, committed
+
+### 2. Reconciliation on Startup ✅ COMPLETE
 
 **Symphony:**
 ```elixir
@@ -57,14 +61,18 @@ backoff = min(base * 2^(attempt-1), max_backoff_ms)
 # 3. Resume running issues (if state still active)
 ```
 
-**Nexus Missing:**
-- No startup reconciliation
-- Orphaned workspaces not cleaned
-- Interrupted tasks not resumed
+**Nexus Implementation:** `Aitlas.Reconciliation`
+```elixir
+# Runs automatically on app start
+# 1. Cleans orphaned workspaces (>24h old)
+# 2. Marks interrupted tasks as failed
+# 3. Cleans terminal task workspaces (>1h grace)
+# 4. Runs every 5 minutes
+```
 
-**Recommendation:** Add `Aitlas.Reconciliation` module that runs on app start.
+**Status:** ✅ Implemented, tested, committed
 
-### 3. WORKFLOW.md Support
+### 3. WORKFLOW.md Support 🟡 FUTURE
 
 **Symphony:**
 ```markdown
