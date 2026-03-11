@@ -1,13 +1,13 @@
 # Aitlas — Deployment Architecture
 
+> ⚠️ **OUTDATED** — Nexus is now pure Elixir on Hetzner. See [MASTER_ARCHITECTURE.md](../MASTER_ARCHITECTURE.md)
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 
-**Version:** 1.0 | **Date:** March 2026 | **Status:** LOCKED  
-**Foundation:** Nexus runtime is **cloned from trigger.dev**
-**Maintained by:** Herb (AI CTO)
+**Version:** 1.0 | **Updated:** March 2026 | **Status:** OUTDATED  
+**See:** [MASTER_ARCHITECTURE.md](../MASTER_ARCHITECTURE.md) (canonical)
 
 ---
 

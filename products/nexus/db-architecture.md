@@ -1,4 +1,4 @@
-> ⚠️ **DEPRECATED** — Stack changed (Prisma → Drizzle/Ecto). See [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md)
+> ⚠️ **DEPRECATED** — See [nexus-technical-doc.md](./nexus-technical-doc.md) (canonical)
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
@@ -6,7 +6,7 @@
 
 # NEXUS — Database Architecture (Deprecated)
 
-**See:** [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md) (canonical)
+**See:** [nexus-technical-doc.md](./nexus-technical-doc.md) (canonical)
 
 Version: v1
 Database: PostgreSQL

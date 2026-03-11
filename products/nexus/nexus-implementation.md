@@ -1,14 +1,12 @@
 # Nexus Implementation Summary
 
-> ⚠️ **DEPRECATED** — Stack changed. See [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md)
+> ⚠️ **DEPRECATED** — See [nexus-technical-doc.md](./nexus-technical-doc.md) (canonical)
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
 **Product:** Nexus - Runtime Engine for Aitlas  
-**Foundation:** trigger.dev + Mastra + AutoGen + Pi  
-**Stack:** Elixir / Phoenix / Oban (updated)  
-**See:** [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md) (canonical)
+**See:** [nexus-technical-doc.md](./nexus-technical-doc.md) (canonical)
 
 ---
 

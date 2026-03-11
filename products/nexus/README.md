@@ -33,7 +33,7 @@ Nexus is the **agent operating system** — the execution engine that runs AI ag
 
 ---
 
-## The 10 Engines
+## The 11 Engines
 
 1. **Provider Router** — OpenAI / Anthropic / Gemini / local
 2. **Context Builder** — system + history + memory + tools
@@ -45,6 +45,7 @@ Nexus is the **agent operating system** — the execution engine that runs AI ag
 8. **Observability** — events, metrics, traces
 9. **Workspace Manager** — isolated execution environments
 10. **Codex Client** — OpenAI Codex integration
+11. **Capability Graph** — permission system
 
 ---
 
@@ -53,8 +54,10 @@ Nexus is the **agent operating system** — the execution engine that runs AI ag
 | File | Description |
 |------|-------------|
 | [nexus-technical-doc.md](./nexus-technical-doc.md) | **CANONICAL** - Full technical spec |
-| [agent-graphs-technical-doc.md](./agent-graphs-technical-doc.md) | Agent-to-agent execution |
+| [agent-graphs-technical-doc.md](./agent-graphs-technical-doc.md) | **CANONICAL** - Agent-to-agent execution |
 | [symphony-analysis.md](./symphony-analysis.md) | Symphony analysis |
+| [SYMPHONY_GAP_ANALYSIS.md](./SYMPHONY_GAP_ANALYSIS.md) | Symphony vs Nexus gap analysis |
+| [CORE_LOGIC_REVIEW.md](./CORE_LOGIC_REVIEW.md) | Core logic review (critical issues) |
 | [ORCHESTRATION_MOAT.md](./ORCHESTRATION_MOAT.md) | Competitive analysis |
 
 ---
