@@ -1,154 +1,140 @@
-# OpenCode/Crush Integration Research
+# OpenCode Integration Research
 
 **Date:** March 11, 2026  
-**Status:** Research Complete
+**Status:** Research Complete ✅
 
 ---
 
 ## TL;DR
 
-**OpenCode is archived** → The project moved to **Crush** (21k ⭐, by Charm).  
-Crush is a TUI-based CLI, **NOT an app-server** like Codex. Integration would require a different approach.
+**This is the right repo:** https://github.com/anomalyco/opencode  
+**120k ⭐** (massive!), **TypeScript**, **Active**  
+**Protocol:** REST API over HTTP + SSE for events
 
 ---
 
-## Current Architecture: Codex Provider
-
-### How Codex Works (t3code integration)
-
-1. **Spawns `codex app-server`** as a child process
-2. **JSON-RPC over stdin/stdout** for communication
-3. **Key methods:**
-   - `initialize` - Set up client info
-   - `model/list` - List available models
-   - `account/read` - Get user subscription
-   - `thread/start` or `thread/resume` - Start new or resume existing thread
-   - `turn/start` - Send input to agent
-   - `turn/interrupt` - Stop current turn
-
-4. **Session management:** Handled entirely by Codex process
-5. **Approvals:** JSON-RPC requests for file read/write/command execution
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `codexAppServerManager.ts` | Spawns/manages Codex process, JSON-RPC protocol |
-| `Layers/CodexAdapter.ts` | Wraps manager in Effect service layer |
-| `contracts/src/provider.ts` | Provider types and schemas |
-| `contracts/src/orchestration.ts` | `ProviderKind = "codex"` |
-
----
-
-## Alternative: Crush (OpenCode's Successor)
-
-### What is Crush?
+## What is OpenCode?
 
 | Attribute | Details |
 |-----------|---------|
-| **Repo** | [charmbracelet/crush](https://github.com/charmbracelet/crush) |
-| **Stars** | 21,165 ⭐ |
-| **Language** | Go |
-| **Status** | Active (not archived) |
-| **Successor to** | OpenCode (archived) |
+| **Repo** | [anomalyco/opencode](https://github.com/anomalyco/opencode) |
+| **Stars** | 119,771 ⭐ |
+| **Language** | TypeScript (Bun-native) |
+| **Status** | Active |
+| **License** | MIT |
+| **Default Branch** | `dev` |
 
-### Features
+### Key Features (from README)
 
-- Multi-model support (Anthropic, OpenAI, Gemini, Groq, etc.)
-- MCP servers (stdio, HTTP, SSE)
-- LSP integration
-- Session-based context
-- Permission system for tools
+- 100% open source
+- Provider-agnostic (Anthropic, OpenAI, Google, local models)
+- Out-of-the-box LSP support
+- Client/server architecture → **TUI is just one client**
+- Built-in agents: `build` (full-access), `plan` (read-only), `general` (complex tasks)
+- MCP support (stdio, HTTP, SSE)
 - Agent Skills support
 
-### Key Limitation
+### How It Differs from Claude Code
 
-**No app-server mode.** Crush is a TUI application, not a daemon with a protocol.
+> "A client/server architecture. This, for example, can allow OpenCode to run on your computer while you drive it remotely from a mobile app, meaning that the TUI frontend is just one of the possible clients."
 
 ---
 
-## Integration Approaches
+## Server Architecture
 
-### Option A: Non-Interactive CLI Mode (Recommended)
+OpenCode runs as an **HTTP server** with REST endpoints. This is much cleaner than Codex's JSON-RPC over stdin/stdout.
 
-Run Crush as a subprocess with prompt input, parse JSON output.
+### Starting the Server
 
 ```bash
-crush -p "fix this bug" -f json -c /project/path
+opencode4096 --hostname 0 serve --port .0.0.0
+# Optional: --password for basic auth
 ```
 
-**Pros:**
-- No code changes to Crush
-- Quick to implement
+### Key Endpoints
 
-**Cons:**
-- No streaming responses
-- Session state managed externally (file-based)
-- Approvals handled via config (`--yolo` flag or `permissions`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/session` | List all sessions |
+| `POST` | `/session` | Create new session |
+| `GET` | `/session/:sessionID` | Get session info |
+| `POST` | `/session/:sessionID/message` | Send message (streaming) |
+| `POST` | `/session/:sessionID/prompt_async` | Send message async |
+| `GET` | `/session/:sessionID/message` | Get session messages |
+| `POST` | `/session/:sessionID/abort` | Abort running session |
+| `POST` | `/session/:sessionID/permissions/:permissionID` | Approve/deny permission |
+| `GET` | `/event` | SSE event stream |
+| `GET` | `/provider` | List providers |
+| `GET` | `/agent` | List agents |
+| `GET` | `/skill` | List skills |
+| `GET` | `/path` | Get paths (home, state, config, worktree, directory) |
 
-### Option B: Fork Crush + Add App-Server Mode
+### Authentication
 
-Fork Crush and add a `--server` flag that runs a JSON-RPC server (like Codex).
+- Optional basic auth via `--password` flag
+- CORS support for browser clients
 
-**Pros:**
-- Full parity with Codex integration
-- Clean protocol
+### Event Stream
 
-**Cons:**
-- Ongoing maintenance burden
-- More upfront work
-
-### Option C: Use MCP as Abstraction Layer
-
-Treat Crush as an MCP server and communicate via MCP protocol.
-
-**Pros:**
-- Crush already supports MCP
-- Standardized protocol
-
-**Cons:**
-- MCP is designed for tools, not full agent control
-- Would need to wrap MCP in agent logic
+SSE (Server-Sent Events) at `/event` for real-time updates:
+- `server.connected`
+- `server.heartbeat`
+- Session events (tool calls, permission requests, etc.)
 
 ---
 
-## Implementation Plan (Option A)
+## Comparison: Codex vs OpenCode
+
+| Aspect | Codex (current) | OpenCode |
+|--------|-----------------|----------|
+| **Protocol** | JSON-RPC (stdin/stdout) | REST API (HTTP) |
+| **Stars** | 1.8k | 120k |
+| **Language** | TypeScript | TypeScript |
+| **Provider** | Anthropic-only | Multi-provider |
+| **Architecture** | App-server (child process) | HTTP Server |
+| **Integration** | Complex (process spawn) | Simple (HTTP client) |
+| **Auth** | None | Optional basic auth |
+| **Events** | JSON-RPC notifications | SSE |
+
+---
+
+## Implementation Plan
 
 ### Phase 1: Contracts
 
 ```typescript
 // packages/contracts/src/orchestration.ts
-export const ProviderKind = Schema.Literal("codex", "crush");
-export type ProviderKind = typeof ProviderKind.Type;
+export const ProviderKind = Schema.Literal("codex", "opencode");
 
 // packages/contracts/src/provider.ts
-const CrushProviderStartOptions = Schema.Struct({
-  binaryPath: Schema.optional(TrimmedNonEmptyStringSchema),
-  configPath: Schema.optional(TrimmedNonEmptyStringSchema),
+const OpenCodeProviderStartOptions = Schema.Struct({
+  port: Schema.optional(Schema.Number),
+  hostname: Schema.optional(TrimmedNonEmptyStringSchema),
+  password: Schema.optional(TrimmedNonEmptyStringSchema),
 });
 
 export const ProviderStartOptions = Schema.Struct({
   codex: Schema.optional(CodexProviderStartOptions),
-  crush: Schema.optional(CrushProviderStartOptions),
+  opencode: Schema.optional(OpenCodeProviderStartOptions),
 });
 ```
 
 ### Phase 2: Manager Layer
 
-Create `crushAppServerManager.ts` (new file):
+Create `opencodeServerManager.ts`:
 
-- Spawn `crush` process
-- Handle `-p` prompt mode
-- Parse JSON output streams
-- Manage session state via filesystem (`.crush/`)
+- Spawn `opencode serve` process
+- Wait for server ready (port listening)
+- HTTP client for REST calls
+- Parse streaming responses
 
 ### Phase 3: Adapter Layer
 
-Create `Layers/CrushAdapter.ts`:
+Create `Layers/OpenCodeAdapter.ts`:
 
 - Wrap manager in Effect service
 - Implement `ProviderAdapterShape` interface
-- Map events to provider events
+- Map REST responses to provider events
 
 ### Phase 4: Registry
 
@@ -157,33 +143,42 @@ Update `Layers/ProviderAdapterRegistry.ts`:
 ```typescript
 const registry = Layer.merge(
   CodexAdapterLive,
-  CrushAdapterLive,  // Add this
+  OpenCodeAdapterLive,  // Add this
 );
 ```
 
 ---
 
-## Risks & Considerations
+## Advantages of OpenCode Integration
+
+1. **Simpler protocol** - HTTP REST > JSON-RPC over stdio
+2. **Provider flexibility** - Users can use any LLM (Anthropic, OpenAI, Gemini, local, etc.)
+3. **Massive community** - 120k stars vs 1.8k
+4. **Active development** - Not a niche project
+5. **Better scalability** - HTTP server can run remotely
+6. **Built-in auth** - No custom auth layer needed
+
+---
+
+## Risks
 
 | Risk | Mitigation |
 |------|-------------|
-| Crush CLI changes breaking integration | Version pin, integration tests |
-| No streaming support | Option B (fork + server mode) for production |
-| Approval flow complexity | Use `--yolo` for auto-approve or config-based permissions |
-| Session management | External session store + file-based state |
+| Bun dependency | Server runs on Bun; CLI wrapper available |
+| API changes | Version pin + integration tests |
+| Feature parity | Full feature map needed |
 
 ---
 
 ## Recommendation
 
-**Short-term:** Implement Option A (CLI mode) for MVP - quick to ship, validates demand.
-
-**Long-term:** If Crush gains app-server mode (or we fork it), migrate to full Protocol integration.
+**Add OpenCode as second provider** alongside Codex. Architecture is cleaner, community is massive, and provider flexibility is a huge win for users.
 
 ---
 
 ## References
 
-- Codex integration: `apps/server/src/codexAppServerManager.ts`
-- Crush repo: https://github.com/charmbracelet/crush
-- OpenCode (archived): https://github.com/opencode-ai/opencode
+- OpenCode repo: https://github.com/anomalyco/opencode
+- Server implementation: `packages/opencode/src/server/server.ts`
+- Session routes: `packages/opencode/src/server/routes/session.ts`
+- Install: `npm i -g opencode-ai`
