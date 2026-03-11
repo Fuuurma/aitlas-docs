@@ -1,12 +1,11 @@
 # Aitlas Actions - Future Roadmap
 
-> ⚠️ **OUTDATED** — Stack changed. TODO: Update to Elixir backend.
-
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
 ---
-**Status:** Needs Update  
+**Status:** Living Document  
 **Last Updated:** March 2026
+**Stack:** Elixir/Phoenix (backend) + Next.js 16 (frontend)
 
 ---
 

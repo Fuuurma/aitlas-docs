@@ -4,7 +4,7 @@
 
 ---
 **Version:** 1.0 | **Date:** March 2026 | **Status:** Draft  
-**Parent:** nexus.md | **Type:** Internal Library Integration
+**References:** [nexus-technical-doc.md](../nexus/nexus-technical-doc.md) | [MASTER_ARCHITECTURE.md](../../architecture/MASTER_ARCHITECTURE.md)
 
 ---
 
