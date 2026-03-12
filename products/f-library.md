@@ -143,7 +143,7 @@ CREATE TABLE storage_credentials (
 | `list_folders` | List folders | 0 |
 | `move_file` | Move file to folder | 0 |
 | `add_tag` | Tag a file | 0 |
-| `remove_tag` | Remove tag from file | 0 |
+| `list_tags` | List all tags | 0 |
 
 ### Search (Premium)
 
@@ -151,16 +151,7 @@ CREATE TABLE storage_credentials (
 |------|-------------|---------|
 | `search_files` | Full-text search | 1 |
 | `search_similar` | Semantic similarity search | 2 |
-| `get_related` | Find related files | 2 |
-
-### AI Features (Premium)
-
-| Tool | Description | Credits |
-|------|-------------|---------|
-| `auto_tag` | AI-generated tags | 3 |
-| `extract_text` | Extract text from file | 3 |
-| `summarize` | AI summary of file | 5 |
-| `analyze` | Full content analysis | 5 |
+| `embed_file` | Generate embedding for file | 3 |
 
 ## MCP Tool Definitions
 
