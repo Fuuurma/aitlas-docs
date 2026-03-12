@@ -15,7 +15,7 @@
 | **Nexus runtime** | ✅ Active | Durable agent runtime |
 | **f.library** | ✅ Active | Memory/knowledge management |
 | **f.twyt** | ✅ Active | Twitter automation |
-| **f.improve** | 📋 Planned | Autonomous code improvement |
+| **f.improve** | ✅ Active | Autonomous code improvement |
 | **f.rsrx** | 📋 Planned | Research assistant |
 | **f.finance** | 📋 Planned | Financial data |
 | **f.guard** | 📋 Planned | Security monitoring |
