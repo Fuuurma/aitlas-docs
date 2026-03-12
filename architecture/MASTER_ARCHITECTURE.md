@@ -28,7 +28,7 @@
 | **Codex Client** (Engine 10) — JSON-RPC 2.0 over stdio | 🟢 V1 Feature | Enables Codex/Claude Code/OpenCode as managed sessions |
 | Provider type split: `:api` vs `:local_agent` | 🔴 V1 Fix | API-based and stdio-based agents need different execution paths |
 | Liquid templates (Solid) in Context Builder | 🔴 V1 Fix | System prompts need dynamic variables; from Symphony |
-| Tracker adapter behaviour — `fetch_candidate_tasks`, `update_task_status` | 🟢 V1 Feature | Extension point for Linear/GitHub/Jira; from Symphony |
+| Tracker adapter behaviour — `fetch_candidate_tasks`, `update_task_status` | 🟡 V1 Optional | Optional external adapter; core orchestration is internal tasks DB |
 | `nexus-technical-doc.md` created | 🟢 Docs | Full Elixir implementation spec, replaces deprecated nexus-architecture.md |
 | Nova task monitor: build fresh (not cloned from Symphony UI) | 🔴 Decision | Symphony LiveView not portable to Next.js |
 | Orchestrator state shape: `running` map + `claimed` MapSet | 🔴 V1 Fix | Prevents double-dispatch during poll; from Symphony |
@@ -463,6 +463,8 @@ log tool_call record
 return result to Agent Loop
 ```
 
+Tool call records include replay-safe MCP metadata (endpoint + sanitized request/response) for audit and deterministic trace playback.
+
 Tool execution is async — uses `Task.Supervisor.async_nolink` so a crashing tool doesn't kill the agent loop GenServer:
 
 ```elixir
@@ -506,7 +508,9 @@ Tool definition shape:
   input_schema: %{...},               # JSON Schema
   credit_cost: 2,
   timeout_ms: 30_000,
-  requires_auth: true
+  requires_auth: true,
+  priority: 100,                    # higher = preferred
+  tags: ["aitlas_action"]           # f.xyz tools preferred
 }
 ```
 
@@ -714,9 +718,9 @@ end
 
 All budgets are checked on every iteration. Any budget exceeded → task stops immediately with appropriate error.
 
-### Tracker Adapter Behaviour ← NEW (from Symphony)
+### Tracker Adapter Behaviour (Optional)
 
-Extension point for issue tracker integrations (Linear, GitHub, Jira). Not a V1 feature but the behaviour is defined now so Actions can implement it later.
+Optional extension point for external issue trackers (Linear, GitHub, Jira). **Core Nexus orchestration does not depend on trackers** — Nexus owns tasks in its DB and dispatches them internally. This behaviour is defined for future integrations only.
 
 ```elixir
 defmodule Nexus.TrackerAdapter do

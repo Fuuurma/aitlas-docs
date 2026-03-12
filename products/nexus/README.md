@@ -11,6 +11,8 @@
 ## Overview
 
 Nexus is the **agent operating system** — the execution engine that runs AI agents with deterministic replay.
+It is the **core runtime**: Nexus owns task orchestration, tool calling, agent loops, and agent‑to‑agent execution.
+All tool calls are MCP‑first; agents calling other agents is implemented as MCP tool calls routed through Nexus.
 
 **Stack:** Pure Elixir / Phoenix / Oban  
 **Host:** Hetzner  
@@ -25,8 +27,12 @@ Nexus is the **agent operating system** — the execution engine that runs AI ag
 - **Durable Execution** — Oban jobs survive crashes
 - **OTP Supervision** — Auto-recovery built-in
 - **Deterministic Replay** — Every run is a commit
+- **Replay Forks** — Fork tasks from any step (`replay_of_task_id`, `fork_from_step`)
 - **Real-time Streaming** — Phoenix Channels
 - **MCP-native** — First-class MCP tool support
+- **MCP-first** — All tool calls (including agent‑to‑agent) route through MCP
+- **Aitlas Actions prioritized** — f.xyz tools are preferred in tool selection when available (placeholders until MCP endpoints go live)
+- **Replay-safe tool calls** — MCP requests/responses are sanitized and stored in tool call metadata
 - **BYOK** — User provides their own API keys
 - **Hard Limits** — max_iterations, max_tool_calls, max_tokens, credit_budget
 - **Agent Graphs** — Agents can call other agents as tools

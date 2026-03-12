@@ -47,6 +47,7 @@
 ## 1. What Nexus Is
 
 Nexus is the execution kernel. It does not have a UI. It does not manage users. It does not run a marketplace. It executes agents.
+Nexus **owns task orchestration** end‑to‑end: tasks live in the Nexus DB and are dispatched internally by the runtime. External issue trackers are optional and not required for core operation.
 
 ```
 WHAT NEXUS OWNS
@@ -87,129 +88,40 @@ This is why Nexus is Elixir. Not because it's fashionable. Because the concurren
 ```
 aitlas-nexus/
 ├── lib/
-│   ├── nexus.ex                          ← Application entry
-│   ├── nexus/
-│   │   │
-│   │   ├── ── ENGINES ──────────────────────────────────────
-│   │   │
-│   │   ├── provider_router/
-│   │   │   ├── provider_router.ex        ← Router + normalizer
-│   │   │   ├── openai.ex                 ← OpenAI adapter
-│   │   │   ├── anthropic.ex              ← Anthropic adapter
-│   │   │   ├── gemini.ex                 ← Gemini adapter
-│   │   │   ├── model_registry.ex         ← In-memory capability map
-│   │   │   └── streaming.ex              ← SSE parsing utilities
-│   │   │
-│   │   ├── context_builder/
-│   │   │   ├── context_builder.ex        ← Assembles full prompt
-│   │   │   ├── prompt_builder.ex         ← Liquid template rendering (Solid)
-│   │   │   ├── compactor.ex              ← Sliding window + summarization
-│   │   │   └── skill_prompts.ex          ← Per-skill instruction blocks
-│   │   │
-│   │   ├── agent_loop/
-│   │   │   ├── agent_loop.ex             ← Core GenServer loop
-│   │   │   ├── heuristics.ex             ← Stuck detection
-│   │   │   └── state.ex                  ← Loop state struct
-│   │   │
-│   │   ├── tool_executor/
-│   │   │   ├── tool_executor.ex          ← Dispatch + credit + hash
-│   │   │   └── mcp_client.ex             ← MCP over HTTP (JSON-RPC 2.0)
-│   │   │
-│   │   ├── tool_registry/
-│   │   │   ├── tool_registry.ex          ← ETS table + registration
-│   │   │   └── tool.ex                   ← Tool struct
-│   │   │
-│   │   ├── memory_engine/
-│   │   │   ├── memory_engine.ex          ← Facade: all memory ops
-│   │   │   ├── active_context.ex         ← GenServer state (hot path)
-│   │   │   ├── short_term.ex             ← Redis (Upstash)
-│   │   │   ├── vector_memory.ex          ← pgvector HNSW
-│   │   │   └── episodic.ex               ← Postgres task history
-│   │   │
-│   │   ├── file_processor/
-│   │   │   ├── file_processor.ex         ← Parse → Chunk → Embed → Index
-│   │   │   ├── parsers/
-│   │   │   │   ├── pdf.ex
-│   │   │   │   ├── docx.ex
-│   │   │   │   ├── markdown.ex
-│   │   │   │   └── code.ex
-│   │   │   └── chunker.ex
-│   │   │
-│   │   ├── observability/
-│   │   │   ├── observability.ex          ← :telemetry event bus
-│   │   │   └── logger_redactor.ex        ← Secrets redaction middleware
-│   │   │
-│   │   ├── workspace/
-│   │   │   ├── workspace.ex              ← Per-task sandboxed dirs (Symphony)
-│   │   │   └── hooks.ex                  ← Lifecycle hooks
-│   │   │
-│   │   ├── codex_client/
-│   │   │   └── codex_client.ex           ← JSON-RPC over stdio (Symphony)
-│   │   │
-│   │   ├── capability_graph/
-│   │   │   ├── capability_graph.ex       ← Semantic tool hierarchy
-│   │   │   ├── capability_node.ex        ← Tree node struct
-│   │   │   └── filter.ex                 ← Goal-based tool filtering
-│   │   │
-│   │   ├── budget_guard/
-│   │   │   └── budget_guard.ex           ← Multi-layer budget enforcement
-│   │   │
-│   │   ├── replay_engine/
-│   │   │   └── replay_engine.ex          ← Exact | Live | Fork
-│   │   │
-│   │   ├── ── DOMAIN ───────────────────────────────────────
-│   │   │
-│   │   ├── tasks/
-│   │   │   ├── tasks.ex                  ← Task CRUD + state machine
-│   │   │   ├── task.ex                   ← Ecto schema
-│   │   │   ├── task_step.ex              ← Ecto schema
-│   │   │   └── tool_call.ex              ← Ecto schema
-│   │   │
-│   │   ├── agents/
-│   │   │   ├── agent_loader.ex           ← Load spec from Agents Store API
-│   │   │   └── agent_spec.ex             ← Parsed spec struct
-│   │   │
-│   │   ├── credits/
-│   │   │   └── credits.ex                ← Ledger: reserve/deduct/refund
-│   │   │
-│   │   ├── crypto/
-│   │   │   └── crypto.ex                 ← AES-256-GCM encrypt/decrypt
-│   │   │
-│   │   ├── injection_guard/
-│   │   │   └── injection_guard.ex        ← Tool call security validation
-│   │   │
-│   │   ├── repo.ex                       ← Ecto Repo
-│   │   │
-│   │   ├── ── WORKERS ──────────────────────────────────────
-│   │   │
-│   │   └── workers/
-│   │       ├── agent_runner.ex           ← Main Oban worker
-│   │       ├── memory_extractor.ex       ← Post-task fact extraction
-│   │       ├── file_indexer.ex           ← Parse + embed uploaded files
-│   │       ├── scheduled_task.ex         ← Recurring tasks (cron)
-│   │       ├── replay_runner.ex          ← Replay Oban worker
-│   │       └── watchdog.ex               ← Stale task cleanup
+│   ├── aitlas.ex                         ← Context entry module
+│   ├── aitlas/application.ex             ← OTP supervision tree
+│   ├── aitlas/
+│   │   ├── agent_loop/                   ← Core GenServer loop
+│   │   ├── context/                      ← ContextBuilder + tools filtering
+│   │   ├── provider_router/              ← OpenAI/Anthropic/Gemini adapters
+│   │   ├── tool_executor/                ← Tool execution + MCP client
+│   │   ├── tasks/                        ← Task schemas + workflow
+│   │   ├── tools/                        ← Built-in tool handlers
+│   │   ├── memory_engine/                ← Episodic memory + indexing
+│   │   ├── memory/                       ← In-memory helpers
+│   │   ├── mcp/                          ← MCP dispatcher + tools
+│   │   ├── credits/                      ← Credit ledger
+│   │   ├── circuit_breaker/              ← Provider breaker
+│   │   ├── orchestrator.ex               ← Task dispatcher
+│   │   ├── reconciliation.ex             ← Stale task cleanup
+│   │   ├── capability_graph.ex           ← Tool hierarchy
+│   │   ├── tool_registry.ex              ← ETS tool registry
+│   │   ├── replay_engine.ex              ← Trace | reexecute | fork
+│   │   ├── replay_sanitizer.ex           ← Replay-safe redaction
+│   │   ├── file_processor.ex             ← Parse → Chunk → Embed → Index
+│   │   ├── workspace.ex                  ← Per-task workspace
+│   │   ├── codex_client.ex               ← Local agent JSON-RPC
+│   │   └── observability.ex              ← :telemetry helpers
 │   │
-│   └── nexus_web/
+│   └── aitlas_web/
 │       ├── endpoint.ex                   ← Phoenix endpoint
 │       ├── router.ex                     ← Routes
-│       ├── channels/
-│       │   ├── user_socket.ex            ← WebSocket authentication
-│       │   └── task_channel.ex           ← Per-task live streaming
-│       └── controllers/
-│           ├── task_controller.ex        ← REST: tasks CRUD
-│           ├── replay_controller.ex      ← REST: replay
-│           └── health_controller.ex
+│       ├── channels/                     ← Task streaming
+│       ├── controllers/                  ← REST + MCP endpoints
+│       └── plugs/                        ← Auth/MCP auth
 │
-├── priv/
-│   └── repo/migrations/
-│
+├── priv/repo/migrations/
 ├── config/
-│   ├── config.exs
-│   ├── dev.exs
-│   ├── test.exs
-│   └── runtime.exs                       ← All secrets loaded here
-│
 ├── test/
 ├── AGENTS.md
 └── mix.exs
@@ -275,40 +187,30 @@ NEXUS RUNTIME
 ## 4. Application Supervision Tree
 
 ```elixir
-# lib/nexus.ex
-defmodule Nexus.Application do
+# lib/aitlas/application.ex
+defmodule Aitlas.Application do
   use Application
 
   @impl true
   def start(_type, _args) do
     children = [
-      # ── Database ──────────────────────────────────────────
-      Nexus.Repo,
-
-      # ── Registry (ETS) ────────────────────────────────────
-      {Registry, keys: :unique, name: Nexus.TaskRegistry},
-
-      # ── Engine: Tool Registry ─────────────────────────────
-      Nexus.ToolRegistry,
-
-      # ── Engine: Memory (Redis connection) ─────────────────
-      {Redix, url: Application.fetch_env!(:nexus, :redis_url), name: :nexus_redis},
-
-      # ── Web (Phoenix) ─────────────────────────────────────
-      NexusWeb.Endpoint,
-
-      # ── Task Supervisors ──────────────────────────────────
-      {Task.Supervisor, name: Nexus.TaskSupervisor},
-      {Task.Supervisor, name: Nexus.ToolSupervisor},
-
-      # ── Oban (job queue) ──────────────────────────────────
-      {Oban, Application.fetch_env!(:nexus, Oban)},
-
-      # ── Orchestrator ──────────────────────────────────────
-      Nexus.Orchestrator,
+      Aitlas.Repo,
+      Aitlas.Redix,
+      {Phoenix.PubSub, name: Aitlas.PubSub},
+      {Registry, keys: :unique, name: Aitlas.AgentLoop.Registry},
+      {Registry, keys: :unique, name: Aitlas.CircuitBreaker.Registry},
+      Aitlas.ToolRegistry,
+      Aitlas.CapabilityGraph,
+      Aitlas.AgentLoader,
+      Aitlas.RetryQueue,
+      Aitlas.Orchestrator,
+      Aitlas.Reconciliation,
+      {Aitlas.CircuitBreaker.Supervisor, []},
+      AitlasWeb.Endpoint,
+      {Oban, Application.fetch_env!(:aitlas, Oban)}
     ]
 
-    opts = [strategy: :one_for_one, name: Nexus.Supervisor]
+    opts = [strategy: :one_for_one, name: Aitlas.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end
@@ -323,23 +225,14 @@ Normalizes all LLM calls across providers. The agent loop never calls a provider
 ### Model Registry
 
 ```elixir
-# lib/nexus/provider_router/model_registry.ex
-defmodule Nexus.ProviderRouter.ModelRegistry do
+# lib/aitlas/provider_router/model_registry.ex
+defmodule Aitlas.ProviderRouter.ModelRegistry do
   @models %{
-    # OpenAI
-    "openai:gpt-4o"                        => %{tools: true,  vision: true,  stream: true, max_context: 128_000},
-    "openai:gpt-4o-mini"                   => %{tools: true,  vision: true,  stream: true, max_context: 128_000},
-    "openai:o3-mini"                       => %{tools: true,  vision: false, stream: true, max_context: 200_000},
-    # Pinned versions (required for deterministic replay)
-    "openai:gpt-4o-2024-11-20"             => %{tools: true,  vision: true,  stream: true, max_context: 128_000},
-    # Anthropic
-    "anthropic:claude-3-5-sonnet-20241022" => %{tools: true,  vision: true,  stream: true, max_context: 200_000},
-    "anthropic:claude-3-haiku-20240307"    => %{tools: true,  vision: false, stream: true, max_context: 200_000},
-    # Gemini
-    "gemini:gemini-2.0-flash"              => %{tools: true,  vision: true,  stream: true, max_context: 1_000_000},
-    "gemini:gemini-1.5-pro"                => %{tools: true,  vision: true,  stream: true, max_context: 2_000_000},
-    # Local (Ollama)
-    "local:llama3"                         => %{tools: false, vision: false, stream: true, max_context: 8_000},
+    "openai:gpt-4o" => %{tools: true, vision: true, stream: true, max_context: 128_000, default_temperature: 0.7},
+    "anthropic:claude-3-5-sonnet-20241022" => %{tools: true, vision: true, stream: true, max_context: 200_000},
+    "gemini:gemini-2.0-flash" => %{tools: true, vision: true, stream: true, max_context: 1_000_000},
+    "local:llama3.2" => %{tools: false, vision: false, stream: true, max_context: 128_000},
+    "mock:echo" => %{tools: true, vision: false, stream: false, max_context: 4_096}
   }
 
   def capabilities(model), do: Map.get(@models, model)
@@ -349,55 +242,34 @@ defmodule Nexus.ProviderRouter.ModelRegistry do
 end
 ```
 
+Full, up-to-date model list lives in `lib/aitlas/provider_router/model_registry.ex`.
+
 ### Provider Router
 
 ```elixir
-# lib/nexus/provider_router/provider_router.ex
-defmodule Nexus.ProviderRouter do
-  alias Nexus.ProviderRouter.{OpenAI, Anthropic, Gemini, ModelRegistry}
+# lib/aitlas/provider_router/provider_router.ex
+defmodule Aitlas.ProviderRouter do
+  alias Aitlas.ProviderRouter.{OpenAI, Anthropic, Gemini, ModelRegistry}
 
-  @spec call(map()) :: {:ok, map()} | {:error, term()}
-  def call(%{model: model, messages: messages, tools: tools, api_key: api_key} = opts) do
-    caps = ModelRegistry.capabilities(model)
+  @spec call([map()], keyword()) :: {:ok, map()} | {:error, term()}
+  def call(messages, opts) do
+    model = Keyword.fetch!(opts, :model)
+    user_id = Keyword.fetch!(opts, :user_id)
 
-    if is_nil(caps) do
-      {:error, {:unknown_model, model}}
-    else
-      # Only pass tools if model supports them
-      tools_arg = if caps.tools, do: tools, else: []
-
-      {provider, model_id} = parse_model(model)
-
-      call_provider(provider, %{
-        model:      model_id,
-        messages:   messages,
-        tools:      tools_arg,
-        api_key:    api_key,
-        seed:       Map.get(opts, :seed),
-        max_tokens: Map.get(opts, :max_tokens, 4096),
-        stream:     Map.get(opts, :stream, false)
-      })
+    with {:ok, provider, model_name} <- ModelRegistry.parse_provider(model),
+         :ok <- validate_model(model),
+         {:ok, provider_opts} <- build_provider_opts(provider, model_name, opts) do
+      dispatch(provider, messages, provider_opts)
     end
   end
-
-  defp parse_model(model_string) do
-    [provider | rest] = String.split(model_string, ":", parts: 2)
-    {String.to_atom(provider), Enum.join(rest, ":")}
-  end
-
-  defp call_provider(:openai, opts),     do: OpenAI.call(opts)
-  defp call_provider(:anthropic, opts),  do: Anthropic.call(opts)
-  defp call_provider(:gemini, opts),     do: Gemini.call(opts)
-  defp call_provider(:local, opts),      do: OpenAI.call(%{opts | base_url: "http://localhost:11434/v1"})
-  defp call_provider(p, _),             do: {:error, {:unsupported_provider, p}}
 end
 ```
 
 ### OpenAI Adapter
 
 ```elixir
-# lib/nexus/provider_router/openai.ex
-defmodule Nexus.ProviderRouter.OpenAI do
+# lib/aitlas/provider_router/openai.ex
+defmodule Aitlas.ProviderRouter.OpenAI do
   @base_url "https://api.openai.com/v1"
 
   def call(%{model: model, messages: messages, tools: tools, api_key: api_key} = opts) do
@@ -478,386 +350,91 @@ end
 Assembles the full prompt for each agent loop iteration. Reads from active context (GenServer state), vector memory, files, and tool definitions.
 
 ```elixir
-# lib/nexus/context_builder/context_builder.ex
-defmodule Nexus.ContextBuilder do
-  alias Nexus.{MemoryEngine, ToolRegistry, ContextBuilder.Compactor, ContextBuilder.PromptBuilder}
+# lib/aitlas/context/context_builder.ex
+defmodule Aitlas.ContextBuilder do
+  alias Aitlas.{ToolRegistry, MemoryEngine, CapabilityGraph}
+  alias Aitlas.Context.Compactor
 
-  @spec build(map()) :: list()
-  def build(%{task: task, agent_spec: agent, loop_state: state} = opts) do
-    system = build_system_prompt(agent, task, state)
-    history = state.messages
-    memories = fetch_memories(task, agent)
-    tools = ToolRegistry.list_for_agent(agent)
+  @spec build(keyword()) :: [map()]
+  def build(opts) do
+    agent_spec = Keyword.get(opts, :agent_spec)
+    goal = Keyword.fetch!(opts, :goal)
+    task_context = Keyword.get(opts, :task_context)
+    history = Keyword.get(opts, :history, [])
+    model = Keyword.get(opts, :model, "openai:gpt-4o")
+    user_id = Keyword.get(opts, :user_id)
 
-    # Compact if approaching context limit
-    messages = Compactor.compact(history, max_tokens: agent.execution.max_tokens)
+    _tools = get_tools_for_agent(agent_spec, goal)
 
-    # Assemble final context
-    [
-      %{role: "system", content: system}
-      | inject_memories(messages, memories)
-    ]
-    |> then(&{&1, tools})
-  end
+    messages = []
 
-  defp build_system_prompt(agent, task, state) do
-    PromptBuilder.build(agent.persona.system_prompt, %{
-      user:   %{name: task.user_name, goal: task.goal},
-      agent:  %{name: agent.name, role: agent.role},
-      task:   %{id: task.id, attempt: state.attempt},
-      memory: %{recent_summaries: state.memory_summaries},
-      tools:  ToolRegistry.list_for_agent(agent)
-    })
-  end
+    messages =
+      if agent_spec && agent_spec["system_prompt"] do
+        [%{role: "system", content: render_system_prompt(agent_spec, opts)} | messages]
+      else
+        messages
+      end
 
-  defp fetch_memories(task, agent) do
-    if agent.memory.vector.enabled do
-      MemoryEngine.search_vector(
-        query:   task.goal,
-        user_id: task.user_id,
-        agent_id: agent.id,
-        scopes:  agent.memory.vector.read_scopes,
-        top_k:   agent.memory.vector.top_k
-      )
-    else
-      []
-    end
-  end
+    messages =
+      if user_id do
+        case fetch_relevant_memories(user_id, goal) do
+          [] -> messages
+          memories -> [%{role: "system", content: format_memories(memories)} | messages]
+        end
+      else
+        messages
+      end
 
-  defp inject_memories(messages, []), do: messages
-  defp inject_memories(messages, memories) do
-    memory_block = Enum.map_join(memories, "\n", & &1.content)
-    memory_message = %{
-      role:    "system",
-      content: "[MEMORY]\n#{memory_block}\n[/MEMORY]"
-    }
-    [memory_message | messages]
+    messages =
+      messages ++ [
+        %{role: "user", content: build_initial_message(goal, task_context, agent_spec)}
+      ]
+
+    messages = messages ++ format_history(history)
+    Compactor.compact(messages, max_tokens: Aitlas.ProviderRouter.ModelRegistry.max_context(model), target_ratio: 0.7)
   end
 end
 ```
 
-### Prompt Builder (Liquid templates via Solid)
+### Prompt Builder (Liquid via Solid)
 
-```elixir
-# lib/nexus/context_builder/prompt_builder.ex
-# Derived from Symphony (github.com/openai/symphony), Apache 2.0
-# Modified by Furma.tech for Nexus
-
-defmodule Nexus.ContextBuilder.PromptBuilder do
-  @doc """
-  Renders agent system prompts using Liquid templates.
-
-  Available variables:
-    {{ user.name }}, {{ user.goal }}
-    {{ agent.name }}, {{ agent.role }}
-    {{ task.id }}, {{ task.attempt }}
-    {{ memory.recent_summaries | join: '\\n' }}
-    {{ tools | map: 'name' | join: ', ' }}
-  """
-  def build(template_string, variables) when is_binary(template_string) do
-    case Solid.parse(template_string) do
-      {:ok, template} ->
-        Solid.render!(template, normalize(variables),
-          strict_variables: false,
-          strict_filters:   true
-        )
-        |> to_string()
-
-      {:error, reason} ->
-        # Fall back to raw template if Liquid parse fails
-        # (handles plain text system prompts without templates)
-        template_string
-    end
-  rescue
-    _ -> template_string
-  end
-
-  defp normalize(%{user: user, agent: agent, task: task, memory: memory, tools: tools}) do
-    %{
-      "user"   => %{"name" => user[:name], "goal" => user[:goal]},
-      "agent"  => %{"name" => agent[:name], "role" => agent[:role]},
-      "task"   => %{"id" => task[:id], "attempt" => task[:attempt] || 1},
-      "memory" => %{"recent_summaries" => memory[:recent_summaries] || []},
-      "tools"  => Enum.map(tools, &%{"name" => &1.name, "description" => &1.description})
-    }
-  end
-end
-```
+Prompt rendering is handled inline in `Aitlas.ContextBuilder` using `Solid`.
+Assigns are minimal: `goal`, `context`, `agent_name`, `iteration`.
 
 ### Context Compactor
 
 ```elixir
-# lib/nexus/context_builder/compactor.ex
-defmodule Nexus.ContextBuilder.Compactor do
-  @max_messages_default 50
-
+# lib/aitlas/context/compactor.ex
+defmodule Aitlas.Context.Compactor do
   def compact(messages, opts \\ []) do
-    max_msgs = Keyword.get(opts, :max_messages, @max_messages_default)
-
-    cond do
-      length(messages) <= max_msgs ->
-        messages
-
-      true ->
-        # Keep first message (original task context) + last N messages
-        [List.first(messages) | Enum.take(messages, -max_msgs + 1)]
-    end
+    # Keep system + last N, summarize middle if needed
   end
 end
 ```
 
 ### Skill Prompts
 
-```elixir
-# lib/nexus/context_builder/skill_prompts.ex
-defmodule Nexus.ContextBuilder.SkillPrompts do
-  @skill_prompts %{
-    "web_research" => """
-    You are skilled at web research. When researching:
-    - Always search multiple sources before forming conclusions
-    - Prioritize primary sources over aggregators
-    - Cross-reference claims across at least 3 sources
-    - Synthesize findings in structured, scannable formats
-    """,
-
-    "code_review" => """
-    You are a skilled code reviewer. When reviewing:
-    - Check for correctness, security, performance, and maintainability
-    - Reference exact file names and line numbers
-    - Prioritize issues by severity: CRITICAL > WARNING > SUGGESTION
-    - Explain WHY something is an issue, suggest concrete fixes
-    """,
-
-    "data_analysis" => """
-    You are a skilled data analyst. When analyzing:
-    - Describe the shape and quality of the data first
-    - State your assumptions explicitly
-    - Show your work: include the calculations or code
-    - Distinguish between correlation and causation
-    """,
-
-    "lead_enrichment" => """
-    You are skilled at B2B lead enrichment. When researching leads:
-    - Find company size, funding, tech stack, decision makers
-    - Verify information across multiple sources
-    - Never fabricate data points — mark uncertain info as [UNVERIFIED]
-    - Prioritize recency: information older than 12 months should be flagged
-    """,
-  }
-
-  def for_skill(skill_name), do: Map.get(@skill_prompts, skill_name, "")
-
-  def for_skills(skills) when is_list(skills) do
-    skills
-    |> Enum.map(&for_skill/1)
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.join("\n\n")
-  end
-end
-```
+Skill prompt blocks live in agent specs (Agents Store). Nexus does not embed a static skill prompt registry.
 
 ---
 
 ## 7. Engine 3 — Agent Loop
 
-The core. A GenServer that runs the PLAN → ACT → REFLECT → PERSIST cycle with 5 hard limits and heuristic stuck detection.
+The core. A GenServer that runs the PLAN → ACT → REFLECT → PERSIST cycle with hard limits and heuristic stuck detection.
 
 ```elixir
-# lib/nexus/agent_loop/agent_loop.ex
-defmodule Nexus.AgentLoop do
+# lib/aitlas/agent_loop/agent_loop.ex
+defmodule Aitlas.AgentLoop do
   use GenServer
-  require Logger
 
-  alias Nexus.{
-    ContextBuilder, ProviderRouter, ToolExecutor,
-    Tasks, Credits, Observability, Crypto
-  }
-  alias Nexus.AgentLoop.{Heuristics, State}
+  # PLAN: build context + call LLM
+  # ACT: execute tool calls via ToolExecutor
+  # REFLECT: summarize tool outputs
+  # PERSIST: update task counters + broadcast
+end
+```
 
-  # ── Hard limits (enforced every iteration) ───────────────
-  @max_iterations_default   20
-  @max_tool_calls_default   50
-  @max_tokens_default       200_000
-  @max_runtime_ms_default   30 * 60 * 1000   # 30 min
-
-  # ── Public API ────────────────────────────────────────────
-
-  def start_link(task) do
-    GenServer.start_link(__MODULE__, task,
-      name: via_registry(task.id),
-      timeout: @max_runtime_ms_default + 5_000
-    )
-  end
-
-  def cancel(task_id) do
-    case Registry.lookup(Nexus.TaskRegistry, task_id) do
-      [{pid, _}] -> GenServer.cast(pid, :cancel)
-      []         -> {:error, :not_found}
-    end
-  end
-
-  # ── GenServer callbacks ───────────────────────────────────
-
-  @impl true
-  def init(task) do
-    # Fetch decrypted API key — never stored in state as named var
-    # Passed inline to each ProviderRouter call
-    Process.send_after(self(), :run, 0)
-    {:ok, State.initial(task)}
-  end
-
-  @impl true
-  def handle_info(:run, state) do
-    case run_loop(state) do
-      {:ok, final_state}    -> {:stop, :normal, final_state}
-      {:error, reason}      -> {:stop, reason, state}
-    end
-  end
-
-  @impl true
-  def handle_cast(:cancel, state) do
-    Tasks.transition(state.task, :cancelled)
-    broadcast(state.task.id, "cancelled", %{})
-    {:stop, :normal, state}
-  end
-
-  # ── Core Loop ─────────────────────────────────────────────
-
-  defp run_loop(state) do
-    start_ms = System.monotonic_time(:millisecond)
-    Tasks.transition(state.task, :running)
-    broadcast(state.task.id, "started", %{task_id: state.task.id})
-
-    do_loop(state, start_ms)
-  end
-
-  defp do_loop(state, start_ms) do
-    # 1. Check hard limits every iteration
-    case check_limits(state, start_ms) do
-      {:exceeded, reason} ->
-        Tasks.transition(state.task, :timeout, error: inspect(reason))
-        broadcast(state.task.id, "timeout", %{reason: reason})
-        {:ok, state}
-
-      :ok ->
-        # 2. Check heuristics (stuck detection)
-        case Heuristics.check(state) do
-          {:stuck, reason} ->
-            Tasks.transition(state.task, :stuck, error: inspect(reason))
-            broadcast(state.task.id, "stuck", %{reason: reason})
-            {:ok, state}
-
-          :ok ->
-            # 3. Build context
-            {messages, tools} = ContextBuilder.build(%{
-              task:       state.task,
-              agent_spec: state.agent_spec,
-              loop_state: state
-            })
-
-            prompt_hash = hash_messages(messages)
-
-            # 4. Call LLM (API key decrypted inline, not stored)
-            call_result = ProviderRouter.call(%{
-              model:    state.task.provider,
-              messages: messages,
-              tools:    tools,
-              api_key:  Crypto.decrypt_api_key(state.task.user_id, provider_name(state.task.provider)),
-              seed:     state.task.seed
-            })
-
-            # 5. Handle response
-            handle_response(call_result, state, prompt_hash, start_ms)
-        end
-    end
-  end
-
-  defp handle_response({:ok, %{type: :tool_call} = resp}, state, prompt_hash, start_ms) do
-    # Write PLAN step
-    step = Tasks.create_step!(state.task, %{
-      type:        :action,
-      step_number: state.iteration + 1,
-      content:     "Calling #{resp.tool_name}",
-      prompt_hash: prompt_hash,
-      model:       state.task.provider,
-      input_tokens: get_in(resp, [:raw, "usage", "prompt_tokens"]) || 0,
-    })
-
-    broadcast_step(state.task.id, step, :running)
-
-    # Execute tool (injection guard inside ToolExecutor)
-    case ToolExecutor.run(%{
-      task:        state.task,
-      step:        step,
-      tool_name:   resp.tool_name,
-      tool_args:   resp.tool_args,
-      allowlist:   state.agent_spec.tools.tool_allowlist
-    }) do
-      {:ok, result, credits_used} ->
-        # Update step with result
-        Tasks.complete_step!(step, %{
-          tool_output:  result,
-          credits_used: credits_used,
-          status:       :completed
-        })
-        broadcast_step(state.task.id, step, :completed)
-
-        # Append tool result to message history
-        new_state = state
-          |> State.increment_iteration()
-          |> State.increment_tool_calls()
-          |> State.add_tokens(resp.raw["usage"]["total_tokens"] || 0)
-          |> State.add_message(%{role: "assistant", content: nil, tool_calls: [resp]})
-          |> State.add_message(%{role: "tool", tool_call_id: resp.tool_call_id, content: Jason.encode!(result)})
-
-        do_loop(new_state, start_ms)
-
-      {:error, :injection_blocked} ->
-        Tasks.complete_step!(step, %{status: :blocked, error: "injection_blocked"})
-        broadcast_step(state.task.id, step, :blocked)
-        new_state = State.add_message(state, %{
-          role: "tool",
-          tool_call_id: resp.tool_call_id,
-          content: "Tool call blocked by security policy."
-        })
-        do_loop(State.increment_iteration(new_state), start_ms)
-
-      {:error, reason} ->
-        Tasks.complete_step!(step, %{status: :failed, error: inspect(reason)})
-        broadcast_step(state.task.id, step, :failed)
-        new_state = State.add_message(state, %{
-          role: "tool",
-          tool_call_id: resp.tool_call_id,
-          content: "Tool execution failed: #{inspect(reason)}"
-        })
-        do_loop(State.increment_iteration(new_state), start_ms)
-    end
-  end
-
-  defp handle_response({:ok, %{type: :text, content: content}}, state, prompt_hash, _start_ms) do
-    # Agent produced a final answer
-    step = Tasks.create_step!(state.task, %{
-      type:        :final,
-      step_number: state.iteration + 1,
-      content:     content,
-      prompt_hash: prompt_hash,
-      model:       state.task.provider,
-      status:      :completed
-    })
-
-    broadcast_step(state.task.id, step, :completed)
-    Tasks.complete!(state.task, content)
-    broadcast(state.task.id, "complete", %{result: content, credits_used: state.task.credits_used})
-
-    # Enqueue memory extraction
-    %{task_id: state.task.id, user_id: state.task.user_id}
-    |> Nexus.Workers.MemoryExtractor.new()
-    |> Oban.insert()
-
-    {:ok, state}
-  end
-
-  defp handle_response({:error, :rate_limited}, state, _hash, start_ms) do
+Local agent mode: when `provider` is `codex`, `claude-code`, or `opencode`, the loop dispatches via `Aitlas.CodexClient` and routes tool calls back through `Aitlas.ToolExecutor`.
     # Back off and retry
     Process.sleep(5_000)
     do_loop(state, start_ms)
@@ -899,7 +476,7 @@ defmodule Nexus.AgentLoop do
   # ── Helpers ───────────────────────────────────────────────
 
   defp broadcast(task_id, event, payload) do
-    NexusWeb.Endpoint.broadcast("task:#{task_id}", event, payload)
+    AitlasWeb.Endpoint.broadcast("task:#{task_id}", event, payload)
   end
 
   defp broadcast_step(task_id, step, status) do
@@ -913,7 +490,7 @@ defmodule Nexus.AgentLoop do
   defp provider_name(model), do: model |> String.split(":") |> List.first()
 
   defp via_registry(task_id) do
-    {:via, Registry, {Nexus.TaskRegistry, task_id}}
+    {:via, Registry, {Aitlas.AgentLoop.Registry, task_id}}
   end
 end
 ```
@@ -921,8 +498,7 @@ end
 ### Agent Loop State
 
 ```elixir
-# lib/nexus/agent_loop/state.ex
-defmodule Nexus.AgentLoop.State do
+defmodule Aitlas.AgentLoop.State do
   defstruct [
     :task,
     :agent_spec,
@@ -958,8 +534,7 @@ end
 ### Heuristics
 
 ```elixir
-# lib/nexus/agent_loop/heuristics.ex
-defmodule Nexus.AgentLoop.Heuristics do
+defmodule Aitlas.AgentLoop.Heuristics do
   @doc "Detect pathological loop behavior before it burns credits"
 
   def check(state) do
@@ -1012,102 +587,15 @@ end
 Every tool call flows through here. No exceptions.
 
 ```elixir
-# lib/nexus/tool_executor/tool_executor.ex
-defmodule Nexus.ToolExecutor do
-  alias Nexus.{ToolRegistry, InjectionGuard, Credits, Observability}
-
-  @spec run(map()) :: {:ok, map(), integer()} | {:error, term()}
-  def run(%{task: task, step: step, tool_name: name, tool_args: args, allowlist: allowlist}) do
-
-    # 1. Injection guard — must pass before anything else
-    with :ok <- InjectionGuard.validate(%{name: name, arguments: args}, allowlist),
-
-    # 2. Resolve from registry (ETS, zero DB)
-         {:ok, tool}  <- ToolRegistry.resolve(name),
-
-    # 3. Credit pre-check (enough balance to cover this tool)
-         :ok          <- Credits.check(task.user_id, tool.credit_cost),
-
-    # 4. Execute (async, isolated process — crash doesn't kill agent loop)
-         {:ok, result} <- execute_isolated(tool, args, task) do
-
-      # 5. Deduct credits (ONLY on success)
-      Credits.deduct(task.user_id, tool.credit_cost, %{
-        task_id:   task.id,
-        step_id:   step.id,
-        tool_name: name,
-        reason:    "tool:#{name}"
-      })
-
-      # 6. Hash output for replay
-      output_hash = :crypto.hash(:sha256, Jason.encode!(result))
-        |> Base.encode16(case: :lower)
-
-      # 7. Log tool call
-      Nexus.Tasks.create_tool_call!(task, %{
-        step_id:      step.id,
-        tool_name:    name,
-        tool_input:   args,
-        tool_output:  result,
-        tool_version: tool.version,
-        output_hash:  output_hash,
-        credits_used: tool.credit_cost,
-        status:       :completed
-      })
-
-      # 8. Telemetry
-      Observability.emit("tool.executed", %{
-        tool_name:    name,
-        user_id:      task.user_id,
-        credits_used: tool.credit_cost,
-        task_id:      task.id
-      })
-
-      {:ok, result, tool.credit_cost}
-
-    else
-      {:error, :injection_blocked} ->
-        Observability.emit("tool.injection_blocked", %{tool_name: name, task_id: task.id})
-        {:error, :injection_blocked}
-
-      {:error, :not_found} ->
-        {:error, {:tool_not_found, name}}
-
-      {:error, :insufficient_credits} ->
-        {:error, :insufficient_credits}
-
-      {:error, reason} ->
-        # Log failed call (no credit charge)
-        Nexus.Tasks.create_tool_call!(task, %{
-          step_id:    step.id,
-          tool_name:  name,
-          tool_input: args,
-          status:     :failed,
-          error:      inspect(reason)
-        })
-
-        Observability.emit("tool.failed", %{
-          tool_name: name,
-          reason:    inspect(reason),
-          task_id:   task.id
-        })
-
-        {:error, reason}
-    end
-  end
-
-  defp execute_isolated(tool, args, task) do
-    # Run in a separate supervised process
-    # If this crashes, the agent loop GenServer is unaffected
-    task_ref = Task.Supervisor.async_nolink(Nexus.ToolSupervisor, fn ->
-      Nexus.MCP.Client.call(tool, args, task)
-    end)
-
-    case Task.yield(task_ref, tool.timeout_ms) || Task.shutdown(task_ref) do
-      {:ok, result}    -> result
-      {:exit, reason}  -> {:error, {:tool_crashed, reason}}
-      nil              -> {:error, :tool_timeout}
-    end
+# lib/aitlas/tool_executor.ex
+defmodule Aitlas.ToolExecutor do
+  @spec execute(String.t(), map(), keyword()) :: map()
+  def execute(tool_name, args, opts) do
+    # 1. Validate schema + injection guard + allowlist
+    # 2. Resolve tool from ToolRegistry (ETS)
+    # 3. Execute (built-in or MCP)
+    # 4. Hash output for replay
+    # 5. Charge credits on success
   end
 end
 ```
@@ -1115,56 +603,11 @@ end
 ### MCP Client
 
 ```elixir
-# lib/nexus/tool_executor/mcp_client.ex
-defmodule Nexus.MCP.Client do
-  @doc "JSON-RPC 2.0 call to an Action's MCP endpoint"
-
-  def call(tool, arguments, task) do
-    payload = %{
-      jsonrpc: "2.0",
-      id:      System.unique_integer([:positive]),
-      method:  "tools/call",
-      params:  %{
-        name:      tool.name,
-        arguments: arguments
-      }
-    }
-
-    headers = build_headers(task)
-
-    case Req.post(tool.endpoint,
-      json:            payload,
-      headers:         headers,
-      receive_timeout: tool.timeout_ms
-    ) do
-      {:ok, %{status: 200, body: %{"result" => result}}} ->
-        {:ok, result}
-
-      {:ok, %{status: 200, body: %{"error" => error}}} ->
-        {:error, {:mcp_error, error["code"], error["message"]}}
-
-      {:ok, %{status: 401}} ->
-        {:error, :mcp_auth_failed}
-
-      {:ok, %{status: 429}} ->
-        {:error, :mcp_rate_limited}
-
-      {:ok, %{status: status, body: body}} ->
-        {:error, {:mcp_http_error, status, body}}
-
-      {:error, reason} ->
-        {:error, {:mcp_network_error, reason}}
-    end
-  end
-
-  defp build_headers(task) do
-    [
-      {"content-type",     "application/json"},
-      {"authorization",    "Bearer #{task.session_token}"},
-      {"x-furma-internal", System.get_env("FURMA_INTERNAL_SECRET")},
-      {"x-task-id",        task.id},
-      {"x-user-id",        task.user_id}
-    ]
+# lib/aitlas/tool_executor/mcp_client.ex
+defmodule Aitlas.ToolExecutor.MCPClient do
+  @doc "JSON-RPC 2.0 call to an MCP endpoint"
+  def call_tool(endpoint, name, arguments, opts \\ []) do
+    # POST /api/mcp with tools/call
   end
 end
 ```
@@ -1176,304 +619,65 @@ end
 ETS-backed. All lookups are in-memory. Zero DB round-trips during agent execution.
 
 ```elixir
-# lib/nexus/tool_registry/tool_registry.ex
-defmodule Nexus.ToolRegistry do
+# lib/aitlas/tool_registry.ex
+defmodule Aitlas.ToolRegistry do
   use GenServer
-  require Logger
 
-  @table :nexus_tool_registry
+  @table :aitlas_tool_registry
 
-  # ── Tool struct ───────────────────────────────────────────
-
-  defmodule Tool do
-    defstruct [
-      :name,            # "web_search"
-      :namespace,       # "f.rsrx"
-      :full_name,       # "f.rsrx.web_search"
-      :version,         # "1"
-      :endpoint,        # "https://rsrx.f.xyz/api/mcp"
-      :description,
-      :input_schema,    # JSON Schema map
-      :credit_cost,     # integer
-      :timeout_ms,      # default 30_000
-      :requires_auth,   # boolean
-      :tags             # ["search", "web"]
-    ]
-  end
-
-  # ── Public API ────────────────────────────────────────────
-
-  def register(%Tool{} = tool) do
-    GenServer.call(__MODULE__, {:register, tool})
-  end
-
-  def resolve(full_name) do
-    case :ets.lookup(@table, full_name) do
-      [{^full_name, tool}] -> {:ok, tool}
-      []                   -> {:error, :not_found}
-    end
-  end
-
-  def validate(tool_name, arguments) do
-    with {:ok, tool} <- resolve(tool_name) do
-      validate_schema(arguments, tool.input_schema)
-    end
-  end
-
-  def list_for_agent(agent_spec) do
-    agent_spec.tools.tool_allowlist
-    |> Enum.flat_map(fn name ->
-      case resolve(name) do
-        {:ok, tool}      -> [tool]
-        {:error, _}      -> []
-      end
-    end)
-  end
-
-  def record_usage(tool_name, user_id, credits_used) do
-    GenServer.cast(__MODULE__, {:record_usage, tool_name, user_id, credits_used})
-  end
-
-  def all_tools do
-    :ets.tab2list(@table)
-    |> Enum.map(fn {_key, tool} -> tool end)
-  end
-
-  # ── GenServer ─────────────────────────────────────────────
-
-  def start_link(_), do: GenServer.start_link(__MODULE__, [], name: __MODULE__)
-
-  @impl true
-  def init(_) do
-    :ets.new(@table, [:set, :public, :named_table, read_concurrency: true])
-    register_builtin_tools()
-    {:ok, %{}}
-  end
-
-  @impl true
-  def handle_call({:register, tool}, _from, state) do
-    :ets.insert(@table, {tool.full_name, tool})
-    Logger.info("ToolRegistry: registered #{tool.full_name}")
-    {:reply, :ok, state}
-  end
-
-  @impl true
-  def handle_cast({:record_usage, tool_name, _user_id, _credits}, state) do
-    # V2: persist usage analytics
-    {:noreply, state}
-  end
-
-  # ── Built-in tools (always available) ────────────────────
-
-  defp register_builtin_tools do
-    [
-      %Tool{
-        name:         "execute_code",
-        namespace:    "builtin",
-        full_name:    "execute_code",
-        version:      "1",
-        endpoint:     :builtin,
-        description:  "Execute Python or JavaScript code in a sandbox",
-        input_schema: %{
-          "type"       => "object",
-          "required"   => ["code", "language"],
-          "properties" => %{
-            "code"     => %{"type" => "string"},
-            "language" => %{"type" => "string", "enum" => ["python", "javascript"]}
-          }
-        },
-        credit_cost: 2,
-        timeout_ms:  30_000
-      },
-      %Tool{
-        name:         "web_fetch",
-        namespace:    "builtin",
-        full_name:    "web_fetch",
-        version:      "1",
-        endpoint:     :builtin,
-        description:  "Fetch the raw content of a URL",
-        input_schema: %{
-          "type"       => "object",
-          "required"   => ["url"],
-          "properties" => %{"url" => %{"type" => "string", "format" => "uri"}}
-        },
-        credit_cost: 0,
-        timeout_ms:  10_000
-      },
-      %Tool{
-        name:         "memory_search",
-        namespace:    "builtin",
-        full_name:    "memory_search",
-        version:      "1",
-        endpoint:     :builtin,
-        description:  "Semantic search over agent vector memory",
-        input_schema: %{
-          "type"       => "object",
-          "required"   => ["query"],
-          "properties" => %{"query" => %{"type" => "string"}}
-        },
-        credit_cost: 1,
-        timeout_ms:  5_000
-      }
-    ]
-    |> Enum.each(&register/1)
-  end
-
-  defp validate_schema(_args, nil), do: :ok
-  defp validate_schema(args, schema) do
-    # V1: basic type validation. V2: ExJsonSchema
-    :ok
-  end
+  def register(tool), do: :ets.insert(@table, {tool.name, tool})
+  def get(name), do: case :ets.lookup(@table, name) do [{^name, tool}] -> tool; [] -> nil end
+  def all, do: :ets.tab2list(@table) |> Enum.map(fn {_k, v} -> v end)
+  def for_llm, do: all() |> prioritize_tools() |> Enum.map(&format_for_llm/1)
 end
 ```
+
+Tool discovery includes MCP refresh (`Aitlas.Workers.MCPRefresh`) and Aitlas Action placeholders (f.*) with high priority until endpoints are live.
 
 ---
 
 ## 10. Engine 6 — Memory Engine
 
-Four memory tiers. The agent loop only touches active context (GenServer state). All other tiers are async.
+Three memory tiers. The agent loop primarily uses episodic + semantic search; short-term is Redis-backed.
 
 ```elixir
-# lib/nexus/memory_engine/memory_engine.ex
-defmodule Nexus.MemoryEngine do
-  alias Nexus.MemoryEngine.{ShortTerm, VectorMemory, Episodic}
+# lib/aitlas/memory_engine.ex
+defmodule Aitlas.MemoryEngine do
+  alias Aitlas.MemoryEngine.{ShortTerm, Episodic, Semantic}
 
-  # ── Vector search (called by ContextBuilder) ─────────────
+  def add_turn(task_id, role, content), do: ShortTerm.push(task_id, %{role: role, content: content})
+  def get_context(task_id, opts \\ []), do: ShortTerm.get(task_id, Keyword.get(opts, :limit, 20))
 
-  def search_vector(query:, user_id:, agent_id:, scopes:, top_k:) do
-    VectorMemory.search(%{
-      query:    query,
-      user_id:  user_id,
-      agent_id: agent_id,
-      scopes:   scopes,
-      top_k:    top_k
-    })
+  def persist_episode(task_id, user_id, step) do
+    Episodic.insert(%{task_id: task_id, user_id: user_id, step_number: step.step_number, type: step.type, content: step.content})
   end
 
-  # ── Store memory (called by MemoryExtractor worker) ──────
-
-  def store_vector(content, embedding, user_id:, agent_id:, scope:) do
-    VectorMemory.insert(%{
-      content:   content,
-      embedding: embedding,
-      user_id:   user_id,
-      agent_id:  agent_id,
-      scope:     scope
-    })
+  def add_knowledge(user_id, content, opts \\ []) do
+    # embed via ProviderRouter.embed/2 and store in Semantic
   end
 
-  # ── Redis: persist active context on shutdown ─────────────
-
-  def checkpoint_to_redis(task_id, messages) do
-    ShortTerm.set(task_id, messages, ttl: 86_400)  # 24h
-  end
-
-  def restore_from_redis(task_id) do
-    ShortTerm.get(task_id)
-  end
-
-  # ── Episodic: task outcome summary ───────────────────────
-
-  def record_episode(task) do
-    Episodic.insert(%{
-      user_id:     task.user_id,
-      agent_id:    task.agent_id,
-      task_id:     task.id,
-      goal:        task.goal,
-      outcome:     task.status,
-      result:      task.result,
-      tools_used:  task.tools_used,
-      credits_used: task.credits_used,
-      duration_ms: task.duration_ms
-    })
+  def search(user_id, query, opts \\ []) do
+    # embed query and run Semantic.similarity_search/4
   end
 end
 ```
 
-### Vector Memory
+### Semantic Memory
 
 ```elixir
-# lib/nexus/memory_engine/vector_memory.ex
-defmodule Nexus.MemoryEngine.VectorMemory do
-  import Ecto.Query
-  alias Nexus.Repo
-
-  defmodule Entry do
-    use Ecto.Schema
-
-    @primary_key {:id, :binary_id, autogenerate: true}
-    schema "memory_vectors" do
-      field :user_id,   :string
-      field :agent_id,  :binary_id
-      field :scope,     :string
-      field :content,   :string
-      field :embedding, Pgvector.Ecto.Vector
-      timestamps()
-    end
-  end
-
-  def search(%{query: query, user_id: user_id, agent_id: agent_id, scopes: scopes, top_k: k}) do
-    # Embed query using user's OpenAI BYOK key
-    case embed(query, user_id) do
-      {:ok, embedding} ->
-        Repo.all(
-          from m in Entry,
-          where: m.user_id == ^user_id and m.scope in ^scopes,
-          order_by: fragment("embedding <=> ?", ^embedding),
-          limit: ^k,
-          select: %{id: m.id, content: m.content, scope: m.scope}
-        )
-
-      {:error, _} ->
-        # No OpenAI key = no vector memory, graceful degradation
-        []
-    end
-  end
-
-  def insert(%{content: content, embedding: embedding} = attrs) do
-    %Entry{}
-    |> Ecto.Changeset.cast(attrs, [:user_id, :agent_id, :scope, :content, :embedding])
-    |> Repo.insert!()
-  end
-
-  defp embed(text, user_id) do
-    case Nexus.Crypto.decrypt_api_key(user_id, "openai") do
-      {:ok, api_key} ->
-        Nexus.ProviderRouter.OpenAI.embed(text, api_key)
-
-      {:error, :no_key} ->
-        {:error, :no_openai_key}
-    end
-  end
+# lib/aitlas/memory_engine/semantic.ex
+defmodule Aitlas.MemoryEngine.Semantic do
+  # pgvector-backed similarity search
 end
 ```
 
 ### Short Term (Redis)
 
 ```elixir
-# lib/nexus/memory_engine/short_term.ex
-defmodule Nexus.MemoryEngine.ShortTerm do
-  @prefix "nexus:context:"
-
-  def set(task_id, messages, ttl: ttl) do
-    key   = @prefix <> task_id
-    value = Jason.encode!(messages)
-    Redix.command!(:nexus_redis, ["SET", key, value, "EX", ttl])
-    :ok
-  end
-
-  def get(task_id) do
-    key = @prefix <> task_id
-    case Redix.command!(:nexus_redis, ["GET", key]) do
-      nil   -> nil
-      value -> Jason.decode!(value)
-    end
-  end
-
-  def delete(task_id) do
-    Redix.command!(:nexus_redis, ["DEL", @prefix <> task_id])
-    :ok
-  end
+# lib/aitlas/memory_engine/short_term.ex
+defmodule Aitlas.MemoryEngine.ShortTerm do
+  def push(task_id, turn), do: :ok
+  def get(task_id, limit \\ 50), do: []
 end
 ```
 
@@ -1482,64 +686,10 @@ end
 ## 11. Engine 7 — File Processor
 
 ```elixir
-# lib/nexus/file_processor/file_processor.ex
-defmodule Nexus.FileProcessor do
-  alias Nexus.{Repo, MemoryEngine}
-
-  def process(file_path, user_id: user_id, task_id: task_id) do
-    with {:ok, content} <- parse(file_path),
-         chunks         <- chunk(content),
-         {:ok, embeddings} <- embed_all(chunks, user_id) do
-
-      Enum.each(Enum.zip(chunks, embeddings), fn {chunk, embedding} ->
-        MemoryEngine.store_vector(chunk, embedding,
-          user_id:  user_id,
-          agent_id: nil,
-          scope:    "user_global"
-        )
-      end)
-
-      {:ok, length(chunks)}
-    end
-  end
-
-  defp parse(path) do
-    ext = Path.extname(path) |> String.downcase()
-    case ext do
-      ".pdf"  -> Nexus.FileProcessor.Parsers.PDF.parse(path)
-      ".docx" -> Nexus.FileProcessor.Parsers.Docx.parse(path)
-      ".md"   -> {:ok, File.read!(path)}
-      ".txt"  -> {:ok, File.read!(path)}
-      _       -> {:ok, File.read!(path)}
-    end
-  end
-
-  defp chunk(content, max_chars \\ 800) do
-    content
-    |> String.split(~r/\n\n+/)
-    |> Enum.flat_map(fn para ->
-      if String.length(para) > max_chars do
-        para |> String.graphemes() |> Enum.chunk_every(max_chars) |> Enum.map(&Enum.join/1)
-      else
-        [para]
-      end
-    end)
-    |> Enum.reject(&(String.trim(&1) == ""))
-  end
-
-  defp embed_all(chunks, user_id) do
-    results = Enum.map(chunks, fn chunk ->
-      case Nexus.Crypto.decrypt_api_key(user_id, "openai") do
-        {:ok, key} -> Nexus.ProviderRouter.OpenAI.embed(chunk, key)
-        _          -> {:error, :no_key}
-      end
-    end)
-
-    if Enum.all?(results, &match?({:ok, _}, &1)) do
-      {:ok, Enum.map(results, fn {:ok, e} -> e end)}
-    else
-      {:error, :embedding_failed}
-    end
+# lib/aitlas/file_processor.ex
+defmodule Aitlas.FileProcessor do
+  def process(file_path, opts \\ []) do
+    # parse → chunk → embed → index via MemoryEngine.add_knowledge/3
   end
 end
 ```
@@ -1549,62 +699,18 @@ end
 ## 12. Engine 8 — Observability
 
 ```elixir
-# lib/nexus/observability/observability.ex
-defmodule Nexus.Observability do
-  require Logger
-
-  @events [
-    "agent.started", "agent.completed", "agent.stuck",
-    "agent.failed", "agent.replayed",
-    "llm.called", "llm.tokens_used",
-    "tool.executed", "tool.failed", "tool.timeout", "tool.injection_blocked",
-    "memory.updated", "memory.retrieved",
-    "task.created", "task.completed", "task.failed",
-    "credits.reserved", "credits.deducted", "credits.refunded"
-  ]
-
-  def emit(event, metadata \\ %{}) when event in @events do
-    Logger.info("[#{event}] #{inspect(metadata)}")
-
-    :telemetry.execute(
-      [:nexus | String.split(event, ".") |> Enum.map(&String.to_atom/1)],
-      %{count: 1},
-      metadata
-    )
-  end
+# lib/aitlas/observability.ex
+defmodule Aitlas.Observability do
+  def task_started(task_id, user_id, agent_slug), do: :ok
+  def task_completed(task_id, duration_ms, iterations, credits_used), do: :ok
+  def tool_call_completed(task_id, tool_name, status, duration_ms), do: :ok
 end
 ```
 
 ### Logger Redactor
 
-```elixir
-# lib/nexus/observability/logger_redactor.ex
-defmodule Nexus.Observability.LoggerRedactor do
-  @redact_pattern ~r/(api_key|authorization|password|secret|token|bearer|sk-)[=:\s"']+\S+/i
-
-  def filter({level, group_leader, {Logger, message, timestamp, metadata}}) do
-    clean = Regex.replace(@redact_pattern, to_string(message), "[REDACTED]")
-    {level, group_leader, {Logger, clean, timestamp, metadata}}
-  end
-
-  def filter(data), do: data
-end
-```
-
-Add to `config/config.exs`:
-```elixir
-config :logger,
-  backends: [:console],
-  compile_time_purge_matching: [level_lower_than: :info]
-
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id, :task_id, :user_id]
-
-# Add redactor
-config :logger,
-  translators: [{Nexus.Observability.LoggerRedactor, :filter}]
-```
+Use `Aitlas.LoggerRedactor.redact/1` for sanitizing user content before persistence or logging.
+It is used by `Aitlas.ReplaySanitizer` to remove secrets from replay traces.
 
 ---
 
@@ -1614,14 +720,11 @@ Per-task sandboxed directory. Critical for Codex/Claude Code sessions and code e
 Derived from Symphony (Apache 2.0).
 
 ```elixir
-# lib/nexus/workspace/workspace.ex
-# Derived from Symphony (github.com/openai/symphony), Apache 2.0
-# Modified by Furma.tech for Nexus (Aitlas)
-
-defmodule Nexus.Workspace do
+# lib/aitlas/workspace.ex
+defmodule Aitlas.Workspace do
   require Logger
 
-  @workspace_root Application.compile_env(:nexus, :workspace_root, "/tmp/nexus-workspaces")
+  @workspace_root Application.compile_env(:aitlas, :workspace_root, "/tmp/aitlas-workspaces")
 
   def create(task_id) do
     safe_id   = sanitize_id(task_id)
@@ -1676,7 +779,7 @@ defmodule Nexus.Workspace do
   # ── Hooks ─────────────────────────────────────────────────
 
   defp run_hook(hook, workspace) do
-    case Application.get_env(:nexus, [:workspace_hooks, hook]) do
+    case Application.get_env(:aitlas, [:workspace_hooks, hook]) do
       nil      -> :ok
       cmd      ->
         case System.cmd("bash", ["-c", cmd], cd: workspace) do
@@ -1688,6 +791,10 @@ defmodule Nexus.Workspace do
 end
 ```
 
+**RTK integration (optional):** When `RTK_ENABLED=true`, `Aitlas.Workspace.exec/3` attempts to rewrite
+shell commands using `rtk rewrite` before execution. This pairs with the optional `shell_exec` tool
+(`SHELL_EXEC_ENABLED=true`) to reduce CLI output tokens in tool responses.
+
 ---
 
 ## 14. Engine 10 — Codex Client
@@ -1696,11 +803,8 @@ JSON-RPC 2.0 client over stdio. Enables Nexus to orchestrate locally-installed C
 Derived from Symphony (Apache 2.0).
 
 ```elixir
-# lib/nexus/codex_client/codex_client.ex
-# Derived from Symphony (github.com/openai/symphony), Apache 2.0
-# Modified by Furma.tech for Nexus (Aitlas)
-
-defmodule Nexus.CodexClient do
+# lib/aitlas/codex_client.ex
+defmodule Aitlas.CodexClient do
   require Logger
 
   defstruct [:port, :thread_id, :workspace, :task_id, :request_id]
@@ -1714,12 +818,7 @@ defmodule Nexus.CodexClient do
   # ── Public API ────────────────────────────────────────────
 
   def start_session(workspace, provider, task_id) do
-    command = Map.fetch!(@supported_commands, provider)
-
-    port = Port.open(
-      {:spawn_executable, System.find_executable("bash")},
-      [:binary, :exit_status, args: ["-lc", command], cd: workspace]
-    )
+    # resolves provider to command, spawns port, runs MCP handshake
 
     with :ok             <- handshake(port),
          {:ok, thread_id} <- start_thread(port, workspace) do
@@ -1771,7 +870,7 @@ defmodule Nexus.CodexClient do
       method:  "initialize",
       params:  %{
         protocolVersion: "2024-11-05",
-        clientInfo:      %{name: "nexus", version: "1.0.0"}
+        clientInfo:      %{name: "aitlas-nexus", version: "1.0.0"}
       }
     })
 
@@ -1848,44 +947,27 @@ end
 When `provider` is `codex`, `claude-code`, or `opencode`, the Agent Loop forks to `run_local_agent/2` instead of the standard API loop:
 
 ```elixir
-# In Nexus.AgentLoop — provider dispatch
+# In Aitlas.AgentLoop — provider dispatch
+defp local_agent?(provider) when is_binary(provider),
+  do: provider in ["codex", "claude-code", "opencode"]
 
-defp classify_provider("codex"),       do: :local_agent
-defp classify_provider("claude-code"), do: :local_agent
-defp classify_provider("opencode"),    do: :local_agent
-defp classify_provider(_),             do: :api
-
-# run_local_agent replaces do_loop for :local_agent providers
-defp run_local_agent(state, start_ms) do
-  {:ok, workspace} = Nexus.Workspace.create(state.task.id)
-  {:ok, session}   = Nexus.CodexClient.start_session(workspace, state.task.provider, state.task.id)
+# run_local_agent_loop replaces run_loop for local providers
+defp run_local_agent_loop(state) do
+  {:ok, workspace} = Aitlas.Workspace.create(state.task_id)
+  {:ok, session} = Aitlas.CodexClient.start_session(workspace, state.provider, state.task_id)
 
   tool_executor_fn = fn tool_name, args ->
-    case Nexus.ToolExecutor.run(%{
-      task:      state.task,
-      step:      Tasks.current_step(state.task),
-      tool_name: tool_name,
-      tool_args: args,
-      allowlist: state.agent_spec.tools.tool_allowlist
-    }) do
-      {:ok, result, _credits} -> result
-      {:error, reason}        -> %{"error" => inspect(reason)}
-    end
+    Aitlas.ToolExecutor.execute(tool_name, args,
+      user_id: state.user_id,
+      task_id: state.task_id,
+      allowlist: get_in(state.agent_spec, ["tools", "tool_allowlist"])
+    )
   end
 
-  result = Nexus.CodexClient.run_turn(session, state.task.goal, tool_executor_fn)
-  Nexus.CodexClient.stop_session(session)
-  Nexus.Workspace.remove(state.task.id)
-
-  case result do
-    {:ok, params}    ->
-      Tasks.complete!(state.task, params["output"] || "")
-      {:ok, state}
-
-    {:error, reason} ->
-      Tasks.transition(state.task, :failed, error: inspect(reason))
-      {:ok, state}
-  end
+  result = Aitlas.CodexClient.run_turn(session, state.goal, tool_executor_fn)
+  Aitlas.CodexClient.stop_session(session)
+  Aitlas.Workspace.remove(state.task_id)
+  result
 end
 ```
 
@@ -1919,38 +1001,17 @@ Communication
 
 ### Tool Registration with Capabilities
 
-```elixir
-# lib/nexus/tool_registry/tool.ex
-defmodule Nexus.ToolRegistry.Tool do
-  defstruct [
-    :name,
-    :namespace,
-    :full_name,
-    :version,
-    :endpoint,
-    :description,
-    :input_schema,
-    :credit_cost,
-    :timeout_ms,
-    :requires_auth,
-    :tags,
-    # ── Capability Graph fields ──────────────────────────
-    capabilities: [],        # ["knowledge", "search", "web"]
-    latency_ms: 3000,        # average response time
-    reliability_score: 0.98  # success rate (0.0 - 1.0)
-  ]
-end
-```
+Tool capability metadata is stored directly on the tool definition maps (e.g., `capabilities`, `tags`, `priority`) in `Aitlas.ToolRegistry`.
 
 ### Capability Graph Module
 
 ```elixir
-# lib/nexus/capability_graph/capability_graph.ex
-defmodule Nexus.CapabilityGraph do
+# lib/aitlas/capability_graph.ex
+defmodule Aitlas.CapabilityGraph do
   use GenServer
   require Logger
 
-  @table :nexus_capability_graph
+  @table :aitlas_capability_graph
 
   # ── Public API ────────────────────────────────────────────
 
@@ -1993,7 +1054,7 @@ defmodule Nexus.CapabilityGraph do
 
   @impl true
   def handle_call(:build_index, _from, state) do
-    tools = Nexus.ToolRegistry.all_tools()
+    tools = Aitlas.ToolRegistry.all()
 
     # Build capability → tools mapping
     by_capability = Enum.group_by(tools, fn tool ->
@@ -2036,12 +1097,12 @@ defmodule Nexus.CapabilityGraph do
     # Plus always include agent tools if agent.allow_subagents
     tools = capabilities
       |> Enum.flat_map(fn cap -> tools_for_capability(cap) end)
-      |> Enum.uniq_by(& &1.full_name)
+      |> Enum.uniq_by(& &1.name)
 
     # Filter by agent allowlist if present
     case context[:agent] do
       %{tools: %{tool_allowlist: allowlist}} when is_list(allowlist) ->
-        Enum.filter(tools, fn tool -> tool.full_name in allowlist end)
+        Enum.filter(tools, fn tool -> tool.name in allowlist end)
 
       _ ->
         tools
@@ -2053,26 +1114,7 @@ end
 ### Integration with Tool Registry
 
 ```elixir
-# In ToolRegistry.register/1
-def register(%Tool{} = tool) do
-  :ets.insert(@table, {tool.full_name, tool})
-  # Rebuild capability graph on new tool registration
-  Nexus.CapabilityGraph.build_index()
-  :ok
-end
-
-# In ToolRegistry.list_for_agent/1 — updated to use CapabilityGraph
-def list_for_agent(agent_spec) do
-  # V1: Use allowlist directly (backward compatible)
-  # V2: Use CapabilityGraph.filter for semantic selection
-  agent_spec.tools.tool_allowlist
-  |> Enum.flat_map(fn name ->
-    case resolve(name) do
-      {:ok, tool}      -> [tool]
-      {:error, _}      -> []
-    end
-  end)
-end
+ToolRegistry calls `Aitlas.CapabilityGraph.build_index/0` on refresh to keep the index in sync.
 ```
 
 ---
@@ -2084,7 +1126,7 @@ Centralized multi-layer budget enforcement. Prevents runaway agents across all b
 ### Budget Types
 
 ```elixir
-defmodule Nexus.BudgetGuard do
+defmodule Aitlas.BudgetGuard do
   @moduledoc """
   Multi-layer budget enforcement. Checked on every agent loop iteration.
   """
@@ -2157,11 +1199,11 @@ end
 ### Integration with Agent Loop
 
 ```elixir
-# In Nexus.AgentLoop — updated check_limits
+# In Aitlas.AgentLoop — updated check_limits
 defp check_limits(state, start_ms) do
-  guard = Nexus.BudgetGuard.from_task(state.task)
+  guard = Aitlas.BudgetGuard.from_task(state.task)
 
-  case Nexus.BudgetGuard.check(guard, %{state | start_time: start_ms}) do
+  case Aitlas.BudgetGuard.check(guard, %{state | start_time: start_ms}) do
     :ok -> :ok
     {:exceeded, reason, current, max} -> {:exceeded, {reason, current, max}}
   end
@@ -2185,94 +1227,30 @@ Enterprise customers require multi-layer budgets. A single credit limit is insuf
 ## 17. Replay Engine
 
 ```elixir
-# lib/nexus/replay_engine/replay_engine.ex
-defmodule Nexus.ReplayEngine do
-  alias Nexus.{Tasks, Repo}
-
+# lib/aitlas/replay_engine.ex
+defmodule Aitlas.ReplayEngine do
   @doc """
   Replay modes:
-    :exact  — re-emit stored steps. Zero new tokens. 0 credits.
-    :live   — re-run all steps fresh. Full credits.
-    :fork   — replay 1..N-1 from cache, continue live from N.
+    :exact     — re-emit stored steps/tool calls over channels
+    :trace     — return persisted steps + tool calls (graph-aware)
+    :reexecute — re-run PLAN/REFLECT from stored prompts (best-effort)
+    :fork      — create a new task starting from a step with overrides
   """
-  def replay(task_id, opts \\ []) do
-    mode       = Keyword.get(opts, :mode, :exact)
-    fork_step  = Keyword.get(opts, :fork_from_step, nil)
-    overrides  = Keyword.get(opts, :overrides, %{})
-
-    original = Tasks.get_with_trace!(task_id)
-
-    case mode do
-      :exact -> replay_exact(original)
-      :live  -> dispatch_live(original, overrides)
-      :fork  -> dispatch_fork(original, fork_step, overrides)
-    end
+  def trace(task_id, user_id) do
+    # returns %{task, steps, tool_calls, children: [...]}
   end
 
-  # ── Exact: re-broadcast stored steps, zero cost ──────────
-
-  defp replay_exact(task) do
-    Enum.each(task.steps, fn step ->
-      NexusWeb.Endpoint.broadcast("task:#{task.id}", "step",
-        Map.put(Map.from_struct(step), :replay, true)
-      )
-      Process.sleep(50)  # slight delay for UI rendering
-    end)
-
-    NexusWeb.Endpoint.broadcast("task:#{task.id}", "replay_complete", %{
-      task_id: task.id, mode: "exact"
-    })
-
-    {:ok, :replayed}
+  def reexecute(task_id, user_id) do
+    # returns %{task, replayed, children: [...]}
   end
 
-  # ── Live: create new task, run fresh ─────────────────────
-
-  defp dispatch_live(original, overrides) do
-    new_task = %{
-      user_id:          original.user_id,
-      agent_id:         original.agent_id,
-      goal:             original.goal,
-      provider:         Map.get(overrides, :model, original.provider),
-      max_iterations:   original.max_iterations,
-      max_tool_calls:   original.max_tool_calls,
-      max_tokens:       original.max_tokens,
-      credit_budget:    original.credit_budget,
-      replay_of_task_id: original.id,
-      fork_from_step:   nil
-    }
-
-    {:ok, task} = Tasks.create(new_task)
-    {:ok, _job} = %{task_id: task.id} |> Nexus.Workers.AgentRunner.new() |> Oban.insert()
-    {:ok, task}
-  end
-
-  # ── Fork: replay 1..N-1 from cache, live from N ──────────
-
-  defp dispatch_fork(original, fork_step, overrides) do
-    cached_steps = Enum.take(original.steps, fork_step - 1)
-
-    new_task = %{
-      user_id:          original.user_id,
-      agent_id:         original.agent_id,
-      goal:             original.goal,
-      provider:         Map.get(overrides, :model, original.provider),
-      max_iterations:   original.max_iterations,
-      max_tool_calls:   original.max_tool_calls,
-      max_tokens:       original.max_tokens,
-      credit_budget:    original.credit_budget,
-      replay_of_task_id: original.id,
-      fork_from_step:   fork_step,
-      cached_steps:     cached_steps,
-      overrides:        overrides
-    }
-
-    {:ok, task} = Tasks.create(new_task)
-    {:ok, _job} = %{task_id: task.id} |> Nexus.Workers.ReplayRunner.new() |> Oban.insert()
-    {:ok, task}
+  def fork_from_step(task_id, user_id, step_number, opts \\ []) do
+    # creates a new task with replay_of_task_id + fork_from_step
   end
 end
 ```
+
+Graph replay propagation: `trace/2` and `reexecute/2` include child tasks recursively (`children`), using `parent_task_id` links.
 
 ---
 
@@ -2281,22 +1259,16 @@ end
 Real-time streaming from Nexus to Nova. Every agent step is broadcast as it completes.
 
 ```elixir
-# lib/nexus_web/channels/user_socket.ex
-defmodule NexusWeb.UserSocket do
+# lib/aitlas_web/channels/user_socket.ex
+defmodule AitlasWeb.UserSocket do
   use Phoenix.Socket
 
-  channel "task:*", NexusWeb.TaskChannel
+  channel "task:*", AitlasWeb.TaskChannel
 
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do
     # Validate Better Auth session token
-    case Nexus.Auth.validate_session_token(token) do
-      {:ok, user_id} ->
-        {:ok, assign(socket, :user_id, user_id)}
-
-      :error ->
-        :error
-    end
+    # JWT validation lives in AitlasWeb.UserSocket (Better Auth)
   end
 
   @impl true
@@ -2305,34 +1277,25 @@ end
 ```
 
 ```elixir
-# lib/nexus_web/channels/task_channel.ex
-defmodule NexusWeb.TaskChannel do
-  use NexusWeb, :channel
-  alias Nexus.Tasks
+# lib/aitlas_web/channels/task_channel.ex
+defmodule AitlasWeb.TaskChannel do
+  use AitlasWeb, :channel
+  alias Aitlas.Tasks
 
   @impl true
   def join("task:" <> task_id, _params, socket) do
     # Verify this user owns this task
-    case Tasks.get_for_user(task_id, socket.assigns.user_id) do
-      {:ok, task} ->
-        # Send current state immediately on join
-        # (client may have missed steps if reconnecting)
-        current_steps = Tasks.get_steps(task_id)
-        {:ok, %{task: task, steps: current_steps}, assign(socket, :task_id, task_id)}
-
-      {:error, :not_found} ->
-        {:error, %{reason: "task_not_found"}}
-
-      {:error, :unauthorized} ->
-        {:error, %{reason: "unauthorized"}}
+    case Tasks.get_for_user(socket.assigns.user_id, task_id) do
+      nil -> {:error, %{reason: "task_not_found"}}
+      task -> {:ok, assign(socket, :task_id, task_id)}
     end
   end
 
   # User can cancel a running task
   @impl true
   def handle_in("cancel", _params, socket) do
-    case Nexus.AgentLoop.cancel(socket.assigns.task_id) do
-      :ok             -> {:reply, :ok, socket}
+    case Aitlas.Tasks.Workflow.cancel_task(socket.assigns.task_id) do
+      :ok -> {:reply, :ok, socket}
       {:error, reason} -> {:reply, {:error, reason}, socket}
     end
   end
@@ -2348,11 +1311,11 @@ end
 Mount in endpoint:
 
 ```elixir
-# lib/nexus_web/endpoint.ex
-defmodule NexusWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :nexus
+# lib/aitlas_web/endpoint.ex
+defmodule AitlasWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :aitlas
 
-  socket "/socket", NexusWeb.UserSocket,
+  socket "/socket", AitlasWeb.UserSocket,
     websocket: [timeout: 45_000],
     longpoll:  false
 
@@ -2365,127 +1328,38 @@ end
 ## 19. Oban Workers
 
 ```elixir
-# lib/nexus/workers/agent_runner.ex
-defmodule Nexus.Workers.AgentRunner do
-  use Oban.Worker,
-    queue:        :agents,
-    max_attempts: 3,
-    unique:       [period: 60]
-
-  @impl true
-  def perform(%Oban.Job{args: %{"task_id" => task_id}}) do
-    task = Nexus.Tasks.get_with_agent_spec!(task_id)
-
-    # Start GenServer for this task
-    case Nexus.AgentLoop.start_link(task) do
-      {:ok, _pid} ->
-        # GenServer runs the loop, completes async
-        # Worker job is done — loop runs independently
-        :ok
-
-      {:error, {:already_started, _}} ->
-        # Task already running (Oban unique constraint should prevent this)
-        :ok
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-end
-```
-
-```elixir
-# lib/nexus/workers/memory_extractor.ex
-defmodule Nexus.Workers.MemoryExtractor do
-  use Oban.Worker, queue: :memory, max_attempts: 3
+# lib/aitlas/workers/agent_runner.ex
+defmodule Aitlas.Workers.AgentRunner do
+  use Oban.Worker, queue: :agents, max_attempts: 3
 
   @impl true
   def perform(%Oban.Job{args: %{"task_id" => task_id, "user_id" => user_id}}) do
-    task = Nexus.Tasks.get_with_steps!(task_id)
-
-    if task.agent_spec.memory.vector.enabled do
-      # Extract memorable facts from completed task
-      facts = extract_facts(task)
-
-      Enum.each(facts, fn fact ->
-        case Nexus.ProviderRouter.OpenAI.embed(fact, get_openai_key(user_id)) do
-          {:ok, embedding} ->
-            Nexus.MemoryEngine.store_vector(fact, embedding,
-              user_id:  user_id,
-              agent_id: task.agent_id,
-              scope:    "user_agent"
-            )
-          {:error, _} -> :skip
-        end
-      end)
-    end
-
-    # Always record episodic memory
-    Nexus.MemoryEngine.record_episode(task)
-    :ok
-  end
-
-  defp extract_facts(task) do
-    # Simple V1: extract the final answer + tool results as facts
-    final_step = Enum.find(task.steps, &(&1.type == :final))
-    if final_step, do: [final_step.content], else: []
-  end
-
-  defp get_openai_key(user_id) do
-    case Nexus.Crypto.decrypt_api_key(user_id, "openai") do
-      {:ok, key} -> key
-      _          -> nil
-    end
+    # Starts AgentLoop and waits for completion
   end
 end
 ```
 
-```elixir
-# lib/nexus/workers/watchdog.ex
-defmodule Nexus.Workers.Watchdog do
-  use Oban.Worker, queue: :default
-
-  @stale_threshold_ms 35 * 60 * 1000  # 35 min (5 min over max runtime)
-
-  @impl true
-  def perform(_job) do
-    stale_cutoff = DateTime.add(DateTime.utc_now(), -@stale_threshold_ms, :millisecond)
-
-    stale_tasks = Nexus.Tasks.find_stale(
-      status:        :running,
-      started_before: stale_cutoff
-    )
-
-    Enum.each(stale_tasks, fn task ->
-      Nexus.Tasks.transition(task, :timeout, error: "watchdog: stale task")
-      NexusWeb.Endpoint.broadcast("task:#{task.id}", "timeout", %{reason: "watchdog"})
-    end)
-
-    :ok
-  end
-end
-```
+`MemoryExtractor` and `Watchdog` workers are not implemented in this codebase. Stale-task cleanup is handled by `Aitlas.Reconciliation`, and MCP tool refresh runs via `Aitlas.Workers.MCPRefresh`.
 
 ### Oban Config
 
 ```elixir
 # config/config.exs
-config :nexus, Oban,
-  repo:   Nexus.Repo,
+config :aitlas, Oban,
+  repo: Aitlas.Repo,
   queues: [
     default: 10,
-    agents:  20,   # main agent runners
-    tools:   30,   # tool execution workers (future)
-    memory:  5,    # memory extraction
-    files:   5     # file indexing
+    agents: 20,
+    tools: 30,
+    memory: 5,
+    files: 5
   ],
   plugins: [
-    {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},  # 7 days
-    {Oban.Plugins.Cron,
-      crontab: [
-        {"*/5 * * * *", Nexus.Workers.Watchdog}         # every 5 min
-      ]
-    }
+    {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
+    {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(5)},
+    {Oban.Plugins.Cron, crontab: [
+      {"*/5 * * * *", Aitlas.Workers.MCPRefresh}
+    ]}
   ]
 ```
 
@@ -2494,38 +1368,42 @@ config :nexus, Oban,
 ## 20. API Layer
 
 ```elixir
-# lib/nexus_web/router.ex
-defmodule NexusWeb.Router do
-  use NexusWeb, :router
+# lib/aitlas_web/router.ex
+defmodule AitlasWeb.Router do
+  use AitlasWeb, :router
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug Nexus.Plugs.Auth           # validates Bearer session token
-    plug Nexus.Plugs.RateLimit      # Upstash Redis rate limiting
+    plug :fetch_session
+  end
+
+  pipeline :authenticated do
+    plug AitlasWeb.Plugs.Auth
   end
 
   pipeline :internal do
-    plug :accepts, ["json"]
-    plug Nexus.Plugs.InternalAuth   # X-Furma-Internal header
+    plug AitlasWeb.Plugs.InternalAuth
   end
 
-  scope "/api/v1", NexusWeb do
+  pipeline :mcp_auth do
+    plug AitlasWeb.Plugs.MCPAuth
+  end
+
+  scope "/api", AitlasWeb do
     pipe_through :api
-
-    # Tasks
-    post   "/tasks",              TaskController,   :create
-    get    "/tasks",              TaskController,   :index
-    get    "/tasks/:id",          TaskController,   :show
-    delete "/tasks/:id",          TaskController,   :cancel
-
-    # Replay
-    post   "/tasks/:id/replay",   ReplayController, :replay
+    get "/health", HealthController, :index
   end
 
-  scope "/internal", NexusWeb do
-    pipe_through :internal
+  scope "/api", AitlasWeb do
+    pipe_through [:api, :mcp_auth]
+    post "/mcp", MCPController, :handle
+  end
 
-    get  "/health", HealthController, :check
+  scope "/api/v1", AitlasWeb do
+    pipe_through [:api, :authenticated]
+    resources "/tasks", TaskController, only: [:index, :create, :show, :delete]
+    post "/tasks/:id/retry", TaskController, :retry
+    post "/tasks/:id/replay", ReplayController, :replay
   end
 end
 ```
@@ -2533,39 +1411,40 @@ end
 ### Task Controller
 
 ```elixir
-# lib/nexus_web/controllers/task_controller.ex
-defmodule NexusWeb.TaskController do
-  use NexusWeb, :controller
-  alias Nexus.{Tasks, Credits, AgentLoader, ReplayEngine}
+# lib/aitlas_web/controllers/task_controller.ex
+defmodule AitlasWeb.TaskController do
+  use AitlasWeb, :controller
+  alias Aitlas.{Tasks, AgentLoader}
+  alias Aitlas.Tasks.Workflow
 
   # POST /api/v1/tasks
   def create(conn, params) do
-    user_id = conn.assigns.user_id
+    user_id = conn.assigns.current_user_id
 
-    with {:ok, agent_spec} <- AgentLoader.load(params["agent_slug"]),
-         :ok               <- Credits.reserve(user_id, agent_spec.execution.credit_budget),
-         {:ok, task}       <- Tasks.create(%{
-           user_id:       user_id,
-           agent_id:      agent_spec.id,
-           agent_spec:    agent_spec,
-           goal:          params["goal"],
-           provider:      params["model"] || agent_spec.model.provider,
-           credit_budget: params["credit_budget"] || agent_spec.execution.credit_budget,
-           max_iterations: agent_spec.execution.max_iterations,
-           max_tool_calls: agent_spec.execution.max_tool_calls,
-           max_tokens:     agent_spec.execution.max_tokens,
-           seed:           params["seed"]
-         }),
-         {:ok, _job}       <- Nexus.Workers.AgentRunner.new(%{task_id: task.id}) |> Oban.insert() do
-
+    with {:ok, agent_spec} <- AgentLoader.resolve(params["agent_slug"]),
+         {:ok, task} <- Workflow.create_task(user_id, %{
+           agent_slug: params["agent_slug"],
+           agent_spec: agent_spec,
+           goal: params["goal"],
+           context: params["context"],
+           provider: params["provider"],
+           model: params["model"],
+           seed: params["seed"],
+           credit_budget: params["credit_budget"] || 100,
+           max_iterations: params["max_iterations"] || 20,
+           max_tool_calls: params["max_tool_calls"] || 50,
+           max_tokens: params["max_tokens"] || 200_000,
+           max_runtime_ms: params["max_runtime_ms"] || 1_800_000
+         }) do
+      # Orchestrator will dispatch pending tasks
       conn
       |> put_status(:created)
-      |> json(%{task_id: task.id, status: "PENDING"})
+      |> json(%{task_id: task.id, status: "pending"})
     else
       {:error, :insufficient_credits} ->
         conn |> put_status(402) |> json(%{error: "insufficient_credits"})
 
-      {:error, :agent_not_found} ->
+      {:error, :agent_not_found, _slug} ->
         conn |> put_status(404) |> json(%{error: "agent_not_found"})
 
       {:error, reason} ->
@@ -2575,28 +1454,24 @@ defmodule NexusWeb.TaskController do
 
   # GET /api/v1/tasks/:id
   def show(conn, %{"id" => task_id}) do
-    user_id = conn.assigns.user_id
+    user_id = conn.assigns.current_user_id
 
-    case Tasks.get_for_user(task_id, user_id) do
-      {:ok, task} ->
-        steps = Tasks.get_steps(task_id)
-        json(conn, %{task: task, steps: steps})
-
-      {:error, :not_found} ->
-        conn |> put_status(404) |> json(%{error: "not_found"})
+    case Tasks.get_for_user(user_id, task_id) do
+      nil -> conn |> put_status(404) |> json(%{error: "task_not_found"})
+      task -> json(conn, %{task: task})
     end
   end
 
   # DELETE /api/v1/tasks/:id
-  def cancel(conn, %{"id" => task_id}) do
-    user_id = conn.assigns.user_id
+  def delete(conn, %{"id" => task_id}) do
+    user_id = conn.assigns.current_user_id
 
-    with {:ok, task}   <- Tasks.get_for_user(task_id, user_id),
-         :ok           <- Nexus.AgentLoop.cancel(task_id) do
+    with {:ok, task} <- Tasks.get_for_user(user_id, task_id),
+         :ok <- Workflow.cancel_task(task.id) do
       json(conn, %{status: "cancelled"})
     else
       {:error, :not_found} ->
-        conn |> put_status(404) |> json(%{error: "not_found"})
+        conn |> put_status(404) |> json(%{error: "task_not_found"})
     end
   end
 end
@@ -2611,53 +1486,59 @@ end
 CREATE TABLE tasks (
   id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id             TEXT NOT NULL,
-  agent_id            UUID,
-  agent_slug          TEXT,
+  agent_slug          TEXT NOT NULL,
   agent_spec          JSONB,                 -- snapshot of spec at dispatch time
   goal                TEXT NOT NULL,
-  status              TEXT NOT NULL DEFAULT 'PENDING',
-  provider            TEXT NOT NULL,         -- "openai:gpt-4o-2024-11-20"
+  context             TEXT,
+  provider            TEXT NOT NULL,         -- "openai" (provider name)
+  model               TEXT,                  -- "openai:gpt-4o"
+  seed                INTEGER,
+
+  -- Execution state
+  status              TEXT NOT NULL DEFAULT 'pending',
 
   -- Limits (from agent spec, can be overridden at dispatch)
   max_iterations      INTEGER NOT NULL DEFAULT 20,
   max_tool_calls      INTEGER NOT NULL DEFAULT 50,
   max_tokens          INTEGER NOT NULL DEFAULT 200000,
+  max_runtime_ms      INTEGER NOT NULL DEFAULT 1800000,
   credit_budget       INTEGER NOT NULL DEFAULT 100,
 
   -- Runtime counters
-  current_iteration   INTEGER NOT NULL DEFAULT 0,
+  iteration           INTEGER NOT NULL DEFAULT 0,
   tool_calls_made     INTEGER NOT NULL DEFAULT 0,
   tokens_used         INTEGER NOT NULL DEFAULT 0,
   credits_reserved    INTEGER NOT NULL DEFAULT 0,
   credits_used        INTEGER NOT NULL DEFAULT 0,
-
-  -- Scheduling
-  scheduled_for       TIMESTAMPTZ,
-  cron_expression     TEXT,
+  retry_count         INTEGER NOT NULL DEFAULT 0,
 
   -- Replay fields
   execution_hash      TEXT,
-  agent_spec_version  TEXT,
-  provider_version    TEXT,
-  seed                INTEGER,
   replay_of_task_id   UUID REFERENCES tasks(id),
   fork_from_step      INTEGER,
 
   -- Output
   result              TEXT,
-  error_message       TEXT,
+  error               TEXT,
 
   -- Heartbeat (worker health)
   worker_id           TEXT,
   heartbeat_at        TIMESTAMPTZ,
 
-  created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  completed_at        TIMESTAMPTZ
+  -- Agent graph
+  parent_task_id      UUID REFERENCES tasks(id),
+  root_task_id        UUID REFERENCES tasks(id),
+  graph_depth         INTEGER NOT NULL DEFAULT 0,
+
+  started_at          TIMESTAMPTZ,
+  completed_at        TIMESTAMPTZ,
+  inserted_at         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_tasks_user_id_created  ON tasks(user_id, created_at DESC);
+CREATE INDEX idx_tasks_user_id_created  ON tasks(user_id, inserted_at DESC);
 CREATE INDEX idx_tasks_status_running   ON tasks(status)
-  WHERE status IN ('PENDING', 'RUNNING', 'CLAIMED');
+  WHERE status IN ('pending', 'running');
 CREATE INDEX idx_tasks_replay           ON tasks(replay_of_task_id)
   WHERE replay_of_task_id IS NOT NULL;
 
@@ -2667,20 +1548,18 @@ CREATE TABLE task_steps (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   task_id       UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
   step_number   INTEGER NOT NULL,
-  type          TEXT NOT NULL,     -- PLAN | ACTION | REFLECTION | FINAL
-  status        TEXT NOT NULL DEFAULT 'pending',  -- pending | running | streaming | completed | failed | blocked
+  type          TEXT NOT NULL,     -- PLAN | ACT | REFLECT
   content       TEXT,
   metadata      JSONB DEFAULT '{}',
 
   -- Replay
   prompt_hash   TEXT,
+  response_hash TEXT,
   model         TEXT,
-  input_tokens  INTEGER DEFAULT 0,
-  output_tokens INTEGER DEFAULT 0,
-  seed          INTEGER,
-
-  duration_ms   INTEGER,
-  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  tokens_in     INTEGER DEFAULT 0,
+  tokens_out    INTEGER DEFAULT 0,
+  latency_ms    INTEGER,
+  inserted_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_task_steps_task_id ON task_steps(task_id, step_number);
@@ -2692,23 +1571,27 @@ CREATE TABLE tool_calls (
   task_id       UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
   step_id       UUID REFERENCES task_steps(id),
   tool_name     TEXT NOT NULL,
-  tool_input    JSONB NOT NULL DEFAULT '{}',
+  tool_input    JSONB,
   tool_output   JSONB,
-  status        TEXT NOT NULL DEFAULT 'pending', -- pending | completed | failed | blocked | timeout
-  credits_used  INTEGER DEFAULT 0,
+  status        TEXT NOT NULL DEFAULT 'pending', -- pending | completed | failed | timeout
+  credit_cost   INTEGER DEFAULT 0,
 
-  -- Replay
-  tool_version  TEXT,
+  -- Replay + audit
   output_hash   TEXT,
+  metadata      JSONB,
+
+  -- Agent graphs
+  child_task_id UUID REFERENCES tasks(id),
 
   error         TEXT,
-  retry_count   INTEGER DEFAULT 0,
-  duration_ms   INTEGER,
+  latency_ms    INTEGER,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_tool_calls_task_id   ON tool_calls(task_id);
 CREATE INDEX idx_tool_calls_tool_name ON tool_calls(tool_name);
+CREATE INDEX idx_tool_calls_child_task_id ON tool_calls(child_task_id)
+  WHERE child_task_id IS NOT NULL;
 
 
 -- ─── Memory Vectors ─────────────────────────────────────────
@@ -2773,7 +1656,7 @@ CREATE VIEW credit_balances AS
 
 ```elixir
 # lib/nexus/injection_guard/injection_guard.ex
-defmodule Nexus.InjectionGuard do
+defmodule Aitlas.InjectionGuard do
   @suspicious_patterns [
     ~r/ignore (previous|all|above) instructions/i,
     ~r/exfiltrate/i,
@@ -2814,7 +1697,7 @@ defmodule Nexus.InjectionGuard do
   defp contains_injection?(_), do: false
 
   defp valid_arguments?(tool_name, args) do
-    case Nexus.ToolRegistry.validate(tool_name, args) do
+    case Aitlas.ToolRegistry.validate(tool_name, args) do
       :ok              -> true
       {:error, _}      -> false
     end
@@ -2825,16 +1708,16 @@ end
 ### Auth Plug
 
 ```elixir
-# lib/nexus_web/plugs/auth.ex
-defmodule Nexus.Plugs.Auth do
+# lib/aitlas_web/plugs/auth.ex
+defmodule AitlasWeb.Plugs.Auth do
   import Plug.Conn
 
   def init(opts), do: opts
 
   def call(conn, _opts) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-         {:ok, user_id}       <- Nexus.Auth.validate_session_token(token) do
-      assign(conn, :user_id, user_id)
+         {:ok, user_id}       <- AitlasWeb.Plugs.Auth.validate_session_token(token) do
+      assign(conn, :current_user_id, user_id)
     else
       _ ->
         conn
@@ -2851,10 +1734,10 @@ end
 ## 23. Credit System
 
 ```elixir
-# lib/nexus/credits/credits.ex
-defmodule Nexus.Credits do
+# lib/aitlas/credits.ex
+defmodule Aitlas.Credits do
   import Ecto.Query
-  alias Nexus.Repo
+  alias Aitlas.Repo
 
   # ── Read ─────────────────────────────────────────────────
 
@@ -2919,12 +1802,12 @@ end
 ## 24. BYOK Key Handling
 
 ```elixir
-# lib/nexus/crypto/crypto.ex
-defmodule Nexus.Crypto do
+# lib/aitlas/crypto.ex
+defmodule Aitlas.Crypto do
   import Ecto.Query
-  alias Nexus.Repo
+  alias Aitlas.Repo
 
-  @aad "nexus-api-key-v1"
+  @aad "aitlas-api-key-v1"
 
   def encrypt(plaintext) do
     key   = get_encryption_key()
@@ -2969,11 +1852,10 @@ end
 
 ## 25. MCP Client
 
-See §8 Engine 4 (ToolExecutor) for the full `Nexus.MCP.Client` implementation.
+See §8 Engine 4 (ToolExecutor) for `Aitlas.ToolExecutor.MCPClient`.
 
-The MCP client speaks JSON-RPC 2.0 to any Action's `/api/mcp` endpoint.
-
-External MCP connections (user-connected services like GitHub, Notion) follow the same pattern but use the user's OAuth/PAT credentials fetched from `mcp_connections` table, decrypted inline.
+The MCP client speaks JSON-RPC 2.0 to any MCP endpoint (`POST /api/mcp`) using tools/list and tools/call.
+External MCP callers must provide `task_id` to enforce tool allowlists; internal callers may omit it.
 
 ---
 
@@ -2984,26 +1866,31 @@ External MCP connections (user-connected services like GitHub, Notion) follow th
 import Config
 
 # ── Database ──────────────────────────────────────────────
-config :nexus, Nexus.Repo,
+config :aitlas, Aitlas.Repo,
   url:              System.fetch_env!("DATABASE_URL"),
   pool_size:        10,
   ssl:              true
 
 # ── Web ───────────────────────────────────────────────────
-config :nexus, NexusWeb.Endpoint,
+config :aitlas, AitlasWeb.Endpoint,
   url:       [host: System.fetch_env!("PHX_HOST"), port: 443],
   secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
   server:    true
 
 # ── Redis ─────────────────────────────────────────────────
-config :nexus, :redis_url, System.fetch_env!("REDIS_URL")
+config :aitlas, :redis_url, System.fetch_env!("REDIS_URL")
 
 # ── Workspace ─────────────────────────────────────────────
-config :nexus, :workspace_root, System.get_env("WORKSPACE_ROOT", "/var/nexus/workspaces")
+config :aitlas, :workspace_root, System.get_env("WORKSPACE_ROOT", "/tmp/aitlas-workspaces")
+
+# ── RTK / Shell Exec ──────────────────────────────────────
+config :aitlas, :rtk_enabled, System.get_env("RTK_ENABLED", "false") in ["true", "1", "yes"]
+config :aitlas, :rtk_path, System.get_env("RTK_PATH", "rtk")
+config :aitlas, :shell_exec_enabled, System.get_env("SHELL_EXEC_ENABLED", "false") in ["true", "1", "yes"]
 
 # ── Agents Store ──────────────────────────────────────────
-config :nexus, :agents_store_url,    System.fetch_env!("AGENTS_STORE_API_URL")
-config :nexus, :agents_store_secret, System.fetch_env!("FURMA_INTERNAL_SECRET")
+config :aitlas, :agents_store_url,    System.fetch_env!("AGENTS_STORE_API_URL")
+config :aitlas, :agents_store_secret, System.fetch_env!("FURMA_INTERNAL_SECRET")
 ```
 
 ### `.env` (Hetzner server)
@@ -3031,6 +1918,11 @@ AGENTS_STORE_API_URL="https://api.agents.aitlas.xyz"
 
 # Workspace
 WORKSPACE_ROOT="/var/nexus/workspaces"
+
+# RTK (optional)
+RTK_ENABLED="true"
+RTK_PATH="rtk"
+SHELL_EXEC_ENABLED="true"
 
 # MCP
 MCP_API_KEY="external-mcp-key"
@@ -3098,12 +1990,12 @@ Build in strict sequence. Each phase is independently runnable.
 - [ ] `mix phx.new nexus --no-html --no-assets --no-live --binary-id`
 - [ ] Add all deps to `mix.exs`, `mix deps.get`
 - [ ] `config/runtime.exs` — all env vars validated at boot
-- [ ] `Nexus.Repo` + DB connection to Neon
+- [ ] `Aitlas.Repo` + DB connection to Neon
 - [ ] All migrations: `tasks`, `task_steps`, `tool_calls`, `memory_vectors`, `episodic_memory`, `credit_ledger`
 - [ ] All DB indexes from §19
 - [ ] `GET /internal/health` returns 200 with DB ping
-- [ ] `Nexus.Crypto` — encrypt/decrypt (tested)
-- [ ] `Nexus.Credits` — reserve/deduct/refund/balance (tested)
+- [ ] `Aitlas.Crypto` — encrypt/decrypt (tested)
+- [ ] `Aitlas.Credits` — reserve/deduct/refund/balance (tested)
 - [ ] Logger redactor installed
 
 **Milestone:** Nexus boots, connects to DB, health check passes, crypto works.
@@ -3112,11 +2004,11 @@ Build in strict sequence. Each phase is independently runnable.
 
 ### Phase 2 — Tool Registry + Security (Day 3)
 
-- [ ] `Nexus.ToolRegistry` — ETS table, start on boot
+- [ ] `Aitlas.ToolRegistry` — ETS table, start on boot
 - [ ] Built-in tools registered: `execute_code`, `web_fetch`, `memory_search`
-- [ ] `Nexus.InjectionGuard` — validate allowlist + injection patterns (tested)
-- [ ] `Nexus.MCP.Client` — JSON-RPC 2.0 HTTP client
-- [ ] `Nexus.ToolExecutor` — full flow: guard → resolve → execute → hash → charge
+- [ ] `Aitlas.InjectionGuard` — validate allowlist + injection patterns (tested)
+- [ ] `Aitlas.ToolExecutor.MCPClient` — JSON-RPC 2.0 HTTP client
+- [ ] `Aitlas.ToolExecutor` — full flow: guard → resolve → execute → hash → charge
 
 **Milestone:** Tool calls work end-to-end. Injection blocked. Credits deducted correctly.
 
@@ -3124,11 +2016,11 @@ Build in strict sequence. Each phase is independently runnable.
 
 ### Phase 3 — Provider Router (Day 4)
 
-- [ ] `Nexus.ProviderRouter.ModelRegistry` — capability map
-- [ ] `Nexus.ProviderRouter.OpenAI` — call + normalize response
-- [ ] `Nexus.ProviderRouter.Anthropic`
-- [ ] `Nexus.ProviderRouter.Gemini`
-- [ ] `Nexus.ProviderRouter` — dispatch + BYOK key inline
+- [ ] `Aitlas.ProviderRouter.ModelRegistry` — capability map
+- [ ] `Aitlas.ProviderRouter.OpenAI` — call + normalize response
+- [ ] `Aitlas.ProviderRouter.Anthropic`
+- [ ] `Aitlas.ProviderRouter.Gemini`
+- [ ] `Aitlas.ProviderRouter` — dispatch + BYOK key inline
 - [ ] `OpenAI.embed/2` for vector memory
 - [ ] Tests: all providers return normalized `%{type: :tool_call}` or `%{type: :text}`
 
@@ -3138,15 +2030,15 @@ Build in strict sequence. Each phase is independently runnable.
 
 ### Phase 4 — Agent Loop (Day 5–6)
 
-- [ ] `Nexus.AgentLoop.State` struct
-- [ ] `Nexus.AgentLoop.Heuristics` (tested)
-- [ ] `Nexus.ContextBuilder` + `PromptBuilder` (Solid/Liquid)
-- [ ] `Nexus.AgentLoop` GenServer — full PLAN→ACT→REFLECT→PERSIST loop
+- [ ] `Aitlas.AgentLoop.State` struct
+- [ ] `Aitlas.AgentLoop.Heuristics` (tested)
+- [ ] `Aitlas.ContextBuilder` (Solid/Liquid)
+- [ ] `Aitlas.AgentLoop` GenServer — full PLAN→ACT→REFLECT→PERSIST loop
 - [ ] Hard limits enforced: all 5
 - [ ] Task state machine: `Tasks.transition/2`
-- [ ] `Nexus.Workers.AgentRunner` Oban worker
+- [ ] `Aitlas.Workers.AgentRunner` Oban worker
 - [ ] Phoenix Channel: `UserSocket` + `TaskChannel`
-- [ ] `NexusWeb.TaskController` — create + show + cancel
+- [ ] `AitlasWeb.TaskController` — create + show + cancel
 - [ ] `POST /api/v1/tasks` end-to-end test
 
 **Milestone:** Agent task dispatched from `curl`, runs loop, broadcasts steps via WebSocket, completes.
@@ -3155,13 +2047,11 @@ Build in strict sequence. Each phase is independently runnable.
 
 ### Phase 5 — Memory + File Processor (Day 7–8)
 
-- [ ] `Nexus.MemoryEngine` facade
+- [ ] `Aitlas.MemoryEngine` facade
 - [ ] `VectorMemory` — pgvector search + insert
 - [ ] `ShortTerm` — Redis checkpoint/restore
 - [ ] `Episodic` — task outcome records
-- [ ] `Nexus.Workers.MemoryExtractor` Oban worker
-- [ ] `Nexus.FileProcessor` — parse → chunk → embed → store
-- [ ] `Nexus.Workers.FileIndexer` Oban worker
+- [ ] `Aitlas.FileProcessor` — parse → chunk → embed → store
 - [ ] ContextBuilder reads vector memories on each iteration
 
 **Milestone:** Agent accumulates memories across runs. Files indexed and retrieved in context.
@@ -3170,9 +2060,8 @@ Build in strict sequence. Each phase is independently runnable.
 
 ### Phase 6 — Replay Engine (Day 9)
 
-- [ ] `Nexus.ReplayEngine` — exact, live, fork modes
-- [ ] `Nexus.Workers.ReplayRunner` Oban worker
-- [ ] `NexusWeb.ReplayController` — `POST /api/v1/tasks/:id/replay`
+- [ ] `Aitlas.ReplayEngine` — exact, trace, reexecute, fork modes
+- [ ] `AitlasWeb.ReplayController` — `POST /api/v1/tasks/:id/replay`
 - [ ] Exact replay: re-broadcasts stored steps, 0 credits
 - [ ] Fork replay: dispatches new task with `replay_of_task_id` + `fork_from_step`
 - [ ] Execution hash computed and stored on task completion
@@ -3183,11 +2072,11 @@ Build in strict sequence. Each phase is independently runnable.
 
 ### Phase 7 — Workspace + Codex Client (Day 10)
 
-- [ ] `Nexus.Workspace` — create, remove, path validation (from Symphony)
-- [ ] `Nexus.CodexClient` — JSON-RPC over stdio (from Symphony)
+- [ ] `Aitlas.Workspace` — create, remove, path validation (from Symphony)
+- [ ] `Aitlas.CodexClient` — JSON-RPC over stdio (from Symphony)
 - [ ] `AgentLoop` — `classify_provider` + `run_local_agent` branch
 - [ ] Test: dispatch task with `provider: "claude-code"`, verify session starts
-- [ ] `Nexus.Workers.Watchdog` Oban worker (stale task cleanup)
+- [ ] `Aitlas.Reconciliation` periodic cleanup (stale tasks)
 
 **Milestone:** Codex and Claude Code sessions manageable by Nexus as regular tasks.
 
@@ -3195,179 +2084,14 @@ Build in strict sequence. Each phase is independently runnable.
 
 ### Phase 8 — Hardening (Day 11–12)
 
-- [x] `Nexus.AgentLoader` — load + cache agent specs from Agents Store API (ETS, 5min TTL) ✅
-- [ ] `Nexus.Auth.validate_session_token/1` — JWT validation via Better Auth
-- [ ] `Nexus.Plugs.Auth` + `Nexus.Plugs.InternalAuth` + `Nexus.Plugs.RateLimit`
+- [ ] `Aitlas.AgentLoader` — load + cache agent specs from Agents Store API (ETS, 5min TTL)
+- [ ] `AitlasWeb.Plugs.Auth` + `AitlasWeb.Plugs.InternalAuth` + `AitlasWeb.Plugs.MCPAuth`
 - [ ] Rate limiting on all public routes (Hammer + Upstash)
 - [ ] Watchdog cron job running every 5 minutes
 - [ ] Load test: 50 concurrent agent tasks, verify isolation
 - [ ] All secrets redacted in logs — manual verification
 
----
-
-## 30. Implementation Status (March 11, 2026)
-
-### ✅ Complete (11/11 Engines)
-
-| Engine | Module | Lines | Status |
-|--------|--------|-------|--------|
-| 1. Provider Router | `Aitlas.ProviderRouter` | ~1,200 | ✅ |
-| 2. Context Builder | `Aitlas.ContextBuilder` | ~300 | ✅ |
-| 3. Agent Loop | `Aitlas.AgentLoop` | ~600 | ✅ |
-| 4. Tool Executor | `Aitlas.ToolExecutor` | ~300 | ✅ |
-| 5. Tool Registry | `Aitlas.ToolRegistry` | ~400 | ✅ |
-| 6. Memory Engine | `Aitlas.MemoryEngine` | ~700 | ✅ |
-| 7. File Processor | `Aitlas.FileProcessor` | ~250 | ✅ |
-| 8. Observability | `Aitlas.Observability` | ~250 | ✅ |
-| 9. Workspace Manager | `Aitlas.Workspace` | ~200 | ✅ |
-| 10. Codex Client | `Aitlas.CodexClient` | ~300 | ✅ |
-| 11. Capability Graph | `Aitlas.CapabilityGraph` | ~250 | ✅ |
-
-### ✅ Supporting Modules
-
-| Module | Purpose |
-|--------|---------|
-| `Aitlas.AgentLoader` | Resolves agent_slug → agent_spec |
-| `Aitlas.BudgetGuard` | Multi-layer budget enforcement |
-| `Aitlas.InjectionGuard` | SQL/shell injection detection |
-| `Aitlas.Crypto` | AES-256-GCM key encryption |
-| `Aitlas.Credits` | Credit ledger operations |
-
-### Test Status
-
-| Category | Tests | Passing |
-|----------|-------|---------|
-| MCP Controller | 5 | 5 ✅ |
-| Tool Registry | 4 | 4 ✅ |
-| Provider Router | 3 | 2 |
-| Memory (Redis) | 4 | (excluded) |
-| Credits | 6 | (schema issues) |
-| Tasks | 8 | 3 |
-| **Total** | 61 | 28 |
-
-### Known Issues
-
-1. **Credits tests** - Schema mismatch with existing test expectations
-2. **Provider Router** - `get_capabilities/1` not fully implemented
-3. **Datetime format** - Some tests use `DateTime.utc_now()` without truncating microseconds
-
-### Symphony Patterns Leveraged
-
-| Pattern | Source | Applied In |
-|---------|--------|------------|
-| Workspace isolation | Symphony Workspace | `Aitlas.Workspace` |
-| JSON-RPC over stdio | Symphony AgentRunner | `Aitlas.CodexClient` |
-| Per-task sandboxes | Symphony Orchestrator | `run_local_agent_loop/1` |
-| Thread management | Symphony Thread | `start_session/3`, `stop_session/1` |
-| Tool routing | Symphony ToolExecutor | `execute_local_tool/3` |
-
-### Best Practices Applied
-
-1. **ETS for hot paths** - ToolRegistry, CapabilityGraph, AgentLoader
-2. **GenServer for stateful** - AgentLoop, ToolRegistry
-3. **Registry for lookup** - `Aitlas.AgentLoop.Registry`
-4. **Supervision tree** - All engines supervised
-5. **:telemetry for metrics** - Observability engine
-6. **Phoenix Channels** - Real-time task updates
-7. **Oban for async** - Background job processing
-
----
-
-**Last Updated:** March 11, 2026 — 13:30 CET
-
-> *Every agent run is a commit.*  
-> *Nexus is the Git.*  
-> *Build engines, not features.*
-
-AgentLoader resolves `agent_slug` to full agent specifications.
-
-```elixir
-# lib/nexus/agent_loader.ex
-defmodule Nexus.AgentLoader do
-  use GenServer
-
-  @table :nexus_agent_specs
-  @cache_ttl_seconds 300  # 5 minutes
-
-  # ── Public API ────────────────────────────────────────────
-
-  @doc "Resolve an agent slug to its full specification."
-  @spec resolve(String.t()) :: {:ok, map()} | {:error, term()}
-  def resolve(slug) when is_binary(slug) do
-    case get_cached(slug) do
-      {:ok, spec} -> {:ok, spec}
-      :miss       -> fetch_and_cache(slug)
-    end
-  end
-
-  # ── Cache Operations ──────────────────────────────────────
-
-  defp get_cached(slug) do
-    case :ets.lookup(@table, slug) do
-      [{^slug, spec, cached_at}] ->
-        if System.system_time(:second) - cached_at < @cache_ttl_seconds do
-          {:ok, spec}
-        else
-          :miss
-        end
-      [] -> :miss
-    end
-  end
-
-  # ── Agents Store API ──────────────────────────────────────
-
-  defp fetch_and_cache(slug) do
-    case fetch_from_store(slug) do
-      {:ok, spec} ->
-        cache(slug, spec)
-        {:ok, spec}
-      {:error, reason} ->
-        # Fallback to built-in agents
-        case builtin_spec(slug) do
-          nil -> {:error, reason}
-          spec -> {:ok, spec}
-        end
-    end
-  end
-
-  # ── Built-in Agents (Fallback) ────────────────────────────
-
-  defp builtin_spec("f.investor") do
-    %{
-      "slug" => "f.investor",
-      "name" => "Finance Investor",
-      "role" => "Investment analyst",
-      "system_prompt" => "You are a financial investment analyst...",
-      "tools" => %{
-        "tool_allowlist" => ["web_fetch", "memory_search", "execute_code"],
-        "dangerous_tools" => []
-      },
-      "execution" => %{
-        "max_iterations" => 20,
-        "max_tool_calls" => 50
-      }
-    }
-  end
-
-  defp builtin_spec("f.developer"), do: %{"slug" => "f.developer", ...}
-  defp builtin_spec("f.researcher"), do: %{"slug" => "f.researcher", ...}
-  defp builtin_spec(_), do: nil
-end
-```
-
-### Integration Points
-
-| Component | Uses AgentLoader |
-|-----------|------------------|
-| TaskController | Resolves agent_slug before creating task |
-| ContextBuilder | Uses tools.tool_allowlist for filtering |
-| AgentLoop | Uses execution config for limits |
-
-### Cache Strategy
-
-- **TTL:** 5 minutes
-- **Storage:** ETS (public, read_concurrency: true)
-- **Fallback:** Built-in agents when Agents Store unavailable
+**Milestone:** Nexus is production-hardened. Rate limited. Stale tasks cleaned. Auth tested.
 
 ---
 
