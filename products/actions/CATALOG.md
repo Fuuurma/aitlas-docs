@@ -15,6 +15,7 @@
 | **Nexus runtime** | ✅ Active | Durable agent runtime |
 | **f.library** | ✅ Active | Memory/knowledge management |
 | **f.twyt** | ✅ Active | Twitter automation |
+| **f.improve** | 📋 Planned | Autonomous code improvement |
 | **f.rsrx** | 📋 Planned | Research assistant |
 | **f.finance** | 📋 Planned | Financial data |
 | **f.guard** | 📋 Planned | Security monitoring |
@@ -141,6 +142,46 @@ Result: Structured markdown report
 - Thread composition
 - Analytics tracking
 - Content curation
+
+### f.improve - Autonomous Code Improvement
+
+**Type:** Developer  
+**Purpose:** Iteratively improve code by running tests/benchmarks
+
+**Inspired by:** [karpathy/autoresearch](https://github.com/karpathy/autoresearch)
+
+**Pipeline:** ANALYZE → EXPERIMENT → ITERATE
+
+**What it does:**
+- Reads code and runs baseline benchmarks
+- Proposes improvements (performance, quality, coverage)
+- Tests each change and measures metrics
+- Keeps improvements, discards regressions
+- Repeats until improvement plateaus
+
+**Tools:**
+- `improve_code` - Full improvement loop
+- `quick_scan` - One-shot suggestions
+- `run_benchmark` - Run benchmark on code
+- `analyze_code` - Deep code analysis
+
+**Example:**
+```
+Goal: "Optimize this function"
+
+Iteration 1: Use Set for O(1) lookups
+  Baseline: 1250ms
+  Result: 45ms
+  ✅ Kept (96.4% improvement)
+
+Iteration 2: Use Map for single pass
+  Result: 38ms
+  ✅ Kept (15.6% improvement)
+
+Final: 97.0% faster (1250ms → 38ms)
+```
+
+**Spec:** See `products/actions/f-improve.md`
 
 ### f.support - Customer Support
 
