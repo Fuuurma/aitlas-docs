@@ -1,6 +1,6 @@
 # Agents Store - The App Store for AI Agents
 
-> ⚠️ **OUTDATED** — Stack changed from Prisma to Drizzle. TODO: Update schema examples.
+> ⚠️ **Note** — Stack uses Drizzle ORM. See schema examples below.
 
 > ⚠️ **Proprietary** — All Aitlas products are **closed source**. No open source license.
 
@@ -82,29 +82,30 @@ interface AgentCommercial {
 
 **Opt-in upgrades** — silent updates break user prompts.
 
-```prisma
-model AgentVersion {
-  id          String   @id @default(cuid())
-  agentId     String
-  version     String   // "1.2.0"
-  changelog   String   @db.Text
-  basePrompt  String   @db.Text
-  skillsJson  Json
-  isLatest    Boolean  @default(true)
-  publishedAt DateTime @default(now())
-  agent       Agent    @relation(...)
-  
-  @@unique([agentId, version])
-}
+```typescript
+// Drizzle schema
+import { pgTable, text, boolean, timestamp, json } from "drizzle-orm/pg-core";
 
-model UserAgent {
-  id          String   @id @default(cuid())
-  userId      String
-  agentId     String
-  versionId   String   // Locked to version at hire time
-  activatedAt DateTime @default(now())
-  isActive    Boolean  @default(true)
-}
+export const agentVersions = pgTable("agent_versions", {
+  id: text("id").primaryKey(),
+  agentId: text("agent_id").notNull(),
+  version: text("version").notNull(), // "1.2.0"
+  changelog: text("changelog").notNull(),
+  basePrompt: text("base_prompt").notNull(),
+  skillsJson: json("skills_json").notNull(),
+  isLatest: boolean("is_latest").default(true),
+  publishedAt: timestamp("published_at").defaultNow(),
+});
+
+export const userAgents = pgTable("user_agents", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  agentId: text("agent_id").notNull(),
+  versionId: text("version_id").notNull(), // Locked to version at hire time
+  activatedAt: timestamp("activated_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+```
 ```
 
 **Version Update UX:**
@@ -278,19 +279,23 @@ interface AgentSearchParams {
 
 ## Review System
 
-```prisma
-model AgentReview {
-  id        String   @id @default(cuid())
-  agentId   String
-  userId    String
-  rating    Int      // 1-5
-  comment   String?  @db.Text
-  isVerified Boolean @default(false)  // User has used agent >= 3 sessions
-  createdAt DateTime @default(now())
-  isHidden  Boolean  @default(false)
-  
-  @@unique([agentId, userId]) // One review per user per agent
-}
+```typescript
+// Drizzle schema
+import { pgTable, text, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { uniqueIndex } from "drizzle-orm/pg-core";
+
+export const agentReviews = pgTable("agent_reviews", {
+  id: text("id").primaryKey(),
+  agentId: text("agent_id").notNull(),
+  userId: text("user_id").notNull(),
+  rating: integer("rating").notNull(), // 1-5
+  comment: text("comment"),
+  isVerified: boolean("is_verified").default(false), // User has used agent >= 3 sessions
+  createdAt: timestamp("created_at").defaultNow(),
+  isHidden: boolean("is_hidden").default(false),
+}, (table) => ({
+  uniqueAgentUser: uniqueIndex("agent_user_unique").on(table.agentId, table.userId),
+}));
 ```
 
 **Rules:**
